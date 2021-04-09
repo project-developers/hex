@@ -166,12 +166,10 @@ const saveToComputer = () => {
 	allReport.push(mon);
 	//allReport.push(past);
 	download(JSON.stringify(congregationData), 'Monthly Report.csv', 'text/plain');
-	download(JSON.stringify(Attendance), 'Attendance.csv', 'text/plain');
 	localStorage.removeItem('CongregationData');
 	localStorage.removeItem('Groups');
 	localStorage.removeItem('MonthlyRecord');
 	localStorage.removeItem('LateRecord');
-	localStorage.removeItem('Attendance');
 	} else {
 		return;
 	}
@@ -180,17 +178,7 @@ const saveToComputer = () => {
 button.addEventListener('click', saveToComputer);
 
 function attProcess() {
-	/*
-	var a = attendance.week1.weekend
-	var b = attendance.week1.midweek
-	var c = attendance.week2.weekend
-	var d = attendance.week2.midweek
-	var e = attendance.week3.weekend
-	var f = attendance.week3.midweek
-	var g = attendance.week4.weekend
-	var h = attendance.week4.midweek
-	var i = attendance.week5.weekend
-	var j = attendance.week5.midweek*/
+	
 	var weekCount = 0, weekendCount = 0;
 	
 	
@@ -1114,12 +1102,22 @@ if(m == "September"){
 	serviceYear = "<p><button style='width:200px;' id='srvYr' class='button' onclick='yrProcess()'>Update Service Year</button></p>"
 }
 
+function attDownload() {
+	if (confirm('Press "OK" to Download Attendance')){
+	download(JSON.stringify(Attendance), 'Attendance.csv', 'text/plain');
+	localStorage.removeItem('Attendance');
+	} else {
+		return;
+	}
+
+}
+
 //Function starts here
 function getContent(fragmentId, callback){
  var pages = {
 	monthlyReport: "<h1>Monthly Report</h1>" + serviceYear + "<div>" + reports + lateReport + "</div>",
     missingReport: "<h1>Missing Report</h1>" + "<div style='display: flex; flex-wrap: wrap; margin: 0; padding: 0; width: 100%;'>" + missingReport + "</div>",	
-	branch: "<h1>Branch Report</h1>" + active + attendance.average.weekend + "<p><button style='width:200px;' id='addAtt' class='button' onclick='attProcess()'>Process Attendance</button></p>" + summary + publisherReport + auxiliaryPioneerReport + regularPioneerReport
+	branch: "<h1>Branch Report</h1>" + active + attendance.average.weekend + "<p><button style='width:200px;' id='addAtt' class='button' onclick='attProcess()'>Process Attendance</button><button style='width:110px;' id='attDownload' class='button' onclick='attDownload()'>Download</button></p>" + summary + publisherReport + auxiliaryPioneerReport + regularPioneerReport
 
   };
   callback(pages[fragmentId]);

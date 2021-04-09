@@ -27,6 +27,8 @@ var reports = "";
 
 var lateReport = "";
 
+var yr;
+
 window.onload = function(){
 	document.getElementById("month1").style.display='none';
 
@@ -72,10 +74,6 @@ input.onkeypress = input. onkeydown = function() {
 	this.size = ( this.value.length > 10 ) ? this.value.length : 10;
 };
 
-//var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-
-//function myFunction() {
   var months = new Array();
   months[0] = "January";
   months[1] = "February";
@@ -92,8 +90,7 @@ input.onkeypress = input. onkeydown = function() {
 
   var d = new Date();
   var m = months[d.getMonth()-1];
-  //document.getElementById("demo").innerHTML = m;
-//};
+  
 
 var options1 = '';
 
@@ -253,6 +250,8 @@ function table(){
 	};
 	
 	groups = groups.sort();
+	
+	yr = congregationData[1].report.serviceYear1.year;
 
 	var x = -1;
 
@@ -1117,7 +1116,7 @@ function attDownload() {
 //Function starts here
 function getContent(fragmentId, callback){
  var pages = {
-	monthlyReport: "<h1>Monthly Report</h1>" + serviceYear + "<div>" + reports + lateReport + "</div>",
+	monthlyReport: "<h1>Monthly Report (" + m + " " + yr + ")</h1>" + serviceYear + "<div>" + reports + lateReport + "</div>",
     missingReport: "<h1>Missing Report</h1>" + "<div style='display: flex; flex-wrap: wrap; margin: 0; padding: 0; width: 100%;'>" + missingReport + "</div>",	
 	branch: "<h1>Branch Report</h1>" + active + attendance.average.weekend + "<p><button style='width:200px;' id='addAtt' class='button' onclick='attProcess()'>Process Attendance</button><button style='width:110px;' id='attDownload' class='button' onclick='attDownload()'>Download</button></p>" + summary + publisherReport + auxiliaryPioneerReport + regularPioneerReport
 

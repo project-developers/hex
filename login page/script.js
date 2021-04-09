@@ -250,7 +250,9 @@ function table(){
 		if(!groups.includes(congregationData[i].fieldServiceGroup)){
 		groups.push(congregationData[i].fieldServiceGroup);
 		};
-	};		
+	};
+	
+	groups = groups.sort();
 
 	var x = -1;
 

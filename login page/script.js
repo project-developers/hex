@@ -1136,7 +1136,7 @@ function attDownload() {
 //Function starts here
 function getContent(fragmentId, callback){
  var pages = {
-	 cong: "<h1>Report</h1>",//"<ul class='topnav'><li><a class='active' href='#monthlyReport'>Monthly Report</a></li><li><a href='#missingReport'>Missing Report</a></li><li><a href='#branch'>Branch Report</a></li></ul><h1>Cong Name</h1>",
+	 cong: "<h1>Congregation</h1>",//"<ul class='topnav'><li><a class='active' href='#monthlyReport'>Monthly Report</a></li><li><a href='#missingReport'>Missing Report</a></li><li><a href='#branch'>Branch Report</a></li></ul><h1>Cong Name</h1>",
 	 report: "<h1>Report</h1>",
 	monthlyReport: "<h1>Monthly Report (" + m + " " + yr + ")</h1>" + serviceYear + "<div>" + reports + lateReport + "</div>",
     missingReport: "<h1>Missing Report</h1>" + "<div style='display: flex; flex-wrap: wrap; margin: 0; padding: 0; width: 100%;'>" + missingReport + "</div>",	

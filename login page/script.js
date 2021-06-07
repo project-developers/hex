@@ -1,3 +1,4 @@
+/*
 function displayNotification() {
   if (Notification.permission == 'granted') {
     navigator.serviceWorker.getRegistration().then(function(reg) {
@@ -14,6 +15,8 @@ function displayNotification() {
     });
   }
 }
+
+*/
 
 const button = document.querySelector('.button');
 
@@ -78,7 +81,7 @@ window.onload = function(){
 		datasetMain();
 		createRecord();
 		processRecord();
-		table();
+		//table();
 		dataset1();
 		branchRecord();
 		

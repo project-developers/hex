@@ -81,7 +81,7 @@ window.onload = function(){
 		datasetMain();
 		createRecord();
 		processRecord();
-		//table();
+		table();
 		dataset1();
 		branchRecord();
 		

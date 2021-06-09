@@ -139,7 +139,7 @@ function dataset1(){
 
 var options = '';
 
-for (var i = 0; i < congregationData.length; i++) {
+for (var i = 1; i < congregationData.length; i++) {
 
 if(monthlyRecord[i + 1][3] !== ""){
 			continue;
@@ -152,7 +152,7 @@ return options;
 
 function dataset2(){
 var options = '';
-for (var i = 0; i < congregationData.length; i++) {
+for (var i = 1; i < congregationData.length; i++) {
   options += '<option value="' + congregationData[i].name + '" />';
 };
 document.getElementById('publisherName').innerHTML = options;
@@ -160,7 +160,7 @@ document.getElementById('publisherName').innerHTML = options;
 
 function datasetMain(){
 var options = '';
-for (var i = 0; i < congregationData.length; i++) {
+for (var i = 1; i < congregationData.length; i++) {
   options += '<option value="' + congregationData[i].name + '" />';
 };
 document.getElementById('publisherName').innerHTML = options;
@@ -262,7 +262,7 @@ function table(){
 
 	missingReport = "";
 
-	for(var i = 0; i < congregationData.length; i++){
+	for(var i = 1; i < congregationData.length; i++){
 			
 		if(!groups.includes(congregationData[i].fieldServiceGroup)){
 		groups.push(congregationData[i].fieldServiceGroup);
@@ -282,7 +282,7 @@ function table(){
 
 	var a = 1;	
 
-	for(var i = 0; i < congregationData.length; i++) {
+	for(var i = 1; i < congregationData.length; i++) {
 
 		if(congregationData[i].fieldServiceGroup == groups[x]){		
 
@@ -311,7 +311,7 @@ function createRecord(){
 	monthlyRecord[0] = [];
 	monthlyRecord[0] = heading;
 
-	for(var i = 0; i < congregationData.length; i++){
+	for(var i = 1; i < congregationData.length; i++){
 		monthlyRecord[i + 1] = [];
 		monthlyRecord[i + 1].push(congregationData[i].name);
 		
@@ -467,7 +467,7 @@ function enterRecord(){
 		};
 		
 		var publi = [];
-		for(var i = 0; i < congregationData.length; i++){
+		for(var i = 1; i < congregationData.length; i++){
 		publi.push(congregationData[i].name);
 		};
 		
@@ -889,7 +889,7 @@ function branchRecord(){
 	});
 
 
-for(var i = 0; i < congregationData.length; i++){	
+for(var i = 1; i < congregationData.length; i++){	
 
 if(congregationData[i].privilege.regularPioneer == "Yes") {
 			regPio.push(congregationData[i].name);
@@ -1073,7 +1073,7 @@ branchReg.forEach(function(row){
 });
 summary += "</tr></table>";
 var activePub = 0;
-for(var i = 0; i < congregationData.length; i++){
+for(var i = 1; i < congregationData.length; i++){
 	if(m=="January") {
 	if(congregationData[i].report.serviceYear1.jan.hours !== "" || congregationData[i].report.serviceYear1.dec.hours !== "" || congregationData[i].report.serviceYear1.nov.hours !== "" || congregationData[i].report.serviceYear1.oct.hours !== "" || congregationData[i].report.serviceYear1.sept.hours !== "" || congregationData[i].report.serviceYear2.aug.hours !== ""){activePub += 1}
 	}

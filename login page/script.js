@@ -1145,10 +1145,10 @@ const newPublisher = document.getElementById('newPublisher');
 newPublisher.addEventListener('click', addNewPublisher);
 
 function addNewPublisher(){
-	const newCard = congregationData[0];
-	newCard.name = prompt("Publisher Name", newCard.name);
-	newCard.fieldServiceGroup = prompt("Field Service Group", newCard.fieldServiceGroup);
-	congregationData.push(newCard);
+	var newCard = congregationData.slice(0,1);
+	newCard[0].name = prompt("Publisher Name", newCard[0].name);
+	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
+	congregationData.push(newCard[0]);
 	localStorage.removeItem('MonthlyRecord');
 	localStorage.removeItem('LateRecord');
 	localStorage.removeItem('CongregationData');

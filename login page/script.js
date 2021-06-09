@@ -1147,8 +1147,8 @@ newPublisher.addEventListener('click', addNewPublisher);
 function addNewPublisher(){
 	var newCard = [];
 	newCard.push(congregationData[0]);
-	newCard[0].name = prompt("Publisher Name", newCard.name);
-	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard.fieldServiceGroup);
+	newCard[0].name = prompt("Publisher Name", newCard[0].name);
+	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
 	congregationData.push(newCard[0]);
 	localStorage.removeItem('MonthlyRecord');
 	localStorage.removeItem('LateRecord');

@@ -1158,17 +1158,17 @@ function addNewPublisher(){
 	newCard[0].name = prompt("Publisher Name", newCard[0].name);
 	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
 	congregationData.push(newCard[0]);*/
-	localStorage.removeItem('MonthlyRecord');
+	/*localStorage.removeItem('MonthlyRecord');
 	localStorage.removeItem('LateRecord');
-	localStorage.removeItem('CongregationData');
+	localStorage.removeItem('CongregationData');*/
 	createRecord();
 	processRecord();
 	table();
 	//resetEntry();
 	branchRecord();
-	localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
+	/*localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
 	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
-	localStorage.setItem('CongregationData', JSON.stringify(congregationData));
+	localStorage.setItem('CongregationData', JSON.stringify(congregationData));*/
 	console.log('New Publisher Added')
 }
 

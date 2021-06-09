@@ -1149,7 +1149,8 @@ function addNewPublisher(){
 	
 	congregationData[0].name = prompt("Publisher Name", congregationData[0].name);
 	congregationData[0].fieldServiceGroup = prompt("Field Service Group", congregationData[0].fieldServiceGroup);
-	congregationData.push(congregationData.slice(0,1));
+	var newCard = congregationData.slice(0,1);
+	congregationData.push(newCard[0]);
 	congregationData[0].name = "LASTNAME FirstName";
 	congregationData[0].fieldServiceGroup = "Field Service Group";
 	

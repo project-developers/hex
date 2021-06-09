@@ -51,7 +51,7 @@ font-family: "candara", sans-serif;
 }
 
 /* Hide the link that should open and close the topnav on small screens */
-.topnav .icon {
+.topnav .icon .inside {
   display: none;
 }
 
@@ -168,9 +168,9 @@ font-family: "candara", sans-serif;
       <a href="#missingReport">Missing</a>
       <a href="#branch">Branch</a>
     </div>
-  <input type="file" id="file" accept='.csv'/>
-  <label for="file">Load File</label>
-  <button id='button' class='button'>Button</button>
+  <input class="inside" type="file" id="file" accept='.csv'/>
+  <label class="inside" for="file">Load File</label>
+  <button class="inside" id='button' class='button'>Button</button>
   <a style="margin-left:12px;" onclick="location.reload();">Reload</a>
   <a href="https://project-developers.github.io/hexa/">Log Off</a>
 	  

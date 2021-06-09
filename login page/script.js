@@ -144,7 +144,7 @@ for (var i = 1; i < congregationData.length; i++) {
 if(monthlyRecord[i][3] !== ""){
 			continue;
 		}
-  options += '<option value="' + monthlyRecord[i + 1][0] + '" />';
+  options += '<option value="' + monthlyRecord[i][0] + '" />';
 };
 document.getElementById('publisherName').innerHTML = options;
 return options;

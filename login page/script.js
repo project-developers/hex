@@ -271,7 +271,7 @@ function table(){
 	
 	groups = groups.sort();
 	
-	if(congregationData){
+	if(congregationData.length > 0){
 	yr = congregationData[1].report.serviceYear1.year;
 	}
 

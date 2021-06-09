@@ -24,7 +24,8 @@ newPublisher.addEventListener('click', addNewPublisher);
 function addNewPublisher(){
 	
 	
-	let newCard = congregationData.slice(0,1);
+	let newCard = congregationData.splice(0,1);
+	congregationData.unshift(newCard[0]);
 	newCard[0].name = prompt("Publisher Name", newCard[0].name);
 	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
 	

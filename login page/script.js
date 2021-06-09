@@ -1145,11 +1145,10 @@ const newPublisher = document.getElementById('newPublisher');
 newPublisher.addEventListener('click', addNewPublisher);
 
 function addNewPublisher(){
-	var newCard = [];
-	newCard.push(congregationData[0]);
-	newCard[0].name = prompt("Publisher Name", newCard[0].name);
-	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
-	congregationData.push(newCard[0]);
+	const newCard = congregationData[0];
+	newCard.name = prompt("Publisher Name", newCard.name);
+	newCard.fieldServiceGroup = prompt("Field Service Group", newCard.fieldServiceGroup);
+	congregationData.push(newCard);
 	localStorage.removeItem('MonthlyRecord');
 	localStorage.removeItem('LateRecord');
 	localStorage.removeItem('CongregationData');
@@ -1161,7 +1160,6 @@ function addNewPublisher(){
 	localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
 	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
 	localStorage.setItem('CongregationData', JSON.stringify(congregationData));
-	newCard.length = 0;
 	console.log('New Publisher Added')
 }
 

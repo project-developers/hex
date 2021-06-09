@@ -1134,6 +1134,11 @@ function attDownload() {
 }
 
 const newPublisher = document.getElementById('newPublisher');
+newPublisher.addEventListener('click', addNewPublisher);
+
+function addNewPublisher(){
+	console.log('New Publisher Added')
+}
 
 //Function starts here
 function getContent(fragmentId, callback){

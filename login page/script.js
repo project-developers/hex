@@ -26,7 +26,7 @@ const MonthlyRecord = JSON.parse(localStorage.getItem('MonthlyRecord'));
 
 const PastReport = JSON.parse(localStorage.getItem('LateRecord'));
 
-const Groups = JSON.parse(localStorage.getItem('Groups'));
+//const Groups = JSON.parse(localStorage.getItem('Groups'));
 
 const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 
@@ -55,11 +55,11 @@ window.onload = function(){
 	if(PastReport){
 	pastReport = PastReport;
 	};
-	
+	/*
 	if(Groups){
 	groups = Groups;
 	};
-	
+	*/
 	if(CongregationData){
 	congregationData = CongregationData;
 	};
@@ -184,7 +184,7 @@ const saveToComputer = () => {
 	//allReport.push(past);
 	download(JSON.stringify(congregationData), 'Monthly Report.csv', 'text/plain');
 	localStorage.removeItem('CongregationData');
-	localStorage.removeItem('Groups');
+	//localStorage.removeItem('Groups');
 	localStorage.removeItem('MonthlyRecord');
 	localStorage.removeItem('LateRecord');
 	} else {
@@ -706,6 +706,8 @@ function enterRecord(){
 
 	processRecord();
 	localStorage.removeItem('CongregationData');
+	localStorage.removeItem('MonthlyRecord');
+	localStorage.removeItem('LateRecord');
 	table();
 	resetEntry();
 	branchRecord();
@@ -1141,13 +1143,18 @@ function addNewPublisher(){
 	newCard.name = prompt("Publisher Name", newCard.name);
 	newCard.fieldServiceGroup = prompt("Field Service Group", newCard.fieldServiceGroup);
 	congregationData.push(newCard);
+	localStorage.removeItem('MonthlyRecord');
+	localStorage.removeItem('LateRecord');
 	localStorage.removeItem('CongregationData');
 	//table();
 	//resetEntry();
 	//branchRecord();
-	//localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
-	//localStorage.setItem('LateRecord', JSON.stringify(pastReport));
+	localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
+	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
 	localStorage.setItem('CongregationData', JSON.stringify(congregationData));
+	table();
+	resetEntry();
+	branchRecord();
 	console.log('New Publisher Added')
 }
 

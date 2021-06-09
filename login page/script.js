@@ -1152,9 +1152,6 @@ function addNewPublisher(){
 	localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
 	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
 	localStorage.setItem('CongregationData', JSON.stringify(congregationData));
-	table();
-	resetEntry();
-	branchRecord();
 	console.log('New Publisher Added')
 }
 

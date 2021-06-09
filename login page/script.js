@@ -1141,6 +1141,13 @@ function addNewPublisher(){
 	newCard.name = prompt("Publisher Name", newCard.name);
 	newCard.fieldServiceGroup = prompt("Field Service Group", newCard.fieldServiceGroup);
 	congregationData.push(newCard);
+	localStorage.removeItem('CongregationData');
+	table();
+	resetEntry();
+	branchRecord();
+	localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
+	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
+	localStorage.setItem('CongregationData', JSON.stringify(congregationData));
 	console.log('New Publisher Added')
 }
 

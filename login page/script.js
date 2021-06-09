@@ -1150,6 +1150,8 @@ function addNewPublisher(){
 	localStorage.removeItem('MonthlyRecord');
 	localStorage.removeItem('LateRecord');
 	localStorage.removeItem('CongregationData');
+	createRecord();
+	processRecord();
 	//table();
 	//resetEntry();
 	//branchRecord();

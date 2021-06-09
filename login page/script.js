@@ -1133,6 +1133,8 @@ function attDownload() {
 
 }
 
+const newPublisher = document.getElementById('newPublisher');
+
 //Function starts here
 function getContent(fragmentId, callback){
  var pages = {

@@ -286,7 +286,7 @@ function table(){
 
 		if(congregationData[i].fieldServiceGroup == groups[x]){		
 
-		if(monthlyRecord[i + 1][3] !== ""){
+		if(monthlyRecord[i][3] !== ""){
 			continue
 		}
 

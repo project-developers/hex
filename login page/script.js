@@ -18,6 +18,39 @@ function displayNotification() {
 
 */
 
+const newPublisher = document.getElementById('newPublisher');
+newPublisher.addEventListener('click', addNewPublisher);
+
+function addNewPublisher(){
+	
+	
+	congregationData[0].name = prompt("Publisher Name", congregationData[0].name);
+	congregationData[0].fieldServiceGroup = prompt("Field Service Group", congregationData[0].fieldServiceGroup);
+	var newCard = congregationData.slice(0,1);
+	congregationData.push(newCard[0]);
+	congregationData[0].name = "LASTNAME FirstName";
+	congregationData[0].fieldServiceGroup = "Field Service Group";
+	
+	/*
+	var newCard = congregationData.slice(0,1);
+	newCard[0].name = prompt("Publisher Name", newCard[0].name);
+	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
+	congregationData.push(newCard[0]);*/
+	/*localStorage.removeItem('MonthlyRecord');
+	localStorage.removeItem('LateRecord');
+	localStorage.removeItem('CongregationData');*/
+	createRecord();
+	processRecord();
+	table();
+	//resetEntry();
+	branchRecord();
+	/*localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
+	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
+	localStorage.setItem('CongregationData', JSON.stringify(congregationData));*/
+	console.log('New Publisher Added')
+}
+
+
 const button = document.querySelector('.button');
 
 const add = document.querySelector('.add');
@@ -1141,37 +1174,6 @@ function attDownload() {
 
 }
 
-const newPublisher = document.getElementById('newPublisher');
-newPublisher.addEventListener('click', addNewPublisher);
-
-function addNewPublisher(){
-	
-	
-	congregationData[0].name = prompt("Publisher Name", congregationData[0].name);
-	congregationData[0].fieldServiceGroup = prompt("Field Service Group", congregationData[0].fieldServiceGroup);
-	var newCard = congregationData.slice(0,1);
-	congregationData.push(newCard[0]);
-	congregationData[0].name = "LASTNAME FirstName";
-	congregationData[0].fieldServiceGroup = "Field Service Group";
-	
-	/*
-	var newCard = congregationData.slice(0,1);
-	newCard[0].name = prompt("Publisher Name", newCard[0].name);
-	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
-	congregationData.push(newCard[0]);*/
-	/*localStorage.removeItem('MonthlyRecord');
-	localStorage.removeItem('LateRecord');
-	localStorage.removeItem('CongregationData');*/
-	createRecord();
-	processRecord();
-	table();
-	//resetEntry();
-	branchRecord();
-	/*localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
-	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
-	localStorage.setItem('CongregationData', JSON.stringify(congregationData));*/
-	console.log('New Publisher Added')
-}
 
 //Function starts here
 function getContent(fragmentId, callback){

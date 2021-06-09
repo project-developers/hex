@@ -1137,6 +1137,10 @@ const newPublisher = document.getElementById('newPublisher');
 newPublisher.addEventListener('click', addNewPublisher);
 
 function addNewPublisher(){
+	var newCard = congregationData[0];
+	newCard.name = prompt("Publisher Name", newCard.name);
+	newCard.fieldServiceGroup = prompt("Field Service Group", newCard.fieldServiceGroup);
+	congregationData.push(newCard);
 	console.log('New Publisher Added')
 }
 

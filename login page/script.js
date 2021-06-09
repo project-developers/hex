@@ -141,7 +141,7 @@ var options = '';
 
 for (var i = 1; i < congregationData.length; i++) {
 
-if(monthlyRecord[i + 1][3] !== ""){
+if(monthlyRecord[i][3] !== ""){
 			continue;
 		}
   options += '<option value="' + monthlyRecord[i + 1][0] + '" />';
@@ -312,97 +312,97 @@ function createRecord(){
 	monthlyRecord[0] = heading;
 
 	for(var i = 1; i < congregationData.length; i++){
-		monthlyRecord[i + 1] = [];
-		monthlyRecord[i + 1].push(congregationData[i].name);
+		monthlyRecord[i] = [];
+		monthlyRecord[i].push(congregationData[i].name);
 		
 		//for(var j = 1; j < heading.length; j++){
 		//monthlyRecord[i + 1].push("");
 		
 		
 		if(m=="January") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jan.placements);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jan.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jan.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jan.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jan.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jan.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jan.placements);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jan.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jan.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jan.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jan.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jan.remarks);
 		}else if(m=="February") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.feb.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.feb.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.feb.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.feb.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.feb.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.feb.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.feb.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.feb.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.feb.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.feb.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.feb.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.feb.remarks);
 		}else if(m=="March") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.mar.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.mar.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.mar.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.mar.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.mar.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.mar.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.mar.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.mar.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.mar.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.mar.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.mar.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.mar.remarks);
 		}else if(m=="April") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.apr.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.apr.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.apr.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.apr.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.apr.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.apr.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.apr.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.apr.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.apr.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.apr.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.apr.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.apr.remarks);
 		}else if(m=="May") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.may.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.may.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.may.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.may.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.may.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.may.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.may.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.may.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.may.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.may.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.may.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.may.remarks);
 		}else if(m=="June") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jun.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jun.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jun.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jun.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jun.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jun.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jun.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jun.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jun.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jun.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jun.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jun.remarks);
 		}else if(m=="July") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jul.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jul.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jul.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jul.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jul.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.jul.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jul.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jul.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jul.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jul.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jul.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.jul.remarks);
 		}else if(m=="August") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.aug.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.aug.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.aug.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.aug.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.aug.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.aug.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.aug.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.aug.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.aug.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.aug.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.aug.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.aug.remarks);
 		}else if(m=="September") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.sept.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.sept.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.sept.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.sept.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.sept.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.sept.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.sept.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.sept.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.sept.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.sept.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.sept.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.sept.remarks);
 		}else if(m=="October") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.oct.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.oct.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.oct.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.oct.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.oct.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.oct.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.oct.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.oct.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.oct.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.oct.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.oct.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.oct.remarks);
 		}else if(m=="November") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.nov.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.nov.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.nov.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.nov.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.nov.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.nov.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.nov.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.nov.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.nov.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.nov.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.nov.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.nov.remarks);
 		}else if(m=="December") {
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.dec.placements);//("");
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.dec.videoShowings);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.dec.hours);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.dec.returnVisits);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.dec.bibleStudies);
-		monthlyRecord[i + 1].push(congregationData[i].report.serviceYear1.dec.remarks);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.dec.placements);//("");
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.dec.videoShowings);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.dec.hours);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.dec.returnVisits);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.dec.bibleStudies);
+		monthlyRecord[i].push(congregationData[i].report.serviceYear1.dec.remarks);
 		};
 		
 		//};
@@ -618,89 +618,89 @@ function enterRecord(){
 	
 	
 		if(m=="January") {
-		congregationData[x-1].report.serviceYear1.jan.placements = report[1];
-		congregationData[x-1].report.serviceYear1.jan.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.jan.hours = report[3];
-		congregationData[x-1].report.serviceYear1.jan.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.jan.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.jan.remarks = report[6];
+		congregationData[x].report.serviceYear1.jan.placements = report[1];
+		congregationData[x].report.serviceYear1.jan.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.jan.hours = report[3];
+		congregationData[x].report.serviceYear1.jan.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.jan.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.jan.remarks = report[6];
 		}else if(m=="February") {
-		congregationData[x-1].report.serviceYear1.feb.placements = report[1];
-		congregationData[x-1].report.serviceYear1.feb.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.feb.hours = report[3];
-		congregationData[x-1].report.serviceYear1.feb.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.feb.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.feb.remarks = report[6];
+		congregationData[x].report.serviceYear1.feb.placements = report[1];
+		congregationData[x].report.serviceYear1.feb.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.feb.hours = report[3];
+		congregationData[x].report.serviceYear1.feb.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.feb.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.feb.remarks = report[6];
 		}else if(m=="March") {
-		congregationData[x-1].report.serviceYear1.mar.placements = report[1];
-		congregationData[x-1].report.serviceYear1.mar.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.mar.hours = report[3];
-		congregationData[x-1].report.serviceYear1.mar.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.mar.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.mar.remarks = report[6];
+		congregationData[x].report.serviceYear1.mar.placements = report[1];
+		congregationData[x].report.serviceYear1.mar.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.mar.hours = report[3];
+		congregationData[x].report.serviceYear1.mar.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.mar.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.mar.remarks = report[6];
 		}else if(m=="April") {
-		congregationData[x-1].report.serviceYear1.apr.placements = report[1];
-		congregationData[x-1].report.serviceYear1.apr.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.apr.hours = report[3];
-		congregationData[x-1].report.serviceYear1.apr.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.apr.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.apr.remarks = report[6];
+		congregationData[x].report.serviceYear1.apr.placements = report[1];
+		congregationData[x].report.serviceYear1.apr.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.apr.hours = report[3];
+		congregationData[x].report.serviceYear1.apr.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.apr.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.apr.remarks = report[6];
 		}else if(m=="May") {
-		congregationData[x-1].report.serviceYear1.may.placements = report[1];
-		congregationData[x-1].report.serviceYear1.may.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.may.hours = report[3];
-		congregationData[x-1].report.serviceYear1.may.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.may.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.may.remarks = report[6];
+		congregationData[x].report.serviceYear1.may.placements = report[1];
+		congregationData[x].report.serviceYear1.may.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.may.hours = report[3];
+		congregationData[x].report.serviceYear1.may.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.may.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.may.remarks = report[6];
 		}else if(m=="June") {
-		congregationData[x-1].report.serviceYear1.jun.placements = report[1];
-		congregationData[x-1].report.serviceYear1.jun.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.jun.hours = report[3];
-		congregationData[x-1].report.serviceYear1.jun.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.jun.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.jun.remarks = report[6];
+		congregationData[x].report.serviceYear1.jun.placements = report[1];
+		congregationData[x].report.serviceYear1.jun.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.jun.hours = report[3];
+		congregationData[x].report.serviceYear1.jun.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.jun.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.jun.remarks = report[6];
 		}else if(m=="July") {
-		congregationData[x-1].report.serviceYear1.jul.placements = report[1];
-		congregationData[x-1].report.serviceYear1.jul.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.jul.hours = report[3];
-		congregationData[x-1].report.serviceYear1.jul.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.jul.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.jul.remarks = report[6];
+		congregationData[x].report.serviceYear1.jul.placements = report[1];
+		congregationData[x].report.serviceYear1.jul.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.jul.hours = report[3];
+		congregationData[x].report.serviceYear1.jul.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.jul.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.jul.remarks = report[6];
 		}else if(m=="August") {
-		congregationData[x-1].report.serviceYear1.aug.placements = report[1];
-		congregationData[x-1].report.serviceYear1.aug.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.aug.hours = report[3];
-		congregationData[x-1].report.serviceYear1.aug.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.aug.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.aug.remarks = report[6];
+		congregationData[x].report.serviceYear1.aug.placements = report[1];
+		congregationData[x].report.serviceYear1.aug.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.aug.hours = report[3];
+		congregationData[x].report.serviceYear1.aug.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.aug.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.aug.remarks = report[6];
 		}else if(m=="September") {
-		congregationData[x-1].report.serviceYear1.sept.placements = report[1];
-		congregationData[x-1].report.serviceYear1.sept.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.sept.hours = report[3];
-		congregationData[x-1].report.serviceYear1.sept.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.sept.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.sept.remarks = report[6];
+		congregationData[x].report.serviceYear1.sept.placements = report[1];
+		congregationData[x].report.serviceYear1.sept.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.sept.hours = report[3];
+		congregationData[x].report.serviceYear1.sept.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.sept.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.sept.remarks = report[6];
 		}else if(m=="October") {
-		congregationData[x-1].report.serviceYear1.oct.placements = report[1];
-		congregationData[x-1].report.serviceYear1.oct.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.oct.hours = report[3];
-		congregationData[x-1].report.serviceYear1.oct.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.oct.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.oct.remarks = report[6];
+		congregationData[x].report.serviceYear1.oct.placements = report[1];
+		congregationData[x].report.serviceYear1.oct.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.oct.hours = report[3];
+		congregationData[x].report.serviceYear1.oct.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.oct.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.oct.remarks = report[6];
 		}else if(m=="November") {
-		congregationData[x-1].report.serviceYear1.nov.placements = report[1];
-		congregationData[x-1].report.serviceYear1.nov.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.nov.hours = report[3];
-		congregationData[x-1].report.serviceYear1.nov.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.nov.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.nov.remarks = report[6];
+		congregationData[x].report.serviceYear1.nov.placements = report[1];
+		congregationData[x].report.serviceYear1.nov.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.nov.hours = report[3];
+		congregationData[x].report.serviceYear1.nov.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.nov.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.nov.remarks = report[6];
 		}else if(m=="December") {
-		congregationData[x-1].report.serviceYear1.dec.placements = report[1];
-		congregationData[x-1].report.serviceYear1.dec.videoShowings = report[2];
-		congregationData[x-1].report.serviceYear1.dec.hours = report[3];
-		congregationData[x-1].report.serviceYear1.dec.returnVisits = report[4];
-		congregationData[x-1].report.serviceYear1.dec.bibleStudies = report[5];
-		congregationData[x-1].report.serviceYear1.dec.remarks = report[6];
+		congregationData[x].report.serviceYear1.dec.placements = report[1];
+		congregationData[x].report.serviceYear1.dec.videoShowings = report[2];
+		congregationData[x].report.serviceYear1.dec.hours = report[3];
+		congregationData[x].report.serviceYear1.dec.returnVisits = report[4];
+		congregationData[x].report.serviceYear1.dec.bibleStudies = report[5];
+		congregationData[x].report.serviceYear1.dec.remarks = report[6];
 		};
 	}
 

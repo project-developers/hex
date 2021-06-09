@@ -779,6 +779,10 @@ if(fileName[0].name == "Attendance.csv"){
 	return;
 }
 
+localStorage.removeItem('CongregationData');
+localStorage.removeItem('MonthlyRecord');
+localStorage.removeItem('LateRecord');
+
 localStorage.setItem('CongregationData', head);
 //localStorage.setItem('Attendance', tail);
 

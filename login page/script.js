@@ -1163,9 +1163,9 @@ function addNewPublisher(){
 	localStorage.removeItem('CongregationData');
 	createRecord();
 	processRecord();
-	//table();
+	table();
 	//resetEntry();
-	//branchRecord();
+	branchRecord();
 	localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
 	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
 	localStorage.setItem('CongregationData', JSON.stringify(congregationData));

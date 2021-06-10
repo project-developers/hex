@@ -27,8 +27,20 @@ function addNewPublisher(){
 	const newCard = JSON.parse(JSON.stringify(congregationData));
 	//const newCard = [...congregationData];
 	congregationData.push(newCard[0]);
-	congregationData[congregationData.length - 1].name = prompt("Publisher Name", congregationData[congregationData.length - 1].name);
-	congregationData[congregationData.length - 1].fieldServiceGroup = prompt("Field Service Group", congregationData[congregationData.length - 1].fieldServiceGroup);
+	var input;
+	input = prompt("Publisher Name", congregationData[congregationData.length - 1].name);
+	if (input === null) {
+		congregationData.pop();
+		return; // break out of the function early
+	}
+	congregationData[congregationData.length - 1].name = input
+	
+	input = prompt("Field Service Group", congregationData[congregationData.length - 1].fieldServiceGroup);
+	if (input === null) {
+		congregationData.pop();
+		return; // break out of the function early
+	}
+	congregationData[congregationData.length - 1].fieldServiceGroup = input;
 	localStorage.removeItem('CongregationData');
 	const card = congregationData.shift();
 	

@@ -24,7 +24,7 @@ newPublisher.addEventListener('click', addNewPublisher);
 function addNewPublisher(){
 	
 	
-	const newCard = congregationData.slice(0,1);
+	const newCard = JSON.parse(JSON.stringify(congregationData));
 	//const newCard = [...congregationData];
 	congregationData.push(newCard[0]);
 	congregationData[congregationData.length - 1].name = prompt("Publisher Name", congregationData[congregationData.length - 1].name);

@@ -29,7 +29,7 @@ function addNewPublisher(){
 	congregationData.push(newCard[0]);
 	congregationData[congregationData.length - 1].name = prompt("Publisher Name", congregationData[congregationData.length - 1].name);
 	congregationData[congregationData.length - 1].fieldServiceGroup = prompt("Field Service Group", congregationData[congregationData.length - 1].fieldServiceGroup);
-	
+	localStorage.removeItem('CongregationData');
 	const card = congregationData.shift();
 	
 	congregationData.sort(function(a, b) {
@@ -53,6 +53,7 @@ function addNewPublisher(){
 	table();
 	//resetEntry();
 	branchRecord();
+	localStorage.setItem('CongregationData', JSON.stringify(congregationData));
 	/*localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
 	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
 	localStorage.setItem('CongregationData', JSON.stringify(congregationData));*/

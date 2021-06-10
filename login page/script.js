@@ -46,7 +46,7 @@ function addNewPublisher(){
 		return 0;
 	});
 	
-	congregationData.unshift(Card);
+	congregationData.unshift(card);
 
 	createRecord();
 	processRecord();

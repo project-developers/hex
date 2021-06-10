@@ -30,18 +30,24 @@ function addNewPublisher(){
 	congregationData[congregationData.length - 1].name = prompt("Publisher Name", congregationData[congregationData.length - 1].name);
 	congregationData[congregationData.length - 1].fieldServiceGroup = prompt("Field Service Group", congregationData[congregationData.length - 1].fieldServiceGroup);
 	
-	//congregationData.push(newCard[0]);
-	//congregationData[0].name = "LASTNAME FirstName";
-	//congregationData[0].fieldServiceGroup = "Field Service Group";
+	const card = congregationData.shift();
 	
-	/*
-	var newCard = congregationData.slice(0,1);
-	newCard[0].name = prompt("Publisher Name", newCard[0].name);
-	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
-	congregationData.push(newCard[0]);*/
-	/*localStorage.removeItem('MonthlyRecord');
-	localStorage.removeItem('LateRecord');
-	localStorage.removeItem('CongregationData');*/
+	congregationData.sort(function(a, b) {
+		var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+		var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+		if (nameA < nameB) {
+			return -1;
+		}
+		if (nameA > nameB) {
+			return 1;
+		}
+		
+		//names must be equal
+		return 0;
+	});
+	
+	congregationData.unshift(Card);
+
 	createRecord();
 	processRecord();
 	table();

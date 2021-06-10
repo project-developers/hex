@@ -24,12 +24,13 @@ newPublisher.addEventListener('click', addNewPublisher);
 function addNewPublisher(){
 	
 	
-	const newCard = [...congregationData];
-	//congregationData.unshift(newCard[0]);
-	newCard[0].name = prompt("Publisher Name", newCard[0].name);
-	newCard[0].fieldServiceGroup = prompt("Field Service Group", newCard[0].fieldServiceGroup);
-	
+	const newCard = congregationData.slice(0,1);
+	//const newCard = [...congregationData];
 	congregationData.push(newCard[0]);
+	congregationData[congregationData.length - 1].name = prompt("Publisher Name", congregationData[congregationData.length - 1].name);
+	congregationData[congregationData.length - 1].fieldServiceGroup = prompt("Field Service Group", newCard[congregationData.length - 1].fieldServiceGroup);
+	
+	//congregationData.push(newCard[0]);
 	//congregationData[0].name = "LASTNAME FirstName";
 	//congregationData[0].fieldServiceGroup = "Field Service Group";
 	

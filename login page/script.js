@@ -17,6 +17,19 @@ function displayNotification() {
 }
 
 */
+let toggle = 0;
+
+function navigation(){
+	if(toggle == 0){
+		
+		document.getElementById('report').style.display = 'none';
+		toggle = 0;
+	}else{
+		
+		document.getElementById('report').style.display = 'block';
+		toggle = 1;
+	}
+}
 
 const newPublisher = document.getElementById('newPublisher');
 newPublisher.addEventListener('click', addNewPublisher);

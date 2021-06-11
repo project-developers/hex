@@ -26,7 +26,7 @@ function navigation(){
 		document.getElementById('contactInformation').style.display = 'block';
 		document.getElementById('settings').style.display = 'block';
 		document.getElementById('report').style.display = 'block';
-		
+		table();
 		document.getElementById('monthlyReport').style.display = 'none';
 		document.getElementById('missingReport').style.display = 'none';
 		document.getElementById('branch').style.display = 'none';

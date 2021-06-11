@@ -22,14 +22,32 @@ let toggle = 0;
 function navigation(){
 	if(toggle == 0){
 		
-		document.getElementById('report').style.display = 'none';
-		toggle = 0;
-	}else{
-		
+		document.getElementById('fieldServiceGroups').style.display = 'block';
+		document.getElementById('contactInformation').style.display = 'block';
+		document.getElementById('settings').style.display = 'block';
 		document.getElementById('report').style.display = 'block';
+		
+		document.getElementById('monthlyReport').style.display = 'none';
+		document.getElementById('missingReport').style.display = 'none';
+		document.getElementById('branch').style.display = 'none';
+		document.getElementById('cong').style.display = 'none';
 		toggle = 1;
+	}else{
+		document.getElementById('fieldServiceGroups').style.display = 'none';
+		document.getElementById('contactInformation').style.display = 'none';
+		document.getElementById('settings').style.display = 'none';
+		document.getElementById('report').style.display = 'none';
+		
+		document.getElementById('monthlyReport').style.display = 'block';
+		document.getElementById('missingReport').style.display = 'block';
+		document.getElementById('branch').style.display = 'block';
+		document.getElementById('cong').style.display = 'block';
+		toggle = 0;
 	}
 }
+
+document.getElementById('cong').addEventListener('click', navigation);
+document.getElementById('report').addEventListener('click', navigation);
 
 const newPublisher = document.getElementById('newPublisher');
 newPublisher.addEventListener('click', addNewPublisher);
@@ -120,6 +138,7 @@ var yr;
 
 window.onload = function(){
 	document.getElementById("month1").style.display='none';
+	navigation();
 
 	if(PastReport){
 	pastReport = PastReport;

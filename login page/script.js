@@ -37,7 +37,7 @@ function navigation(){
 		document.getElementById('contactInformation').style.display = 'none';
 		document.getElementById('settings').style.display = 'none';
 		document.getElementById('report').style.display = 'none';
-		
+		table();
 		document.getElementById('monthlyReport').style.display = 'block';
 		document.getElementById('missingReport').style.display = 'block';
 		document.getElementById('branch').style.display = 'block';
@@ -376,7 +376,7 @@ function table(){
 
 		if(congregationData[i].fieldServiceGroup == groups[x]){		
 
-		if(monthlyRecord[i][3] !== ""){
+		if(monthlyRecord[i][3] !== "" && toggle == 1){
 			continue
 		}
 

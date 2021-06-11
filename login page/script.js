@@ -65,6 +65,7 @@ function addNewPublisher(){
 	table();
 	//resetEntry();
 	branchRecord();
+	datasetMain();
 	localStorage.setItem('CongregationData', JSON.stringify(congregationData));
 	/*localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
 	localStorage.setItem('LateRecord', JSON.stringify(pastReport));

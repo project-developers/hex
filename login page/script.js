@@ -229,7 +229,7 @@ var options = '';
 
 for (var i = 1; i < congregationData.length; i++) {
 
-if(monthlyRecord[i][3] !== ""){
+if(monthlyRecord[i][3] !== "" && toggle == 1){
 			continue;
 		}
   options += '<option value="' + monthlyRecord[i][0] + '" />';
@@ -1234,7 +1234,7 @@ function attDownload() {
 function getContent(fragmentId, callback){
  var pages = {
 	 cong: "<h1>Congregation</h1>",//"<ul class='topnav'><li><a class='active' href='#monthlyReport'>Monthly Report</a></li><li><a href='#missingReport'>Missing Report</a></li><li><a href='#branch'>Branch Report</a></li></ul><h1>Cong Name</h1>",
-	 fieldServiceGroups: "<h1>Field Service Groups</h1>",
+	 fieldServiceGroups: "<h1>Field Service Groups</h1>" + "<div style='display: flex; flex-wrap: wrap; margin: 0; padding: 0; width: 100%;'>" + missingReport + "</div>",
 	 contactInformation: "<h1>Contact Information</h1>",
 	 settings: "<h1>Settings</h1>",
 	 report: "<h1>Report</h1>",

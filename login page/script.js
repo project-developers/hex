@@ -1225,7 +1225,7 @@ function loadContent(){
 }
 
 if(!location.hash) {
-  location.hash = "#monthlyReport";
+  location.hash = "#cong";
 }
 
 loadContent();

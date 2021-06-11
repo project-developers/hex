@@ -173,7 +173,7 @@ window.onload = function(){
 		dataset1();
 		branchRecord();
 		
-location.hash = "#monthlyReport";
+location.hash = "#cong";
 };
 
 var input = document.getElementsByTagName('input')[0];

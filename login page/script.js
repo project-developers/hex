@@ -1183,7 +1183,7 @@ for(var i = 1; i < congregationData.length; i++){
 	if(congregationData[i].report.serviceYear1.jan.hours !== "" || congregationData[i].report.serviceYear1.feb.hours !== "" || congregationData[i].report.serviceYear1.may.hours !== "" || congregationData[i].report.serviceYear1.apr.hours !== "" || congregationData[i].report.serviceYear1.dec.hours !== "" || congregationData[i].report.serviceYear1.jan.hours !== ""){activePub += 1}
 	}
 	if(m=="May") {
-	if(congregationData[i].report.serviceYear1.jan.hours !== "" || congregationData[i].report.serviceYear1.feb.hours !== "" || congregationData[i].report.serviceYear1.nov.hours !== "" || congregationData[i].report.serviceYear1.apr.hours !== "" || congregationData[i].report.serviceYear1.dec.hours !== "" || congregationData[i].report.serviceYear1.mar.hours !== ""){activePub += 1}
+	if(congregationData[i].report.serviceYear1.jan.hours !== "" || congregationData[i].report.serviceYear1.feb.hours !== "" || congregationData[i].report.serviceYear1.may.hours !== "" || congregationData[i].report.serviceYear1.apr.hours !== "" || congregationData[i].report.serviceYear1.dec.hours !== "" || congregationData[i].report.serviceYear1.mar.hours !== ""){activePub += 1}
 	}
 	if(m=="June") {
 	if(congregationData[i].report.serviceYear1.jan.hours !== "" || congregationData[i].report.serviceYear1.jun.hours !== "" || congregationData[i].report.serviceYear1.may.hours !== "" || congregationData[i].report.serviceYear1.apr.hours !== "" || congregationData[i].report.serviceYear1.mar.hours !== "" || congregationData[i].report.serviceYear1.feb.hours !== ""){activePub += 1}

@@ -833,6 +833,8 @@ const addItem = () => {
 	dataset1();
 	
 	branchRecord();
+	
+	table();
 
 };
 

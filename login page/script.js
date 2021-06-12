@@ -799,7 +799,17 @@ function enterRecord(){
 	localStorage.removeItem('CongregationData');
 	localStorage.removeItem('MonthlyRecord');
 	localStorage.removeItem('LateRecord');
+	if(toggle == 0){
+		toggle = 1;
+	}else{
+		toggle = 0;
+	};
 	table();
+	if(toggle == 0){
+		toggle = 1;
+	}else{
+		toggle = 0;
+	};
 	resetEntry();
 	branchRecord();
 	localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
@@ -833,8 +843,6 @@ const addItem = () => {
 	dataset1();
 	
 	branchRecord();
-	
-	table();
 
 };
 

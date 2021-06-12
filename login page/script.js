@@ -397,7 +397,8 @@ var pubRec, auxPio, regPio;
 
 function createRecord(){
 		
-	if(heading.length = 6){heading.unshift("Publisher Name")};
+	heading = ["Placements","Video Showings","Hours","Return Visits","Bible Studies","Remarks"];
+	heading.unshift("Publisher Name");
 	monthlyRecord[0] = [];
 	monthlyRecord[0] = heading;
 

@@ -839,10 +839,10 @@ function resetEntry(){
 const addItem = () => {
 
 	enterRecord();
-
-	dataset1();
 	
 	branchRecord();
+	
+	dataset1();
 
 };
 

@@ -197,7 +197,12 @@ input.onkeypress = input. onkeydown = function() {
   months[11] = "December";
 
   var d = new Date();
-  var m = months[d.getMonth()-1];
+  var m;
+  if((d.getMonth()-1) < 0){
+	  m = 12;
+  }else{
+	  m = months[d.getMonth()-1];
+  }; 
   
 
 var options1 = '';

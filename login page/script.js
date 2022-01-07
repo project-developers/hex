@@ -199,7 +199,7 @@ input.onkeypress = input. onkeydown = function() {
   var d = new Date();
   var m;
   if((d.getMonth()-1) < 0){
-	  m = 12;
+	  m = months[12];
   }else{
 	  m = months[d.getMonth()-1];
   }; 

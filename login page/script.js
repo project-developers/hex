@@ -20,7 +20,6 @@ function processNavigation() {
         },
         methods: {
 			openButton(button) {
-				console.log(button)
 				this.buttons = allButtons.filter(elem=>elem.title !== button.innerHTML)
 				gotoView(allButtons.filter(elem=>elem.title == button.innerHTML)[0].function)
 			}
@@ -31,7 +30,6 @@ function processNavigation() {
 processNavigation()
 
 function gotoView(button) {
-	console.log(button)
 	congregationVue.display = false
 	allPublishersVue.display = false
 	fieldServiceGroupsVue.display = false
@@ -99,9 +97,9 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 	<div v-if="display == true">
 		<main class="grid-parent">		
 			<section v-for="(group) in allGroups" :key="group" class="grid-item">
-				{{ group }}
+			<h2 class="main card-title" style="cursor:pointer">{{ group }}</h2>
 				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" class="card">
-					<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
+					<p style="cursor:pointer">{{ publisher.name }}</p>
 				</div>
 			</section>
 		</main>
@@ -118,7 +116,7 @@ function processFieldServiceGroups() {
         },
         computed: {
             allGroups() {
-                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup)
+                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
             },
         },
         methods: {

@@ -38,7 +38,7 @@ function processNavigation() {
                 return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
             },
 			allGroups() {
-                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
+                return getUniqueElementsByProperty(CongregationData,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
             },
         },
         methods: {

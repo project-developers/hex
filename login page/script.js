@@ -178,7 +178,7 @@ function processFieldServiceGroups() {
                 return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group)
             },
 			publisherDetail(publisher) {
-				selectedPublisher = publisher
+				this.selectedPublisher = publisher
 			}
         }
     })

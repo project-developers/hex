@@ -18,7 +18,7 @@ function processNavigation() {
             },
         },
         methods: {
-			addSection(button) {
+			openButton(button) {
 				console.log(button)
 			}
         }

@@ -1,4 +1,32 @@
-var navigationVue, allPublishersVue;
+var navigationVue, allPublishersVue, congregationVue;
+
+document.querySelector('#congregation').innerHTML = `<template>
+    <h1>congregation.name</h1>
+</template>`
+
+function processCongregation() {
+
+    congregationVue = new Vue({
+        el: document.querySelector('#congregation'),
+        data: {
+            congregation: {"name": "New England"},
+            displayCart: 0,
+        },
+        computed: {
+            allCharacters() {/*
+                return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
+            },
+        },
+        methods: {
+			openButton(button) {
+				//console.log(button)
+				console.log(button.innerHTML)
+			}
+        }
+    })
+}
+
+processCongregation()
 
 document.querySelector('#navigation').innerHTML = `<template>
     <button v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button }}</button>
@@ -19,7 +47,7 @@ function processNavigation() {
         },
         methods: {
 			openButton(button) {
-				console.log(button)
+				//console.log(button)
 				console.log(button.innerHTML)
 			}
         }

@@ -208,6 +208,8 @@ function getUniqueElementsByProperty(arr, propNames) {
     });
 }
 
+var s21;
+
 async function editPDF(pdfBytes) {
 	// Create a PDF document
 	const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -235,8 +237,8 @@ async function editPDF(pdfBytes) {
 	  const reader = new FileReader();
 
 	  reader.onload = async function (e) {
-		const pdfBytes = new Uint8Array(e.target.result);
-		await editPDF(pdfBytes);
+		s21 = new Uint8Array(e.target.result);
+		//await editPDF(pdfBytes);
 	  };
 
 	  reader.readAsArrayBuffer(file);
@@ -247,26 +249,29 @@ async function editPDF(pdfBytes) {
 
     async function fillForm() {
     	// Fetch the PDF with form fields
-      const formUrl = 'https://pdf-lib.js.org/assets/dod_character.pdf'
-      const formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer())
+      //const formUrl = 'https://pdf-lib.js.org/assets/dod_character.pdf'
+      //const formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer())
 
 			// Fetch the Mario image
-      const marioUrl = 'https://pdf-lib.js.org/assets/small_mario.png'
-      const marioImageBytes = await fetch(marioUrl).then(res => res.arrayBuffer())
+      //const marioUrl = 'https://pdf-lib.js.org/assets/small_mario.png'
+      //const marioImageBytes = await fetch(marioUrl).then(res => res.arrayBuffer())
 
 			// Fetch the emblem image
-      const emblemUrl = 'https://pdf-lib.js.org/assets/mario_emblem.png'
-      const emblemImageBytes = await fetch(emblemUrl).then(res => res.arrayBuffer())
+      //const emblemUrl = 'https://pdf-lib.js.org/assets/mario_emblem.png'
+      //const emblemImageBytes = await fetch(emblemUrl).then(res => res.arrayBuffer())
 
       // Load a PDF with form fields
-      const pdfDoc = await PDFDocument.load(formPdfBytes)
+      const pdfDoc = await PDFDocument.load(s21)
 
       // Embed the Mario and emblem images
-      const marioImage = await pdfDoc.embedPng(marioImageBytes)
-      const emblemImage = await pdfDoc.embedPng(emblemImageBytes)
+      //const marioImage = await pdfDoc.embedPng(marioImageBytes)
+      //const emblemImage = await pdfDoc.embedPng(emblemImageBytes)
 
       // Get the form containing all the fields
       const form = pdfDoc.getForm()
+
+	  console.log(form)
+	  return
 
       // Get all fields in the PDF by their names
       const nameField = form.getTextField('CharacterName 2')

@@ -30,6 +30,7 @@ function processNavigation() {
 processNavigation()
 
 function gotoView(button) {
+	console.log(button)
 	congregationVue.display = false
 	allPublishersVue.display = false
 	fieldServiceGroupsVue.display = false

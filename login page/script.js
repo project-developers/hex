@@ -9,7 +9,7 @@ function processNavigation() {
     navigationVue = new Vue({
         el: document.querySelector('#navigation'),
         data: {
-            buttons: ["All Publishers"],
+            buttons: ["Congregation Information", "All Publishers", "Field Service Groups", "All Contact Information"],
             displayCart: 0,
         },
         computed: {
@@ -20,6 +20,7 @@ function processNavigation() {
         methods: {
 			openButton(button) {
 				console.log(button)
+				console.log(button.innerHTML)
 			}
         }
     })

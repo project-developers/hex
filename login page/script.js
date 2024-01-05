@@ -245,6 +245,31 @@ async function editPDF(pdfBytes) {
 	}
   });
 
+  document.getElementById('pdfFile').addEventListener('change', async function (event) {
+	const file = event.target.files[0];
+
+	if (file) {
+		const reader = new FileReader();
+
+		reader.onload = async function (e) {
+			const pdfData = new Uint8Array(e.target.result);
+
+			// Using pdf-lib to parse the PDF document
+			const pdfDoc = await PDFLib.PDFDocument.load(pdfData);
+
+			// Get all fields in the PDF
+			const formFields = pdfDoc.getForm().getFields();
+
+			// Display form fields
+			const formFieldsElement = document.getElementById('formFields');
+			formFieldsElement.innerHTML = '<h3>Form Fields:</h3>' +
+				'<ul>' + formFields.map(field => `<li>${field.getName()}</li>`).join('') + '</ul>';
+		};
+
+		reader.readAsArrayBuffer(file);
+	}
+});
+
   const { PDFDocument } = PDFLib
 
     async function fillForm() {

@@ -1,9 +1,11 @@
 var navigationVue, allPublishersVue, congregationVue;
 
 document.querySelector('#congregation').innerHTML = `<template>
-    <h1>{{ congregation.name }}</h1>
-    <h2>{{ congregation.address }}</h2>
-    <h3>{{ congregation.email }}</h3>
+    <div v-if="display == true">
+		<h1>{{ congregation.name }}</h1>
+		<h2>{{ congregation.address }}</h2>
+		<h3>{{ congregation.email }}</h3>
+	</div>
 </template>`
 
 function processCongregation() {
@@ -11,8 +13,8 @@ function processCongregation() {
     congregationVue = new Vue({
         el: document.querySelector('#congregation'),
         data: {
-            congregation: {"name": "New England", "address": "14 Hannesson Street New England Ville", "email": "cong574356@jwpub.org"},
-            displayCart: 0,
+            congregation: {"name": "New England", "address": "14 Hannesson Street, New England Ville.", "email": "cong574356@jwpub.org"},
+            display: true,
         },
         computed: {
             publishersCount() {/*
@@ -49,8 +51,7 @@ function processNavigation() {
         },
         methods: {
 			openButton(button) {
-				//console.log(button)
-				console.log(button.innerHTML)
+				gotoView(button.innerHTML)
 			}
         }
     })
@@ -58,31 +59,41 @@ function processNavigation() {
 
 processNavigation()
 
+function gotoView(button) {
+	if (button == "Congregation Information") {
+		congregationVue.display = !congregationVue.display
+	} else if (button == "All Publishers") {
+		allPublishersVue.display = !allPublishersVue.display
+	}
+}
+
 const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 document.querySelector('#allPublishers').innerHTML = `<template>
-    <div v-if="publishers.length !== 0" class="template--resultCount">
-        <label class="ms-fontWeight-semibold">{{ publishers.length }} {{ publishers.length == 1 ? 'result' : 'results' }}</label>
-    </div>
-    <div style="overflow-y: auto; overflow-x: hidden;">
-        <main class="grid-parent">		
-            <section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
-                <div class="card">
-                    <div class="card-body">
-                        <div>
-                            <p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.fieldServiceGroup }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.gender }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.hope }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateOfBirth }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateImmersed }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.elder }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.ministerialServant }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.regularPioneer }}</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+	<div v-if="display == true">
+		<div v-if="publishers.length !== 0" class="template--resultCount">
+			<label class="ms-fontWeight-semibold">{{ publishers.length }} {{ publishers.length == 1 ? 'result' : 'results' }}</label>
+		</div>
+		<div style="overflow-y: auto; overflow-x: hidden;">
+			<main class="grid-parent">		
+				<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
+					<div class="card">
+						<div class="card-body">
+							<div>
+								<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
+								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.fieldServiceGroup }}</p>
+								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.gender }}</p>
+								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.hope }}</p>
+								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateOfBirth }}</p>
+								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateImmersed }}</p>
+								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.elder }}</p>
+								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.ministerialServant }}</p>
+								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.regularPioneer }}</p>
+							</div>
+						</div>
+					</div>
+				</section>
+			</main>
+		</div>
     </div>
 </template>`
 
@@ -92,7 +103,7 @@ function processAllPublishers() {
         el: document.querySelector('#allPublishers'),
         data: {
             publishers: [],
-            displayCart: 0,
+            display: false,
         },
         computed: {
             allCharacters() {/*

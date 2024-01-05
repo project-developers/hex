@@ -7,6 +7,22 @@ document.querySelector('#navigation').innerHTML = `<template>
 		<option v-if="languageTeams.length > 1" value="All Field Service Groups">All Field Service Groups</option>
 		<option v-for="languageTeam in languageTeams" :key="languageTeam.Title" :value="languageTeam.Title">{{ languageTeam.Title }}</option>
 	</select>
+	<div class="my-searchbox-holder" style="margin: 10px; min-width: 300px;">
+		<div class="my-searchbox">
+			<span>🔍</span>
+			<input 
+				v-model="searchTerms" 
+				placeholder="Mnemonic, Section or Date" 
+				type="text" 
+				@keydown.enter="filteredViews" 
+				@keydown.esc="clearFilter"
+				@focus="boldBox"
+				@focusout="unboldBox"
+			>
+			<button @click="clearFilter">x</button>
+			<button @click="filteredViews">➔</button>
+		</div>
+	</div>
 </template>`
 
 function processNavigation() {

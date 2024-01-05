@@ -141,13 +141,15 @@ function processAllPublishers() {
 
 document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 	<div v-if="display == true" style="display:flex">
-		<section v-for="(group) in allGroups" :key="group" v-if="selectedGroup == group || selectedGroup == 'All Field Service Groups'" class="grid-item">
-			<h2 v-if="groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0" class="main card-title" style="cursor:pointer">{{ group }} ({{ groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length }})</h2>
-			<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)" @click="publisherDetail(publisher)">{{ publisher.name }}</div>
-		</section>
-		<section>
+		<div>
+			<div v-for="(group) in allGroups" :key="group" v-if="selectedGroup == group || selectedGroup == 'All Field Service Groups'" class="grid-item">
+				<h2 v-if="groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0" class="main card-title" style="cursor:pointer">{{ group }} ({{ groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length }})</h2>
+				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)" @click="publisherDetail(publisher)">{{ publisher.name }}</div>
+			</div>
+		</div>
+		<div>
 			<h2></h2>
-		</section>
+		</div>
     </div>
 </template>`
 

@@ -1,5 +1,6 @@
 var navigationVue, allPublishersVue, congregationVue, fieldServiceGroupsVue;
 var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}]
+var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 
 document.querySelector('#navigation').innerHTML = `<template>
     <button v-for="(button, count) in buttons" :key="count" @click="openButton($event.target)">{{ button.title }}</button>
@@ -87,7 +88,6 @@ function processCongregation() {
     })
 }
 
-var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
 		<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">

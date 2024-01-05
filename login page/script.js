@@ -1,8 +1,8 @@
 var navigationVue, allPublishersVue, congregationVue, fieldServiceGroupsVue;
-var allButtons = ["Congregation Information", "All Publishers", "Field Service Groups", "All Contact Information"]
+var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "congregationVue"}, {"title": "Field Service Groups", "function": "congregationVue"}, {"title": "All Contact Information", "function": "congregationVue"}]
 
 document.querySelector('#navigation').innerHTML = `<template>
-    <button v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button }}</button>
+    <button v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button.title }}</button>
 </template>`
 
 function processNavigation() {
@@ -10,7 +10,7 @@ function processNavigation() {
     navigationVue = new Vue({
         el: document.querySelector('#navigation'),
         data: {
-            buttons: ["All Publishers", "Field Service Groups", "All Contact Information"],
+            buttons: [{"title": "All Publishers", "function": "congregationVue"}, {"title": "Field Service Groups", "function": "congregationVue"}, {"title": "All Contact Information", "function": "congregationVue"}],
             displayCart: 0,
         },
         computed: {
@@ -20,8 +20,8 @@ function processNavigation() {
         },
         methods: {
 			openButton(button) {
-				this.buttons = allButtons.filter(elem=>elem !== button.innerHTML)
-				gotoView(button.innerHTML)
+				this.buttons = allButtons.filter(elem=>elem.title !== button.innerHTML)
+				gotoView(allButtons.filter(elem=>elem.title == button.innerHTML)[0].function)
 			}
         }
     })
@@ -30,9 +30,10 @@ function processNavigation() {
 processNavigation()
 
 function gotoView(button) {
-	congregationVue.display = !congregationVue.display
-	allPublishersVue.display = !allPublishersVue.display
-	fieldServiceGroupsVue.display = !fieldServiceGroupsVue.display
+	congregationVue.display = false
+	allPublishersVue.display = false
+	fieldServiceGroupsVue.display = false
+	window[button].display = true
 }
 
 document.querySelector('#congregation').innerHTML = `<template>
@@ -77,7 +78,8 @@ document.querySelector('#allPublishers').innerHTML = `<template>
 			<main class="grid-parent">		
 				<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
 					<div class="card">
-						<div class="card-body">
+						<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
+						<!--div class="card-body">
 							<div>
 								<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
 								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.fieldServiceGroup }}</p>
@@ -89,7 +91,7 @@ document.querySelector('#allPublishers').innerHTML = `<template>
 								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.ministerialServant }}</p>
 								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.regularPioneer }}</p>
 							</div>
-						</div>
+						</div-->
 					</div>
 				</section>
 			</main>

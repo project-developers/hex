@@ -145,7 +145,7 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 			<section v-for="(group) in allGroups" :key="group" v-if="selectedGroup == group || selectedGroup == 'All Field Service Groups'" class="grid-item">
 				<h2 v-if="groupPublishers(group).length !== 0" class="main card-title" style="cursor:pointer">{{ group }}</h2>
 				<ol>
-					<li v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer">{{ publisher.name }}</li>
+					<li v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)">{{ publisher.name }}</li>
 				</ol>
 			</section>
 		</main>
@@ -173,7 +173,7 @@ function processFieldServiceGroups() {
         },
         methods: {
 			groupPublishers(group) {
-                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group && (elem.name.toLowerCase().includes(this.searchTerms) || elem.contactInformation.address.toLowerCase().includes(this.searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(this.searchTerms)))
+                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group)
             },
         }
     })

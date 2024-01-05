@@ -3,6 +3,10 @@ var allButtons = [{"title": "Congregation Information", "function": "congregatio
 
 document.querySelector('#navigation').innerHTML = `<template>
     <button v-for="(button, count) in buttons" :key="count" @click="openButton($event.target)">{{ button.title }}</button>
+	<select v-model="fieldServiceGroup" style="margin:1px">
+		<option v-if="languageTeams.length > 1" value="All Field Service Groups">All Field Service Groups</option>
+		<option v-for="languageTeam in languageTeams" :key="languageTeam.Title" :value="languageTeam.Title">{{ languageTeam.Title }}</option>
+	</select>
 </template>`
 
 function processNavigation() {
@@ -11,11 +15,14 @@ function processNavigation() {
         el: document.querySelector('#navigation'),
         data: {
             buttons: [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}],
-            displayCart: 0,
+            fieldServiceGroup: '',
         },
         computed: {
             allCharacters() {/*
                 return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
+            },
+			allGroups() {
+                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
             },
         },
         methods: {
@@ -26,8 +33,6 @@ function processNavigation() {
         }
     })
 }
-
-processNavigation()
 
 function gotoView(button) {
 	congregationVue.display = false
@@ -128,6 +133,7 @@ function processFieldServiceGroups() {
 }
 
 processAllPublishers()
+processNavigation()
 processCongregation()
 processFieldServiceGroups()
 

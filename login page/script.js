@@ -1,22 +1,5 @@
-/*
-function displayNotification() {
-  if (Notification.permission == 'granted') {
-    navigator.serviceWorker.getRegistration().then(function(reg) {
-      var options = {
-        body: 'Here is a notification body!',
-        icon: 'android.png',
-        vibrate: [100, 50, 100],
-        data: {
-          dateOfArrival: Date.now(),
-          primaryKey: 1
-        }
-      };
-      reg.showNotification('Hello world!', options);
-    });
-  }
-}
 
-*/
+/*
 let toggle = 0;
 
 function navigation(){
@@ -98,9 +81,6 @@ function addNewPublisher(){
 	branchRecord();
 	datasetMain();
 	localStorage.setItem('CongregationData', JSON.stringify(congregationData));
-	/*localStorage.setItem('MonthlyRecord', JSON.stringify(monthlyRecord));
-	localStorage.setItem('LateRecord', JSON.stringify(pastReport));
-	localStorage.setItem('CongregationData', JSON.stringify(congregationData));*/
 	console.log('New Publisher Added')
 }
 
@@ -112,11 +92,11 @@ const add = document.querySelector('.add');
 const MonthlyRecord = JSON.parse(localStorage.getItem('MonthlyRecord'));
 
 const PastReport = JSON.parse(localStorage.getItem('LateRecord'));
-
+*/
 //const Groups = JSON.parse(localStorage.getItem('Groups'));
 
 const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
-
+/*
 const Attendance = JSON.parse(localStorage.getItem('Attendance'));
 
 var monthlyRecord = [];
@@ -143,11 +123,7 @@ window.onload = function(){
 	if(PastReport){
 	pastReport = PastReport;
 	};
-	/*
-	if(Groups){
-	groups = Groups;
-	};
-	*/
+	
 	if(CongregationData){
 	congregationData = CongregationData;
 	};
@@ -667,11 +643,7 @@ function enterRecord(){
 		congregationData[x].report.serviceYear1.dec.remarks = pastReport[o][6];
 		};
 
-/*
-		for(var i = 1; i < report.length; i++){
-		monthlyRecord[x][i] = report[i];
-		};
-		*/
+
 
 	} else {
 
@@ -1279,3 +1251,4 @@ if(!location.hash) {
 loadContent();
 
 window.addEventListener("hashchange", loadContent);
+*/

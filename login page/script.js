@@ -112,9 +112,9 @@ function processCongregation() {
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
 		<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
-			<div class="card">
-				<p style="cursor:pointer">{{ publisher.name }}</p>
-			</div>
+			<ol class="card">
+				<li style="cursor:pointer">{{ publisher.name }}</li>
+			</ol>
 		</section>
     </div>
 </template>`
@@ -140,11 +140,11 @@ function processAllPublishers() {
 document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 	<div v-if="display == true">
 		<main class="grid-parent">		
-			<section v-for="(group) in allGroups" :key="group" class="grid-item">
-			<h2 class="main card-title" style="cursor:pointer">{{ group }}</h2>
-				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" class="card">
-					<p style="cursor:pointer">{{ publisher.name }}</p>
-				</div>
+			<section v-for="(group) in allGroups" :key="group" v-if="selectedGroup == group || selectedGroup == 'All Field Service Groups'" class="grid-item">
+				<h2 class="main card-title" style="cursor:pointer">{{ group }}</h2>
+				<ol v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" class="card">
+					<li style="cursor:pointer">{{ publisher.name }}</li>
+				</ol>
 			</section>
 		</main>
     </div>
@@ -161,6 +161,9 @@ function processFieldServiceGroups() {
         computed: {
             allGroups() {
                 return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
+            },
+			selectedGroup() {
+                return navigationVue.fieldServiceGroup
             },
         },
         methods: {

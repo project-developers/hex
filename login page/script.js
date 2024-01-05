@@ -257,6 +257,8 @@ async function editPDF(pdfBytes) {
 			// Using pdf-lib to parse the PDF document
 			const pdfDoc = await PDFLib.PDFDocument.load(pdfData);
 
+			console.log(pdfDoc)
+
 			// Get all fields in the PDF
 			const formFields = pdfDoc.getForm().getFields();
 

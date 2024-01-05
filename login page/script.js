@@ -1,7 +1,9 @@
 var navigationVue, allPublishersVue, congregationVue;
 
 document.querySelector('#congregation').innerHTML = `<template>
-    <h1>congregation.name</h1>
+    <h1>{{ congregation.name }}</h1>
+    <h2>{{ congregation.address }}</h2>
+    <h3>{{ congregation.email }}</h3>
 </template>`
 
 function processCongregation() {
@@ -9,11 +11,11 @@ function processCongregation() {
     congregationVue = new Vue({
         el: document.querySelector('#congregation'),
         data: {
-            congregation: {"name": "New England"},
+            congregation: {"name": "New England", "address": "14 Hannesson Street New England Ville", "email": "cong574356@jwpub.org"},
             displayCart: 0,
         },
         computed: {
-            allCharacters() {/*
+            publishersCount() {/*
                 return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
             },
         },

@@ -33,7 +33,7 @@ function gotoView(button) {
 	congregationVue.display = false
 	allPublishersVue.display = false
 	fieldServiceGroupsVue.display = false
-	window[button].display = true
+	window[`${button}`].display = true
 }
 
 document.querySelector('#congregation').innerHTML = `<template>

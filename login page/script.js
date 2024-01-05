@@ -145,7 +145,7 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 			<section v-for="(group) in allGroups" :key="group" v-if="selectedGroup == group || selectedGroup == 'All Field Service Groups'" class="grid-item">
 				<h2 class="main card-title" style="cursor:pointer">{{ group }}</h2>
 				<ol>
-					<li v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.includes(searchTerms) || publisher.contactInformation.address.includes(searchTerms) || publisher.contactInformation.phoneNumber.includes(searchTerms)">{{ publisher.name }}</li>
+					<li v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer">{{ publisher.name }}</li>
 				</ol>
 			</section>
 		</main>
@@ -161,14 +161,14 @@ function processFieldServiceGroups() {
             display: false,
         },
         computed: {
-            allGroups() {
-                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
+            searchTerms() {
+                return navigationVue.searchTerms
+            },
+			allGroups() {
+                return getUniqueElementsByProperty(allPublishersVue.publishers.filter(elem=>elem.name.includes(searchTerms) || elem.contactInformation.address.includes(searchTerms) || elem.contactInformation.phoneNumber.includes(searchTerms)),['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
             },
 			selectedGroup() {
                 return navigationVue.fieldServiceGroup
-            },
-			searchTerms() {
-                return navigationVue.searchTerms
             },
         },
         methods: {

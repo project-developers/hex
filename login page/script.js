@@ -46,6 +46,8 @@ function processSectionItems() {
     })
 }
 
+processSectionItems()
+sectionVue.publishers = CongregationData
 /*
 let toggle = 0;
 

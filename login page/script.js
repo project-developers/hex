@@ -96,9 +96,9 @@ function processAllPublishers() {
 document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 	<div v-if="display == true">
 		<main class="grid-parent">		
-			<section v-for="(group, count) in allGroups" :key="group" class="grid-item">
+			<section v-for="(group) in allGroups" :key="group" class="grid-item">
 				{{ group }}
-				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher" class="card">
+				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" class="card">
 					<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
 				</div>
 			</section>

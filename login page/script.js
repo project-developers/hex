@@ -3,26 +3,28 @@ var allButtons = [{"title": "Congregation Information", "function": "congregatio
 var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 
 document.querySelector('#navigation').innerHTML = `<template>
-    <button v-for="(button, count) in buttons" :key="count" @click="openButton($event.target)">{{ button.title }}</button>
-	<div v-if="display == true">
-		<select v-model="fieldServiceGroup" style="margin:1px">
-			<option v-if="allGroups.length > 1" value="All Field Service Groups">All Field Service Groups</option>
-			<option v-for="group in allGroups" :key="group" :value="group">{{ group }}</option>
-		</select>
-		<div class="my-searchbox-holder" style="margin: 10px; width: 200px;">
-			<div class="my-searchbox">
-				<span>🔍</span>
-				<input 
-					v-model="searchTerms" 
-					placeholder="Name, Address or Phone Number" 
-					type="text" 
-					@keydown.enter="filteredViews" 
-					@keydown.esc="clearFilter"
-					@focus="boldBox"
-					@focusout="unboldBox"
-				>
-				<button @click="clearFilter">x</button>
-				<button @click="filteredViews">➔</button>
+	<div style="display:flex">
+		<button v-for="(button, count) in buttons" :key="count" @click="openButton($event.target)">{{ button.title }}</button>
+		<div v-if="display == true" style="display:flex">
+			<select v-model="fieldServiceGroup" style="margin:1px">
+				<option v-if="allGroups.length > 1" value="All Field Service Groups">All Field Service Groups</option>
+				<option v-for="group in allGroups" :key="group" :value="group">{{ group }}</option>
+			</select>
+			<div class="my-searchbox-holder" style="margin: 10px; width: 200px;">
+				<div class="my-searchbox">
+					<span>🔍</span>
+					<input 
+						v-model="searchTerms" 
+						placeholder="Name, Address or Phone Number" 
+						type="text" 
+						@keydown.enter="filteredViews" 
+						@keydown.esc="clearFilter"
+						@focus="boldBox"
+						@focusout="unboldBox"
+					>
+					<button @click="clearFilter">x</button>
+					<button @click="filteredViews">➔</button>
+				</div>
 			</div>
 		</div>
 	</div>

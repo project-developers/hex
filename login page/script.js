@@ -111,9 +111,9 @@ function processCongregation() {
 
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
-		<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
-			<ol class="card">
-				<li style="cursor:pointer">{{ publisher.name }}</li>
+		<section>
+			<ol>
+				<li v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" style="cursor:pointer">{{ publisher.name }}</li>
 			</ol>
 		</section>
     </div>
@@ -142,8 +142,8 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 		<main class="grid-parent">		
 			<section v-for="(group) in allGroups" :key="group" v-if="selectedGroup == group || selectedGroup == 'All Field Service Groups'" class="grid-item">
 				<h2 class="main card-title" style="cursor:pointer">{{ group }}</h2>
-				<ol v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" class="card">
-					<li style="cursor:pointer">{{ publisher.name }}</li>
+				<ol>
+					<li v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer">{{ publisher.name }}</li>
 				</ol>
 			</section>
 		</main>

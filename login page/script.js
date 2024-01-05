@@ -10,7 +10,7 @@ document.querySelector('#navigation').innerHTML = `<template>
 				<option v-if="allGroups.length > 1" value="All Field Service Groups">All Field Service Groups</option>
 				<option v-for="group in allGroups" :key="group" :value="group">{{ group }}</option>
 			</select>
-			<div class="my-searchbox-holder" style="margin: 10px; width: 200px;">
+			<div class="my-searchbox-holder" style="margin: 10px; width: 250px;">
 				<div class="my-searchbox">
 					<span>🔍</span>
 					<input 

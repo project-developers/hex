@@ -2,7 +2,7 @@ var navigationVue, allPublishersVue, congregationVue, fieldServiceGroupsVue;
 var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "congregationVue"}, {"title": "Field Service Groups", "function": "congregationVue"}, {"title": "All Contact Information", "function": "congregationVue"}]
 
 document.querySelector('#navigation').innerHTML = `<template>
-    <button v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button.title }}</button>
+    <button v-for="(button, count) in buttons" :key="count" @click="openButton($event.target)">{{ button.title }}</button>
 </template>`
 
 function processNavigation() {

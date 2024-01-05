@@ -1,5 +1,5 @@
 var navigationVue, allPublishersVue, congregationVue, fieldServiceGroupsVue;
-var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "congregationVue"}, {"title": "Field Service Groups", "function": "congregationVue"}, {"title": "All Contact Information", "function": "congregationVue"}]
+var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}]
 
 document.querySelector('#navigation').innerHTML = `<template>
     <button v-for="(button, count) in buttons" :key="count" @click="openButton($event.target)">{{ button.title }}</button>
@@ -10,7 +10,7 @@ function processNavigation() {
     navigationVue = new Vue({
         el: document.querySelector('#navigation'),
         data: {
-            buttons: [{"title": "All Publishers", "function": "congregationVue"}, {"title": "Field Service Groups", "function": "congregationVue"}, {"title": "All Contact Information", "function": "congregationVue"}],
+            buttons: [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}],
             displayCart: 0,
         },
         computed: {

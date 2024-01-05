@@ -1,9 +1,7 @@
 var navigationVue, allPublishersVue;
 
 document.querySelector('#navigation').innerHTML = `<template>
-    <ul>
-		<li v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button }}</li>
-    </ul>
+    <button v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button }}</button>
 </template>`
 
 function processNavigation() {

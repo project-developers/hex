@@ -149,6 +149,10 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 		</div>
 		<div v-if="selectedPublisher.name">
 			<h2>{{ selectedPublisher.name }}</h2>
+			<h3>{{ selectedPublisher.dateOfBirth }}</h3>
+			<h3>{{ selectedPublisher.dateImmersed }}</h3>
+			<h3>{{ selectedPublisher.gender }}</h3>
+			<h3>{{ selectedPublisher.hope }}</h3>
 		</div>
     </div>
 </template>`

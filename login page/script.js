@@ -76,19 +76,6 @@ document.querySelector('#allPublishers').innerHTML = `<template>
 				<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
 					<div class="card">
 						<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
-						<!--div class="card-body">
-							<div>
-								<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
-								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.fieldServiceGroup }}</p>
-								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.gender }}</p>
-								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.hope }}</p>
-								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateOfBirth }}</p>
-								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateImmersed }}</p>
-								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.elder }}</p>
-								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.ministerialServant }}</p>
-								<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.regularPioneer }}</p>
-							</div>
-						</div-->
 					</div>
 				</section>
 			</main>
@@ -122,17 +109,6 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 				<div v-for="(publisher, count) in allPublishers" :key="publisher" class="card">
 					<div v-if="publisher.fieldServiceGroup == group" class="card-body">
 						<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
-						<!--div>
-							<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
-							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.fieldServiceGroup }}</p>
-							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.gender }}</p>
-							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.hope }}</p>
-							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateOfBirth }}</p>
-							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateImmersed }}</p>
-							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.elder }}</p>
-							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.ministerialServant }}</p>
-							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.regularPioneer }}</p>
-						</div-->
 					</div>
 				</div>
 			</section>

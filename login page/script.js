@@ -271,9 +271,9 @@ async function editPDF(pdfBytes) {
       //const form = pdfDoc.getForm()
       s21form = pdfDoc.getForm()
 
-	  console.log(form)
-	  return
-
+	  console.log(s21form)
+	  //return
+/*
       // Get all fields in the PDF by their names
       const nameField = form.getTextField('CharacterName 2')
       const ageField = form.getTextField('Age')
@@ -345,7 +345,7 @@ async function editPDF(pdfBytes) {
 
       // Fill in the treasure field
       treasureField.setText(['• Gold coins', '• Treasure chests'].join('\n'))
-
+*/
       // Serialize the PDFDocument to bytes (a Uint8Array)
       const pdfBytes = await pdfDoc.save()
 

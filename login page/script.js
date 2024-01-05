@@ -1,13 +1,14 @@
+var navigationVue, allPublishersVue;
 
 document.querySelector('#navigation').innerHTML = `<template>
-    <ul style="overflow-y: auto; overflow-x: hidden; max-height:480px;">
-		<li v-for="(button, count) in buttons" :key="button">{{ button }}</li>
+    <ul>
+		<li v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button }}</li>
     </ul>
 </template>`
 
 function processNavigation() {
 
-    navigation = new Vue({
+    navigationVue = new Vue({
         el: document.querySelector('#navigation'),
         data: {
             buttons: ["All Publishers"],
@@ -19,6 +20,9 @@ function processNavigation() {
             },
         },
         methods: {
+			addSection(button) {
+				console.log(button)
+			}
         }
     })
 }
@@ -30,7 +34,7 @@ document.querySelector('#allPublishers').innerHTML = `<template>
     <div v-if="publishers.length !== 0" class="template--resultCount">
         <label class="ms-fontWeight-semibold">{{ publishers.length }} {{ publishers.length == 1 ? 'result' : 'results' }}</label>
     </div>
-    <div style="overflow-y: auto; overflow-x: hidden; max-height:480px;">
+    <div style="overflow-y: auto; overflow-x: hidden;">
         <main class="grid-parent">		
             <section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
                 <div class="card">

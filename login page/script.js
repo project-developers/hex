@@ -71,9 +71,6 @@ const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
 		<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
-		<!--div v-if="publishers.length !== 0" class="template--resultCount">
-			<label class="ms-fontWeight-semibold">{{ publishers.length }} {{ publishers.length == 1 ? 'result' : 'results' }}</label>
-		</div>
 		<div style="overflow-y: auto; overflow-x: hidden;">
 			<main class="grid-parent">		
 				<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">

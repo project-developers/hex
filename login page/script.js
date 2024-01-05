@@ -1,37 +1,5 @@
 var navigationVue, allPublishersVue, congregationVue;
 
-document.querySelector('#congregation').innerHTML = `<template>
-    <div v-if="display == true">
-		<h1>{{ congregation.name }}</h1>
-		<h2>{{ congregation.address }}</h2>
-		<h3>{{ congregation.email }}</h3>
-	</div>
-</template>`
-
-function processCongregation() {
-
-    congregationVue = new Vue({
-        el: document.querySelector('#congregation'),
-        data: {
-            congregation: {"name": "New England", "address": "14 Hannesson Street, New England Ville.", "email": "cong574356@jwpub.org"},
-            display: true,
-        },
-        computed: {
-            publishersCount() {/*
-                return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
-            },
-        },
-        methods: {
-			openButton(button) {
-				//console.log(button)
-				console.log(button.innerHTML)
-			}
-        }
-    })
-}
-
-processCongregation()
-
 document.querySelector('#navigation').innerHTML = `<template>
     <button v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button }}</button>
 </template>`
@@ -66,6 +34,39 @@ function gotoView(button) {
 		allPublishersVue.display = !allPublishersVue.display
 	}
 }
+
+document.querySelector('#congregation').innerHTML = `<template>
+    <div v-if="display == true">
+		<h1>{{ congregation.name }}</h1>
+		<h2>{{ congregation.address }}</h2>
+		<h3>{{ congregation.email }}</h3>
+		<h3>{{ publishersCount }} Publishers</h3>
+	</div>
+</template>`
+
+function processCongregation() {
+
+    congregationVue = new Vue({
+        el: document.querySelector('#congregation'),
+        data: {
+            congregation: {"name": "New England", "address": "14 Hannesson Street, New England Ville.", "email": "cong574356@jwpub.org"},
+            display: true,
+        },
+        computed: {
+            publishersCount() {
+                return allPublishersVue.publishers.length
+            },
+        },
+        methods: {
+			openButton(button) {
+				//console.log(button)
+				console.log(button.innerHTML)
+			}
+        }
+    })
+}
+
+processCongregation()
 
 const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 document.querySelector('#allPublishers').innerHTML = `<template>

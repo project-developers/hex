@@ -1,4 +1,44 @@
 
+
+const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
+document.querySelector('#app').innerHTML = `<template>
+    <div v-if="publishers.length !== 0" class="template--resultCount">
+        <label class="ms-fontWeight-semibold">{{ publishers.length }} {{ publishers.length == 1 ? 'result' : 'results' }}</label>
+    </div>
+    <div style="overflow-y: auto; overflow-x: hidden; max-height:480px;">
+        <main class="grid-parent">		
+            <section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
+                <div class="card">
+                    <div class="card-body">
+                        <div>
+                            <p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;"><strong><em>{{ publisher.fieldServiceGroup }}</em></strong></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</template>`
+
+function processSectionItems() {
+
+    sectionVue = new Vue({
+        el: document.querySelector('#app'),
+        data: {
+            publishers: [],
+            displayCart: 0,
+        },
+        computed: {
+            allCharacters() {/*
+                return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
+            },
+        },
+        methods: {
+        }
+    })
+}
+
 /*
 let toggle = 0;
 
@@ -95,7 +135,6 @@ const PastReport = JSON.parse(localStorage.getItem('LateRecord'));
 */
 //const Groups = JSON.parse(localStorage.getItem('Groups'));
 
-const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 /*
 const Attendance = JSON.parse(localStorage.getItem('Attendance'));
 

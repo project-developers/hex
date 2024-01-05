@@ -39,7 +39,7 @@ document.querySelector('#congregation').innerHTML = `<template>
 		<h1>{{ congregation.name }}</h1>
 		<h2>{{ congregation.address }}</h2>
 		<h3>{{ congregation.email }}</h3>
-		<h3>{{ publishersCount }} Publishers</h3>
+		<h3>{{ publishersCount }} {{ publishersCount <= 1 ? 'Publisher' : 'Publishers' }}</h3>
 	</div>
 </template>`
 
@@ -68,7 +68,8 @@ function processCongregation() {
 const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
-		<div v-if="publishers.length !== 0" class="template--resultCount">
+		<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
+		<!--div v-if="publishers.length !== 0" class="template--resultCount">
 			<label class="ms-fontWeight-semibold">{{ publishers.length }} {{ publishers.length == 1 ? 'result' : 'results' }}</label>
 		</div>
 		<div style="overflow-y: auto; overflow-x: hidden;">
@@ -91,7 +92,7 @@ document.querySelector('#allPublishers').innerHTML = `<template>
 					</div>
 				</section>
 			</main>
-		</div>
+		</div-->
     </div>
 </template>`
 
@@ -113,10 +114,70 @@ function processAllPublishers() {
     })
 }
 
+document.querySelector('#fieldServiceGroups').innerHTML = `<template>
+	<div v-if="display == true">
+		<main class="grid-parent">		
+			<section v-for="(group, count) in allGroups" :key="group" class="grid-item">
+				{{ group }}
+				<div v-for="(publisher, count) in allPublishers" :key="publisher" class="card">
+					<div v-if="publisher.fieldServiceGroup == group" class="card-body">
+						<div>
+							<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
+							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.fieldServiceGroup }}</p>
+							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.gender }}</p>
+							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.hope }}</p>
+							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateOfBirth }}</p>
+							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateImmersed }}</p>
+							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.elder }}</p>
+							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.ministerialServant }}</p>
+							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.regularPioneer }}</p>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+    </div>
+</template>`
+
+function processAllPublishers() {
+
+    allPublishersVue = new Vue({
+        el: document.querySelector('#fieldServiceGroups'),
+        data: {
+            publishers: [],
+            display: false,
+        },
+        computed: {
+            allGroups() {
+                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup'])
+            },
+			allPublishers() {
+                return allPublishersVue.publishers
+            },
+        },
+        methods: {
+        }
+    })
+}
+
 processAllPublishers()
 processCongregation()
 
 allPublishersVue.publishers = CongregationData
+
+function getUniqueElementsByProperty(arr, propNames) {
+    const uniqueSet = new Set();
+    
+    return arr.filter(obj => {
+        const key = propNames.map(prop => obj[prop]).join('|');
+        if (!uniqueSet.has(key)) {
+            uniqueSet.add(key);
+            return true;
+        }
+        return false;
+    });
+}
+
 /*
 let toggle = 0;
 

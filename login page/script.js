@@ -208,7 +208,7 @@ function getUniqueElementsByProperty(arr, propNames) {
     });
 }
 
-var s21;
+var s21, s21form;
 
 async function editPDF(pdfBytes) {
 	// Create a PDF document
@@ -268,7 +268,8 @@ async function editPDF(pdfBytes) {
       //const emblemImage = await pdfDoc.embedPng(emblemImageBytes)
 
       // Get the form containing all the fields
-      const form = pdfDoc.getForm()
+      //const form = pdfDoc.getForm()
+      s21form = pdfDoc.getForm()
 
 	  console.log(form)
 	  return

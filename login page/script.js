@@ -32,7 +32,8 @@ function processNavigation() {
         el: document.querySelector('#navigation'),
         data: {
             buttons: [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}],
-            fieldServiceGroup: '',
+            fieldServiceGroup: 'All Field Service Groups',
+			searchTerms: '',
         },
         computed: {
             allCharacters() {/*

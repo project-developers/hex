@@ -20,7 +20,7 @@ function processNavigation() {
         },
         methods: {
 			openButton(button) {
-				this.buttons = allButtons.filter(elem !== button.innerHTML)
+				this.buttons = allButtons.filter(elem=>elem !== button.innerHTML)
 				gotoView(button.innerHTML)
 			}
         }

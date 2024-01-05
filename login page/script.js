@@ -165,7 +165,7 @@ function processFieldServiceGroups() {
                 return navigationVue.searchTerms
             },
 			allGroups() {
-                return getUniqueElementsByProperty(allPublishersVue.publishers.filter(elem=>elem.name.includes(searchTerms) || elem.contactInformation.address.includes(searchTerms) || elem.contactInformation.phoneNumber.includes(searchTerms)),['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
+                return getUniqueElementsByProperty(allPublishersVue.publishers.filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)),['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
             },
 			selectedGroup() {
                 return navigationVue.fieldServiceGroup

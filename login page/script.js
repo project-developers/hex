@@ -12,7 +12,14 @@ document.querySelector('#app').innerHTML = `<template>
                     <div class="card-body">
                         <div>
                             <p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
-                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;"><strong><em>{{ publisher.fieldServiceGroup }}</em></strong></p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.fieldServiceGroup }}</p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.gender }}</p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.hope }}</p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateOfBirth }}</p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.dateImmersed }}</p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.elder }}</p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.ministerialServant }}</p>
+                            <p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.regularPioneer }}</p>
                         </div>
                     </div>
                 </div>

@@ -4,8 +4,8 @@ var allButtons = [{"title": "Congregation Information", "function": "congregatio
 document.querySelector('#navigation').innerHTML = `<template>
     <button v-for="(button, count) in buttons" :key="count" @click="openButton($event.target)">{{ button.title }}</button>
 	<select v-model="fieldServiceGroup" style="margin:1px">
-		<option v-if="languageTeams.length > 1" value="All Field Service Groups">All Field Service Groups</option>
-		<option v-for="languageTeam in languageTeams" :key="languageTeam.Title" :value="languageTeam.Title">{{ languageTeam.Title }}</option>
+		<option v-if="allGroups.length > 1" value="All Field Service Groups">All Field Service Groups</option>
+		<option v-for="group in allGroups" :key="group" :value="group">{{ group }}</option>
 	</select>
 	<div class="my-searchbox-holder" style="margin: 10px; min-width: 300px;">
 		<div class="my-searchbox">

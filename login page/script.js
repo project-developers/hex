@@ -1,4 +1,5 @@
 var navigationVue, allPublishersVue, congregationVue;
+var allButtons = ["Congregation Information", "All Publishers", "Field Service Groups", "All Contact Information"]
 
 document.querySelector('#navigation').innerHTML = `<template>
     <button v-for="(button, count) in buttons" :key="button" @click="openButton($event.target)">{{ button }}</button>
@@ -9,7 +10,7 @@ function processNavigation() {
     navigationVue = new Vue({
         el: document.querySelector('#navigation'),
         data: {
-            buttons: ["Congregation Information", "All Publishers", "Field Service Groups", "All Contact Information"],
+            buttons: ["All Publishers", "Field Service Groups", "All Contact Information"],
             displayCart: 0,
         },
         computed: {
@@ -19,6 +20,7 @@ function processNavigation() {
         },
         methods: {
 			openButton(button) {
+				this.buttons = allButtons.filter(elem !== button.innerHTML)
 				gotoView(button.innerHTML)
 			}
         }

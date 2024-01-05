@@ -143,7 +143,7 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 	<div v-if="display == true">
 		<main class="grid-parent">		
 			<section v-for="(group) in allGroups" :key="group" v-if="selectedGroup == group || selectedGroup == 'All Field Service Groups'" class="grid-item">
-				<h2 class="main card-title" style="cursor:pointer">{{ group }}</h2>
+				<h2 v-if="groupPublishers(group).length !== 0" class="main card-title" style="cursor:pointer">{{ group }}</h2>
 				<ol>
 					<li v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer">{{ publisher.name }}</li>
 				</ol>
@@ -165,7 +165,7 @@ function processFieldServiceGroups() {
                 return navigationVue.searchTerms
             },
 			allGroups() {
-                return getUniqueElementsByProperty(allPublishersVue.publishers.filter(elem=>elem.name.toLowerCase().includes(this.searchTerms) || elem.contactInformation.address.toLowerCase().includes(this.searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(this.searchTerms)),['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
+                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
             },
 			selectedGroup() {
                 return navigationVue.fieldServiceGroup
@@ -173,7 +173,7 @@ function processFieldServiceGroups() {
         },
         methods: {
 			groupPublishers(group) {
-                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group)
+                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group && (elem.name.toLowerCase().includes(this.searchTerms) || elem.contactInformation.address.toLowerCase().includes(this.searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(this.searchTerms)))
             },
         }
     })

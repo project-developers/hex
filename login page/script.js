@@ -69,7 +69,7 @@ document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
 		<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
 			<div class="card">
-				<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
+				<p style="cursor:pointer">{{ publisher.name }}</p>
 			</div>
 		</section>
     </div>

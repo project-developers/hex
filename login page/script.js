@@ -30,11 +30,8 @@ function processNavigation() {
 processNavigation()
 
 function gotoView(button) {
-	if (button == "Congregation Information") {
-		congregationVue.display = !congregationVue.display
-	} else if (button == "All Publishers") {
-		allPublishersVue.display = !allPublishersVue.display
-	}
+	congregationVue.display = !congregationVue.display
+	allPublishersVue.display = !allPublishersVue.display
 }
 
 document.querySelector('#congregation').innerHTML = `<template>
@@ -67,8 +64,6 @@ function processCongregation() {
         }
     })
 }
-
-processCongregation()
 
 const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 document.querySelector('#allPublishers').innerHTML = `<template>
@@ -119,6 +114,7 @@ function processAllPublishers() {
 }
 
 processAllPublishers()
+processCongregation()
 
 allPublishersVue.publishers = CongregationData
 /*

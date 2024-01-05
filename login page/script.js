@@ -1,4 +1,4 @@
-var navigationVue, allPublishersVue, congregationVue;
+var navigationVue, allPublishersVue, congregationVue, fieldServiceGroupsVue;
 var allButtons = ["Congregation Information", "All Publishers", "Field Service Groups", "All Contact Information"]
 
 document.querySelector('#navigation').innerHTML = `<template>
@@ -32,6 +32,7 @@ processNavigation()
 function gotoView(button) {
 	congregationVue.display = !congregationVue.display
 	allPublishersVue.display = !allPublishersVue.display
+	fieldServiceGroupsVue.display = !fieldServiceGroupsVue.display
 }
 
 document.querySelector('#congregation').innerHTML = `<template>
@@ -121,7 +122,8 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 				{{ group }}
 				<div v-for="(publisher, count) in allPublishers" :key="publisher" class="card">
 					<div v-if="publisher.fieldServiceGroup == group" class="card-body">
-						<div>
+						<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
+						<!--div>
 							<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
 							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.fieldServiceGroup }}</p>
 							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.gender }}</p>
@@ -131,7 +133,7 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.elder }}</p>
 							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.ministerialServant }}</p>
 							<p class="card-subtitle text-muted" style="font-size:100%;color: black;">{{ publisher.privilege.regularPioneer }}</p>
-						</div>
+						</div-->
 					</div>
 				</div>
 			</section>
@@ -139,9 +141,9 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
     </div>
 </template>`
 
-function processAllPublishers() {
+function processFieldServiceGroups() {
 
-    allPublishersVue = new Vue({
+    fieldServiceGroupsVue = new Vue({
         el: document.querySelector('#fieldServiceGroups'),
         data: {
             publishers: [],
@@ -162,6 +164,7 @@ function processAllPublishers() {
 
 processAllPublishers()
 processCongregation()
+processFieldServiceGroups()
 
 allPublishersVue.publishers = CongregationData
 

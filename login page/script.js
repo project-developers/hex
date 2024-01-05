@@ -50,6 +50,8 @@ function processNavigation() {
     })
 }
 
+processNavigation()
+
 function gotoView(button) {
 	congregationVue.display = false
 	allPublishersVue.display = false
@@ -149,7 +151,6 @@ function processFieldServiceGroups() {
 }
 
 processAllPublishers()
-processNavigation()
 processCongregation()
 processFieldServiceGroups()
 

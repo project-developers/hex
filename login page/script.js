@@ -96,12 +96,10 @@ function processAllPublishers() {
 document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 	<div v-if="display == true">
 		<main class="grid-parent">		
-			<section v-for="(group, count) in allGroups" :key="group.fieldServiceGroup" class="grid-item">
-				{{ group.fieldServiceGroup }}
-				<div v-for="(publisher, count) in allPublishers" :key="publisher" class="card">
-					<div v-if="publisher.fieldServiceGroup == group.fieldServiceGroup" class="card-body">
-						<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
-					</div>
+			<section v-for="(group, count) in allGroups" :key="group" class="grid-item">
+				{{ group }}
+				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher" class="card">
+					<p class="main card-title" style="font-size:110%;font-weight: 600; color:#5B3B88; cursor:pointer">{{ publisher.name }}</p>
 				</div>
 			</section>
 		</main>
@@ -118,13 +116,13 @@ function processFieldServiceGroups() {
         },
         computed: {
             allGroups() {
-                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup'])
-            },
-			allPublishers() {
-                return allPublishersVue.publishers
+                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup)
             },
         },
         methods: {
+			groupPublishers(group) {
+                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group)
+            },
         }
     })
 }

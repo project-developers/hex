@@ -208,6 +208,41 @@ function getUniqueElementsByProperty(arr, propNames) {
     });
 }
 
+async function editPDF(pdfBytes) {
+	// Create a PDF document
+	const pdfDoc = await PDFDocument.load(pdfBytes);
+
+	// Get the first page of the PDF
+	const page = pdfDoc.getPages()[0];
+
+	// Modify form fields (assuming they exist on the first page)
+	const form = page.getForm();
+	console.log(form)
+	const textField = form.getTextField('yourTextFieldName'); // Replace with the actual field name
+	textField.setText('New value for the text field');
+
+	// Save the modified PDF
+	const modifiedPdfBytes = await pdfDoc.save();
+
+	// Now you can use modifiedPdfBytes as needed, e.g., to display or save the modified PDF
+  }
+
+  // Handle file input change
+  document.getElementById('pdfInput').addEventListener('change', async function (event) {
+	const file = event.target.files[0];
+
+	if (file) {
+	  const reader = new FileReader();
+
+	  reader.onload = async function (e) {
+		const pdfBytes = new Uint8Array(e.target.result);
+		await editPDF(pdfBytes);
+	  };
+
+	  reader.readAsArrayBuffer(file);
+	}
+  });
+
 /*
 let toggle = 0;
 

@@ -245,6 +245,8 @@ async function editPDF(pdfBytes) {
 	}
   });
 
+  var pdf2
+
   document.getElementById('pdfFile').addEventListener('change', async function (event) {
 	const file = event.target.files[0];
 
@@ -256,6 +258,8 @@ async function editPDF(pdfBytes) {
 
 			// Using pdf-lib to parse the PDF document
 			const pdfDoc = await PDFLib.PDFDocument.load(pdfData);
+
+			pdf2 = pdfDoc
 
 			console.log(pdfDoc)
 

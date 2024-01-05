@@ -8,12 +8,12 @@ document.querySelector('#navigation').innerHTML = `<template>
 		<option v-if="allGroups.length > 1" value="All Field Service Groups">All Field Service Groups</option>
 		<option v-for="group in allGroups" :key="group" :value="group">{{ group }}</option>
 	</select>
-	<div class="my-searchbox-holder" style="margin: 10px; min-width: 300px;">
+	<div class="my-searchbox-holder" style="margin: 10px; width: 30px;">
 		<div class="my-searchbox">
 			<span>🔍</span>
 			<input 
 				v-model="searchTerms" 
-				placeholder="Mnemonic, Section or Date" 
+				placeholder="Name, Address or Phone Number" 
 				type="text" 
 				@keydown.enter="filteredViews" 
 				@keydown.esc="clearFilter"
@@ -46,6 +46,18 @@ function processNavigation() {
 			openButton(button) {
 				this.buttons = allButtons.filter(elem=>elem.title !== button.innerHTML)
 				gotoView(allButtons.filter(elem=>elem.title == button.innerHTML)[0].function)
+			},
+			filteredViews() {
+
+			},
+			clearFilter() {
+				
+			},
+			boldBox() {
+				
+			},
+			unboldBox() {
+				
 			}
         }
     })

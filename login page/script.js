@@ -1,4 +1,29 @@
 
+document.querySelector('#navigation').innerHTML = `<template>
+    <ul style="overflow-y: auto; overflow-x: hidden; max-height:480px;">
+		<li v-for="(button, count) in buttons" :key="button">{{ button }}</li>
+    </ul>
+</template>`
+
+function processNavigation() {
+
+    navigation = new Vue({
+        el: document.querySelector('#navigation'),
+        data: {
+            buttons: ["All Publishers"],
+            displayCart: 0,
+        },
+        computed: {
+            allCharacters() {/*
+                return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
+            },
+        },
+        methods: {
+        }
+    })
+}
+
+processNavigation()
 
 const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 document.querySelector('#allPublishers').innerHTML = `<template>

@@ -64,7 +64,7 @@ function processCongregation() {
     })
 }
 
-const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
+var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
 		<section v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" class="grid-item">
@@ -131,6 +131,7 @@ processAllPublishers()
 processCongregation()
 processFieldServiceGroups()
 
+var newPublisherRecord = CongregationData.shift()
 allPublishersVue.publishers = CongregationData
 
 function getUniqueElementsByProperty(arr, propNames) {

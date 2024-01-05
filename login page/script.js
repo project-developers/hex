@@ -1,7 +1,7 @@
 
 
 const CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
-document.querySelector('#app').innerHTML = `<template>
+document.querySelector('#allPublishers').innerHTML = `<template>
     <div v-if="publishers.length !== 0" class="template--resultCount">
         <label class="ms-fontWeight-semibold">{{ publishers.length }} {{ publishers.length == 1 ? 'result' : 'results' }}</label>
     </div>
@@ -28,10 +28,10 @@ document.querySelector('#app').innerHTML = `<template>
     </div>
 </template>`
 
-function processSectionItems() {
+function processAllPublishers() {
 
-    sectionVue = new Vue({
-        el: document.querySelector('#app'),
+    allPublishersVue = new Vue({
+        el: document.querySelector('#allPublishers'),
         data: {
             publishers: [],
             displayCart: 0,
@@ -46,8 +46,9 @@ function processSectionItems() {
     })
 }
 
-processSectionItems()
-sectionVue.publishers = CongregationData
+processAllPublishers()
+
+allPublishersVue.publishers = CongregationData
 /*
 let toggle = 0;
 

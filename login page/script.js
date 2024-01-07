@@ -1,6 +1,73 @@
-var navigationVue, allPublishersVue, congregationVue, fieldServiceGroupsVue;
-var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}]
-var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
+var navigationVue, allPublishersVue, congregationVue, configurationVue, fieldServiceGroupsVue;
+var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}, {"title": "Configuration", "function": "configurationVue"}]
+//var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
+
+function createWorker(script, fn) {
+    var blob;
+    if (script) {
+        blob = new Blob([`importScripts(${script});\n\n`, 'self.onmessage = ', fn.toString()], { type: 'text/javascript' });
+    } else {
+        blob = new Blob(['self.onmessage = ', fn.toString()], { type: 'text/javascript' });
+    }
+    var url = URL.createObjectURL(blob);
+    return new Worker(url);
+}
+
+var DBWorker = new Worker("indexedDB.js")
+
+DBWorker.postMessage({ dbName: 'congRec', action: "init"});
+
+var configured
+
+DBWorker.onmessage = async function (msg) {
+    var msgData = msg.data;
+    //console.log(msgData)
+    switch (msgData.name) {
+        case "configuration":
+            {
+                //console.log(msgData.value)
+                if (msgData.value.length == 0) {
+                    configurationVue.display = true
+                    configured = false
+                    navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}]
+                } else {
+                    congregationVue.display = true
+                    configured = true
+                    navigationVue.buttons = [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}, {"title": "Configuration", "function": "configurationVue"}]
+                    configurationVue.configuration = msgData.value[0]
+                    navigationVue.allGroups = msgData.value[0].fieldServiceGroups
+                    DBWorker.postMessage({ storeName: 'data', action: "readAll"});
+                }       
+            }
+            break;
+        case "data":
+            {
+                allPublishersVue.publishers = msgData.value
+            }
+            break;
+        case "ready":
+            {
+                
+            }
+            break;
+        case "productionMonitor":
+            {
+                
+            }
+            break;
+        case "savings":
+            {
+                //console.log(msgData)
+
+            }
+            break;
+        case "done":
+            {
+                // No code here
+            }
+            break;
+    }
+}
 
 document.querySelector('#navigation').innerHTML = `<template>
 	<div style="display:flex">
@@ -35,7 +102,8 @@ function processNavigation() {
     navigationVue = new Vue({
         el: document.querySelector('#navigation'),
         data: {
-            buttons: [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}],
+            buttons: [],
+            allGroups: [],
             fieldServiceGroup: 'All Field Service Groups',
 			searchTerms: '',
 			display: false,
@@ -44,12 +112,10 @@ function processNavigation() {
             allCharacters() {/*
                 return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
             },
-			allGroups() {
-                return getUniqueElementsByProperty(CongregationData,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
-            },
         },
         methods: {
 			openButton(button) {
+                //console.log(button)
 				this.buttons = allButtons.filter(elem=>elem.title !== button.innerHTML)
 				gotoView(allButtons.filter(elem=>elem.title == button.innerHTML)[0].function)
 			},
@@ -75,7 +141,8 @@ function gotoView(button) {
 	congregationVue.display = false
 	allPublishersVue.display = false
 	fieldServiceGroupsVue.display = false
-	if (button == "congregationVue") {
+    configurationVue.display = false
+	if (button == "congregationVue" || button == "configurationVue") {
 		navigationVue.display = false
 	} else {
 		navigationVue.display = true
@@ -87,8 +154,8 @@ document.querySelector('#congregation').innerHTML = `<template>
     <div v-if="display == true">
 		<h1>{{ congregation.name }}</h1>
 		<h2>{{ congregation.address }}</h2>
-		<h3>{{ congregation.email }}</h3>
-		<h3>{{ publishersCount }} {{ publishersCount <= 1 ? 'Publisher' : 'Publishers' }}</h3>
+		<!--h3>{{ congregation.email }}</h3>
+		<h3>{{ publishersCount }} {{ publishersCount <= 1 ? 'Publisher' : 'Publishers' }}</h3-->
 	</div>
 </template>`
 
@@ -97,12 +164,15 @@ function processCongregation() {
     congregationVue = new Vue({
         el: document.querySelector('#congregation'),
         data: {
-            congregation: {"name": "New England", "address": "14 Hannesson Street, New England Ville.", "email": "cong574356@jwpub.org"},
-            display: true,
+            //congregation: {"name": "New England Congregation", "address": "14 Hannesson Street, New England Ville.", "email": "cong574356@jwpub.org"},
+            display: false,
         },
         computed: {
             publishersCount() {
                 return allPublishersVue.publishers.length
+            },
+            congregation() {
+                return configurationVue.configuration
             },
         },
         methods: {
@@ -111,12 +181,149 @@ function processCongregation() {
     })
 }
 
+document.querySelector('#configuration').innerHTML = `<template>
+    <div v-if="display == true">
+		<h1 contenteditable="true" class="name">{{ configuration.name }}</h1>
+		<h2 contenteditable="true" class="address">{{ configuration.address }}</h2>
+		<h2 contenteditable="true" class="email">{{ configuration.email }}</h2>
+		<h3 v-for="group in configuration.fieldServiceGroups" :key="group" contenteditable="true" class="fieldServiceGroups">{{ group }}</h3>
+        <button @click="saveConfiguration($event.target)">Save</button>
+        <button @click="resetConfiguration($event.target)">Reset</button>
+        <button @click="addGroup($event.target)">Add Field Service Group</button>
+        <button @click="removeGroup($event.target)">Remove Field Service Group</button>
+        <p>
+            <button onclick="saveFile()">Save File</button>
+            <input type="file" id="pdfFile" accept=".pdf">
+        </p>
+	</div>
+</template>`
+
+function processConfiguration() {
+
+    configurationVue = new Vue({
+        el: document.querySelector('#configuration'),
+        data: {
+            configuration: {"name": "Congregation Name", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]},
+            display: false,
+        },
+        computed: {
+            publishersCount() {
+                return allPublishersVue.publishers.length
+            },
+        },
+        methods: {
+			saveConfiguration(element) {
+                if (configured = true) {
+                    DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: this.configuration.name});
+                }
+                
+                var allGroups = []
+                element.parentNode.querySelectorAll('.fieldServiceGroups').forEach(elem=>{
+                    allGroups.push(elem.innerHTML)
+                })
+
+                allGroups.sort()
+
+                this.configuration = {"name": element.parentNode.querySelector('.name').innerHTML, "address": element.parentNode.querySelector('.address').innerHTML, "email": element.parentNode.querySelector('.email').innerHTML, "fieldServiceGroups": allGroups}
+                DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [this.configuration]});
+                configured = true
+            },
+            resetConfiguration(element) {
+                if (configured = true) {
+                    DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: this.configuration.name});
+                }
+                this.configuration = {"name": "Congregation Name", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]}
+                DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [this.configuration]});
+                configured = true
+            },
+            addGroup() {
+                const count = configurationVue.configuration.fieldServiceGroups.filter(elem=>elem.startsWith("Group ")).map(elem=>Number(elem.split(' ')[1])).sort().slice(-1)[0]
+                this.configuration.fieldServiceGroups.push("Group " + (count ? count : 0 + 1))
+            },
+            removeGroup() {
+                this.configuration.fieldServiceGroups.pop()
+            },
+        }
+    })
+}
+
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
 		<section>
-			<ol>
-				<li v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup" style="cursor:pointer">{{ publisher.name }}</li>
-			</ol>
+			<div v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup + '|' + publisher.dateOfBirth" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+                <div class="main" style="cursor:pointer">
+                    <div @click="publisherDetail(publisher, $event.target)">{{ publisher.name }}</div>
+                </div>
+                <div class="detail" style="display:none; border: 1px solid gray; padding:5px">
+                    <i @click="publisherDetail(publisher, $event.target)" class="fas fa-arrow-left"></i>
+                    <h2 contenteditable="true" class="name">{{ publisher.name }}</h2>
+                    <p>
+                        <label>Date of Birth: </label>
+                        <input v-if="publisher.dateOfBirth == null" type="date" class="dateOfBirth">
+                        <input v-if="publisher.dateOfBirth !== null" type="date" class="dateOfBirth" :value="cleanDate(publisher.dateOfBirth)">
+                        <select class="gender" :v-model="publisher.gender">
+                            <option v-if="publisher.gender !== 'Male' && publisher.gender !== 'Female'" value="">Select Gender</option>
+                            <option v-if="publisher.gender == 'Male' || publisher.gender == 'Female'" :value="publisher.gender">{{ publisher.gender }}</option>
+                            <option v-for="gender in ['Male', 'Female'].filter(elem=>elem !== publisher.gender)" :value="gender">{{ gender }}</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label>Date of Baptism: </label>
+                        <input type="date" class="dateOfBaptism" :value="cleanDate(publisher.dateOfBaptism)">
+                        
+                        <select class="hope" :v-model="publisher.hope">
+                            <option :value="publisher.hope">{{ publisher.hope }}</option>
+                            <option v-for="hope in hopes.filter(elem=>elem !== publisher.hope)" :value="hope">{{ hope }}</option>
+                        </select>
+                    </p>
+                    <label v-for="(privilege, index) in privileges" :key="index"><input type="checkbox" :name="privilege" class="privileges" :checked=publisher.privilege.includes(privilege)>{{ privilege }}</label>
+                    <p>
+                        <label>Field Service Group: </label>
+                        <select class="fieldServiceGroup" :v-model="publisher.fieldServiceGroup">
+                            <option :value="publisher.fieldServiceGroup">{{ publisher.fieldServiceGroup }}</option>
+                            <option v-for="group in allGroups.filter(elem=>elem !== publisher.fieldServiceGroup)" :value="group">{{ group }}</option>
+                        </select>
+                    </p>
+                    <label>Address: </label>
+                    <p contenteditable="true" class="contactAddress">{{ publisher.contactInformation.address }}</p>
+                    <label>Phone Number: </label>
+                    <p contenteditable="true" class="contactPhoneNumber">{{ publisher.contactInformation.phoneNumber }}</p>
+                    <label>Emergency Contact Name: </label>
+                    <p contenteditable="true" class="emergencyContactAddress">{{ publisher.emergencyContactInformation.address }}</p>
+                    <label>Emergency Contact Phone Number: </label>
+                    <p contenteditable="true" class="emergencyContactPhoneNumber">{{ publisher.emergencyContactInformation.phoneNumber }}</p>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Service Year 2024</th>
+                            <th>Shared in Ministry</th>
+                            <th>Bible Studies</th>
+                            <th>Auxiliary Pioneer</th>
+                            <th>Hours (If pioneer or ﬁeld missionary)</th>
+                            <th>Remarks</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(month, index) in months" :key="month.abbr" :class="month.abbr">
+                            <td>{{ month.fullName }}</td>
+                            <td><input class="sharedInMinistry" type="checkbox" :checked="publisher.report.currentServiceYear[month.abbr].sharedInMinistry !== null"></td>
+                            <td class="bibleStudies" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].bibleStudies }}</td>
+                            <td><input class="auxiliaryPioneer" type="checkbox" :checked="publisher.report.currentServiceYear[month.abbr].auxiliaryPioneer !== null"></td>
+                            <td class="hours" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].hours }}</td>
+                            <td class="remarks" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].remarks }}</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Total</td>
+                            <td>{{ publisher.report.currentServiceYear.totalHours }}</td>
+                            <td contenteditable="true">{{ publisher.report.currentServiceYear.totalRemarks }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 		</section>
     </div>
 </template>`
@@ -128,15 +335,125 @@ function processAllPublishers() {
         data: {
             publishers: [],
             display: false,
+            hopes: ['Anointed', 'Other Sheep', 'Unbaptized Publisher'],
+            privileges: ['Elder', 'Ministerial Servant', 'Regular Pioneer', 'Special Pioneer', 'Field Missionary'],
+            months: [{"abbr": "sept", "fullName": "September"}, {"abbr": "oct", "fullName": "October"}, {"abbr": "nov", "fullName": "November"}, {"abbr": "dec", "fullName": "December"}, {"abbr": "jan", "fullName": "January"}, {"abbr": "feb", "fullName": "February"}, {"abbr": "mar", "fullName": "March"}, {"abbr": "apr", "fullName": "April"}, {"abbr": "may", "fullName": "May"}, {"abbr": "jun", "fullName": "June"}, {"abbr": "jul", "fullName": "July"}, {"abbr": "aug", "fullName": "August"} ],
         },
         computed: {
             allCharacters() {/*
                 return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
             },
+            searchTerms() {
+                return navigationVue.searchTerms
+            },
+			selectedGroup() {
+                return navigationVue.fieldServiceGroup
+            },
+			allGroups() {
+                return navigationVue.allGroups
+            },
         },
         methods: {
+			publisherDetail(publisher, item) {
+                if (item.parentNode.className == 'main') {
+                    item.parentNode.parentNode.querySelector('.main').style.display = 'none'
+                    item.parentNode.parentNode.querySelector('.detail').style.display = ''
+                } else {
+                    publisher.name = item.parentNode.querySelector('.name').innerHTML
+                    if (item.parentNode.querySelector('.dateOfBirth').value) {
+                        publisher.dateOfBirth = item.parentNode.querySelector('.dateOfBirth').value
+                    }
+                    if (item.parentNode.querySelector('.dateOfBaptism')) {
+                        publisher.dateOfBaptism = item.parentNode.querySelector('.dateOfBaptism').value
+                    }
+                    publisher.gender = item.parentNode.querySelector('.gender').value
+                    publisher.hope = item.parentNode.querySelector('.hope').value
+                    publisher.fieldServiceGroup = item.parentNode.querySelector('.fieldServiceGroup').value
+                    
+                    var allPrivileges = []
+
+                    item.parentNode.parentNode.querySelectorAll('.privileges').forEach(elem=>{
+                        if (elem.checked) {
+                            allPrivileges.push(elem.name)
+                        }
+                    })
+
+                    allPrivileges.sort()
+
+                    publisher.privilege = allPrivileges
+
+                    publisher.contactInformation.address = item.parentNode.querySelector('.contactAddress').innerHTML
+                    publisher.contactInformation.phoneNumber = item.parentNode.querySelector('.contactPhoneNumber').innerHTML
+                    publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactAddress').innerHTML
+                    publisher.emergencyContactInformation.phoneNumber = item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML
+                    this.months.forEach(elem=>{
+                        const currentItem = item.parentNode.querySelector(`.${elem.abbr}`)
+                        if (currentItem.querySelector('.hours').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].hours = Number(currentItem.querySelector('.hours').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].hours = null
+                        }
+                        if (currentItem.querySelector('.bibleStudies').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].bibleStudies = Number(currentItem.querySelector('.bibleStudies').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].bibleStudies = null
+                        }
+                        if (currentItem.querySelector('.remarks').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].remarks = Number(currentItem.querySelector('.remarks').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].remarks = null
+                        }
+                        if (currentItem.querySelector('.sharedInMinistry').checked) {
+                            publisher.report.currentServiceYear[elem.abbr].sharedInMinistry = currentItem.querySelector('.sharedInMinistry').checked
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].sharedInMinistry = null
+                        }
+                        if (currentItem.querySelector('.auxiliaryPioneer').checked) {
+                            publisher.report.currentServiceYear[elem.abbr].auxiliaryPioneer = currentItem.querySelector('.auxiliaryPioneer').checked
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].auxiliaryPioneer = null
+                        }
+                        //console.log(currentItem.querySelector('.sharedInMinistry').checked)
+                        //console.log(currentItem.querySelector('.hours'))
+                    })
+
+                    console.log(publisher)
+                    
+                    item.parentNode.parentNode.querySelector('.detail').style.display = 'none'
+                    item.parentNode.parentNode.querySelector('.main').style.display = ''
+                    DBWorker.postMessage({ storeName: 'data', action: "save", value: allPublishersVue.publishers});
+                }
+			},            
+			cleanDate(date) {
+                const currentDate = new Date(date);
+
+                const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+
+                return formattedDate
+            },
+            setHope(publisher) {
+                if (publisher.dateOfBaptism == null) {
+                    return 'Unbaptized Publisher'
+                } else {
+                    return 1
+                }
+            },
+            sumHours(publisher) {
+                var totalHours = 0
+                this.months.forEach(elem=>{
+                    const value = publisher.report.currentServiceYear[elem.abbr].hours
+                    if (value !== null) {
+                        totalHours = totalHours + value
+                    }
+                })
+                return totalHours
+            }
         }
     })
+}
+
+async function shortWait(){
+    await new Promise(a=>setTimeout(a,50))
 }
 
 document.querySelector('#fieldServiceGroups').innerHTML = `<template>
@@ -148,11 +465,19 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 			</div>
 		</div>
 		<div v-if="selectedPublisher.name">
-			<h2>{{ selectedPublisher.name }}</h2>
-			<h3>{{ selectedPublisher.dateOfBirth }}</h3>
-			<h3>{{ selectedPublisher.dateImmersed }}</h3>
-			<h3>{{ selectedPublisher.gender }}</h3>
-			<h3>{{ selectedPublisher.hope }}</h3>
+            <p><input type="text" :value="selectedPublisher.name"></p>
+            <p>Date of Birth: <input type="text" :value="selectedPublisher.dateOfBirth">
+                <span><input type="checkbox">Male<span><input type="checkbox">Female</span>
+            </p>
+            <p>Date of Baptism: <input type="text" :value="selectedPublisher.dateOfBaptism">
+                <span><input type="checkbox">Other Sheep<span><input type="checkbox">Anointed</span>
+            </p>
+            <p>
+                <span><input type="checkbox">Elder<span><input type="checkbox">Ministerial Servant<span><input type="checkbox">Regular Pioneer<span><input type="checkbox">Special Pioneer<span><input type="checkbox">Field Missionary</span>
+            </p>
+            <div>Contact Information</div>
+            <div>Ministry</div>
+			<iframe v-if="pdfFile !== ''" :src="pdfFile" width="800" height="700" style="border: none;"></iframe>
 		</div>
     </div>
 </template>`
@@ -164,6 +489,7 @@ function processFieldServiceGroups() {
         data: {
             publishers: [],
             display: false,
+            pdfFile: "",
 			selectedPublisher: {},
         },
         computed: {
@@ -171,7 +497,7 @@ function processFieldServiceGroups() {
                 return navigationVue.searchTerms
             },
 			allGroups() {
-                return getUniqueElementsByProperty(allPublishersVue.publishers,['fieldServiceGroup']).map(elem=>elem.fieldServiceGroup).sort()
+                return navigationVue.allGroups
             },
 			selectedGroup() {
                 return navigationVue.fieldServiceGroup
@@ -183,6 +509,10 @@ function processFieldServiceGroups() {
             },
 			publisherDetail(publisher) {
 				this.selectedPublisher = publisher
+                //fillPublisherRecord(publisher)
+			},
+            updateRecord(publisher) {
+				updatePublisherRecord(publisher)
 			}
         }
     })
@@ -190,10 +520,206 @@ function processFieldServiceGroups() {
 
 processAllPublishers()
 processCongregation()
+processConfiguration()
 processFieldServiceGroups()
 
-var newPublisherRecord = CongregationData.shift()
-allPublishersVue.publishers = CongregationData
+var newPublisherRecord = {
+    "name": null,
+    "dateOfBirth": null,
+    "gender": null,
+    "hope": null,
+    "privilege": [],
+    "contactInformation": {
+        "address": null,
+        "phoneNumber": null
+    },
+    "fieldServiceGroup": null,
+    "report": {
+        "currentServiceYear": {
+            "year": null,
+            "jan": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "feb": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "mar": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "apr": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "may": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "jun": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "jul": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "aug": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "sept": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "oct": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "nov": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "dec": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "totalHours": null,
+            "totalRemarks": null
+        },
+        "lastServiceYear": {
+            "year": null,
+            "jan": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "feb": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "mar": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "apr": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "may": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "jun": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "jul": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "aug": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "sept": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "oct": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "nov": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "dec": {
+                "sharedInMinistry": null,
+                "bibleStudies": null,
+                "auxiliaryPioneer": null,
+                "hours": null,
+                "remarks": null
+            },
+            "totalHours": null,
+            "totalRemarks": null
+        }
+    },
+    "dateOfBaptism": null,
+    "emergencyContactInformation": {
+        "name": null,
+        "phoneNumber": null
+    }
+}
 
 function getUniqueElementsByProperty(arr, propNames) {
     const uniqueSet = new Set();
@@ -208,181 +734,106 @@ function getUniqueElementsByProperty(arr, propNames) {
     });
 }
 
+function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], {type: contentType});
+    fieldServiceGroupsVue.pdfFile = URL.createObjectURL(file);
+    /*a.href = URL.createObjectURL(file);
+    
+    //a.download = fileName;
+    //a.click();*/
+};
+
+async function fillPublisherRecord(publisher) {
+    // Get the form field by name
+    //const fieldName = fieldNameInput.value;
+    const name = s21.getForm().getTextField('900_1_Text_SanSerif');
+    const dateOfBirth = s21.getForm().getTextField('900_2_Text_SanSerif');
+    const dateOfBaptism = s21.getForm().getTextField('900_5_Text_SanSerif');
+    const male = s21.getForm().getCheckBox('900_3_CheckBox');
+    const female = s21.getForm().getCheckBox('900_4_CheckBox');
+
+    name.setText(publisher.name)
+    dateOfBirth.setText(publisher.dateOfBirth)
+    dateOfBaptism.setText(publisher.dateOfBaptism)
+    if (publisher.gender == "Male") {
+        male.check()
+        female.uncheck()
+    } else if (publisher.gender == "Female") {
+        male.uncheck()
+        female.check()
+    }
+    //name.setText(publisher.name)
+    //name.setText(publisher.name)
+    // Save the modified PDF
+    const modifiedPdfBytes = await s21.save();
+    download(modifiedPdfBytes, publisher.name + ".pdf", "application/pdf");
+}
+
+/**
+ * // Save the modified PDF
+const modifiedPdfBytes = await pdfDoc.save();
+
+// Create a Blob from the modified PDF bytes
+const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+
+// Create a data URL from the Blob
+const dataUrl = URL.createObjectURL(blob);
+
+// Set the new data URL as the source for the iframe
+iframe.src = dataUrl;
+ */
+
+function updatePublisherRecord(publisher) {
+    publisher.gender = "Male"
+    
+
+    const name = s21.getForm().getTextField('900_1_Text_SanSerif');
+    const dateOfBirth = s21.getForm().getTextField('900_2_Text_SanSerif');
+    const dateOfBaptism = s21.getForm().getTextField('900_5_Text_SanSerif');
+    const male = s21.getForm().getCheckBox('900_3_CheckBox');
+    const female = s21.getForm().getCheckBox('900_4_CheckBox');
+
+    console.log(name.getText(), dateOfBirth.getText(), dateOfBaptism.getText(), male.isChecked(), female.isChecked())
+return
+    
+
+    publisher.name = name.getText()
+    publisher.dateOfBirth = dateOfBirth.getText()
+    publisher.dateOfBaptism = dateOfBaptism.getText()
+    if (male.isChecked()) {
+        publisher.gender = "Male"
+    } else if (female.isChecked()) {
+        publisher.gender = "Female"
+    }
+    console.log(publisher)
+}
+
+// 900_1_Text_SanSerif
+
 var s21, s21form;
 
-async function editPDF(pdfBytes) {
-	// Create a PDF document
-	const pdfDoc = await PDFDocument.load(pdfBytes);
+async function getFieldByName() {
+    const fileInput = document.getElementById('pdfFile');
+    const file = fileInput.files[0];
 
-	// Get the first page of the PDF
-	const page = pdfDoc.getPages()[0];
+    if (file) {
+        const reader = new FileReader();
 
-	// Modify form fields (assuming they exist on the first page)
-	const form = page.getForm();
-	console.log(form)
-	const textField = form.getTextField('yourTextFieldName'); // Replace with the actual field name
-	textField.setText('New value for the text field');
+        reader.onload = async function (e) {
+            const pdfData = new Uint8Array(e.target.result);
 
-	// Save the modified PDF
-	const modifiedPdfBytes = await pdfDoc.save();
+            // Using pdf-lib to load the PDF document
+            s21 = await PDFLib.PDFDocument.load(pdfData);
+        };
 
-	// Now you can use modifiedPdfBytes as needed, e.g., to display or save the modified PDF
-  }
-
-  // Handle file input change
-  document.getElementById('pdfInput').addEventListener('change', async function (event) {
-	const file = event.target.files[0];
-
-	if (file) {
-	  const reader = new FileReader();
-
-	  reader.onload = async function (e) {
-		s21 = new Uint8Array(e.target.result);
-		//await editPDF(pdfBytes);
-	  };
-
-	  reader.readAsArrayBuffer(file);
-	}
-  });
-
-  var pdf2
-
-  document.getElementById('pdfFile').addEventListener('change', async function (event) {
-	const file = event.target.files[0];
-
-	if (file) {
-		const reader = new FileReader();
-
-		reader.onload = async function (e) {
-			const pdfData = new Uint8Array(e.target.result);
-
-			// Using pdf-lib to parse the PDF document
-			const pdfDoc = await PDFLib.PDFDocument.load(pdfData);
-
-			pdf2 = pdfDoc
-
-			console.log(pdfDoc)
-
-			// Get all fields in the PDF
-			const formFields = pdfDoc.getForm().getFields();
-
-			// Display form fields
-			const formFieldsElement = document.getElementById('formFields');
-			formFieldsElement.innerHTML = '<h3>Form Fields:</h3>' +
-				'<ul>' + formFields.map(field => `<li>${field.getName()}</li>`).join('') + '</ul>';
-		};
-
-		reader.readAsArrayBuffer(file);
-	}
-});
-
-  const { PDFDocument } = PDFLib
-
-    async function fillForm() {
-    	// Fetch the PDF with form fields
-      //const formUrl = 'https://pdf-lib.js.org/assets/dod_character.pdf'
-      //const formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer())
-
-			// Fetch the Mario image
-      //const marioUrl = 'https://pdf-lib.js.org/assets/small_mario.png'
-      //const marioImageBytes = await fetch(marioUrl).then(res => res.arrayBuffer())
-
-			// Fetch the emblem image
-      //const emblemUrl = 'https://pdf-lib.js.org/assets/mario_emblem.png'
-      //const emblemImageBytes = await fetch(emblemUrl).then(res => res.arrayBuffer())
-
-      // Load a PDF with form fields
-      const pdfDoc = await PDFDocument.load(s21)
-
-      // Embed the Mario and emblem images
-      //const marioImage = await pdfDoc.embedPng(marioImageBytes)
-      //const emblemImage = await pdfDoc.embedPng(emblemImageBytes)
-
-      // Get the form containing all the fields
-      //const form = pdfDoc.getForm()
-      s21form = pdfDoc.getForm()
-
-	  console.log(s21form)
-	  //return
-/*
-      // Get all fields in the PDF by their names
-      const nameField = form.getTextField('CharacterName 2')
-      const ageField = form.getTextField('Age')
-      const heightField = form.getTextField('Height')
-      const weightField = form.getTextField('Weight')
-      const eyesField = form.getTextField('Eyes')
-      const skinField = form.getTextField('Skin')
-      const hairField = form.getTextField('Hair')
-
-      const alliesField = form.getTextField('Allies')
-      const factionField = form.getTextField('FactionName')
-      const backstoryField = form.getTextField('Backstory')
-      const traitsField = form.getTextField('Feat+Traits')
-      const treasureField = form.getTextField('Treasure')
-
-      const characterImageField = form.getButton('CHARACTER IMAGE')
-      const factionImageField = form.getButton('Faction Symbol Image')
-
-      // Fill in the basic info fields
-      nameField.setText('Mario')
-      ageField.setText('24 years')
-      heightField.setText(`5' 1"`)
-      weightField.setText('196 lbs')
-      eyesField.setText('blue')
-      skinField.setText('white')
-      hairField.setText('brown')
-
-      // Fill the character image field with our Mario image
-      characterImageField.setImage(marioImage)
-
-      // Fill in the allies field
-      alliesField.setText(
-        [
-          `Allies:`,
-          `  • Princess Daisy`,
-          `  • Princess Peach`,
-          `  • Rosalina`,
-          `  • Geno`,
-          `  • Luigi`,
-          `  • Donkey Kong`,
-          `  • Yoshi`,
-          `  • Diddy Kong`,
-          ``,
-          `Organizations:`,
-          `  • Italian Plumbers Association`,
-        ].join('\n'),
-      )
-
-      // Fill in the faction name field
-      factionField.setText(`Mario's Emblem`)
-
-      // Fill the faction image field with our emblem image
-      factionImageField.setImage(emblemImage)
-
-      // Fill in the backstory field
-      backstoryField.setText(
-        `Mario is a fictional character in the Mario video game franchise, owned by Nintendo and created by Japanese video game designer Shigeru Miyamoto. Serving as the company's mascot and the eponymous protagonist of the series, Mario has appeared in over 200 video games since his creation. Depicted as a short, pudgy, Italian plumber who resides in the Mushroom Kingdom, his adventures generally center upon rescuing Princess Peach from the Koopa villain Bowser. His younger brother and sidekick is Luigi.`,
-      )
-
-      // Fill in the traits field
-      traitsField.setText(
-        [
-          `Mario can use three basic three power-ups:`,
-          `  • the Super Mushroom, which causes Mario to grow larger`,
-          `  • the Fire Flower, which allows Mario to throw fireballs`,
-          `  • the Starman, which gives Mario temporary invincibility`,
-        ].join('\n'),
-      )
-
-      // Fill in the treasure field
-      treasureField.setText(['• Gold coins', '• Treasure chests'].join('\n'))
-*/
-      // Serialize the PDFDocument to bytes (a Uint8Array)
-      const pdfBytes = await pdfDoc.save()
-
-			// Trigger the browser to download the PDF document
-      download(pdfBytes, "pdf-lib_form_creation_example.pdf", "application/pdf");
+        reader.readAsArrayBuffer(file);
     }
+}
+
+/**
+ * DBWorker.postMessage({ storeName: 'files', action: "save", value: [document.getElementById('pdfFile').files[0]]});
+ */
 
 /*
 let toggle = 0;

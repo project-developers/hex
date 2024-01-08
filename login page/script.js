@@ -57,7 +57,13 @@ DBWorker.onmessage = async function (msg) {
             break;
         case "savings":
             {
-                //console.log(msgData)
+                if (importing > 0) {
+					importing--
+					if (importing == 0) {
+						location.reload()
+					}
+				}
+				//console.log(msgData)
 
             }
             break;
@@ -192,11 +198,89 @@ document.querySelector('#configuration').innerHTML = `<template>
         <button @click="addGroup($event.target)">Add Field Service Group</button>
         <button @click="removeGroup($event.target)">Remove Field Service Group</button>
         <p>
-            <button onclick="saveFile()">Save File</button>
+            <button @click="saveFile()">Save File</button>
             <input type="file" id="pdfFile" accept=".pdf">
+        </p>
+		<p>
+            <div class="main">
+				<button @click="publisherDetail($event.target)">New Publisher</button>
+			</div>
+			<div class="detail" style="display:none; border: 1px solid gray; padding:5px">
+				<button @click="publisherDetail($event.target)">Save</button>
+				<button @click="cancel($event.target)">Cancel</button>
+				<p><label>Name: <input type="text" class="name" placeholder="Publisher Name" :value="publisher.name"></label></p>
+				<p>
+					<label>Date of Birth: </label>
+					<input v-if="publisher.dateOfBirth == null" type="date" class="dateOfBirth">
+					<select class="gender">
+						<option v-for="gender in ['Select Gender', 'Male', 'Female']" :value="gender">{{ gender }}</option>
+					</select>
+				</p>
+				<p>
+					<label>Date of Baptism: </label>
+					<input type="date" class="dateOfBaptism">
+					
+					<select class="hope">
+						<option v-for="hope in hopes" :value="hope">{{ hope }}</option>
+					</select>
+				</p>
+				<label v-for="(privilege, index) in privileges" :key="index"><input type="checkbox" :name="privilege" class="privileges" :checked=publisher.privilege.includes(privilege)>{{ privilege }}</label>
+				<p>
+					<label>Field Service Group: </label>
+					<select class="fieldServiceGroup">
+						<option value="">Select Group</option>
+						<option v-for="group in allGroups" :value="group">{{ group }}</option>
+					</select>
+				</p>
+				<label>Address: </label>
+				<p contenteditable="true" class="contactAddress">{{ publisher.contactInformation.address }}</p>
+				<label>Phone Number: </label>
+				<p contenteditable="true" class="contactPhoneNumber">{{ publisher.contactInformation.phoneNumber }}</p>
+				<label>Emergency Contact Name: </label>
+				<p contenteditable="true" class="emergencyContactAddress">{{ publisher.emergencyContactInformation.address }}</p>
+				<label>Emergency Contact Phone Number: </label>
+				<p contenteditable="true" class="emergencyContactPhoneNumber">{{ publisher.emergencyContactInformation.phoneNumber }}</p>
+				<table>
+					<thead>
+					<tr>
+						<th>Service Year 2024</th>
+						<th>Shared in Ministry</th>
+						<th>Bible Studies</th>
+						<th>Auxiliary Pioneer</th>
+						<th>Hours (If pioneer or ﬁeld missionary)</th>
+						<th>Remarks</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr v-for="(month, index) in months" :key="month.abbr" :class="month.abbr">
+						<td>{{ month.fullName }}</td>
+						<td><input class="sharedInMinistry" type="checkbox" :checked="publisher.report.currentServiceYear[month.abbr].sharedInMinistry !== null"></td>
+						<td class="bibleStudies" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].bibleStudies }}</td>
+						<td><input class="auxiliaryPioneer" type="checkbox" :checked="publisher.report.currentServiceYear[month.abbr].auxiliaryPioneer !== null"></td>
+						<td class="hours" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].hours }}</td>
+						<td class="remarks" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].remarks }}</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td>Total</td>
+						<td>{{ publisher.report.currentServiceYear.totalHours }}</td>
+						<td contenteditable="true">{{ publisher.report.currentServiceYear.totalRemarks }}</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+        </p>
+		<p>
+            <button @click="exportData()">Export Data</button>
+            <button @click="importData()">Import Data</button>
+            <input type="file" id="dataFile">
         </p>
 	</div>
 </template>`
+
+var importing = 0
 
 function processConfiguration() {
 
@@ -205,13 +289,50 @@ function processConfiguration() {
         data: {
             configuration: {"name": "Congregation Name", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]},
             display: false,
+			publisher: {},
+			hopes: ['Unbaptized Publisher', 'Other Sheep', 'Anointed'],
+			privileges: ['Elder', 'Ministerial Servant', 'Regular Pioneer', 'Special Pioneer', 'Field Missionary'],
+            months: [{"abbr": "sept", "fullName": "September"}, {"abbr": "oct", "fullName": "October"}, {"abbr": "nov", "fullName": "November"}, {"abbr": "dec", "fullName": "December"}, {"abbr": "jan", "fullName": "January"}, {"abbr": "feb", "fullName": "February"}, {"abbr": "mar", "fullName": "March"}, {"abbr": "apr", "fullName": "April"}, {"abbr": "may", "fullName": "May"}, {"abbr": "jun", "fullName": "June"}, {"abbr": "jul", "fullName": "July"}, {"abbr": "aug", "fullName": "August"} ],
         },
         computed: {
             publishersCount() {
                 return allPublishersVue.publishers.length
             },
+			selectedGroup() {
+                return navigationVue.fieldServiceGroup
+            },
+			allGroups() {
+                return navigationVue.allGroups
+            },
         },
         methods: {
+            exportData() {
+                var a = document.createElement("a");
+				var file = new Blob([JSON.stringify({"configuration":configurationVue.configuration, "data":allPublishersVue.publishers})], {type: 'text/plain'});
+				a.href = URL.createObjectURL(file);
+				
+				a.download = 'congData';
+				a.click();
+            },
+            importData() {
+                console.log(document.querySelector('#dataFile').files[0])
+				var reader = new FileReader();
+
+				// When the FileReader has loaded the file...
+				reader.onload = function() {
+					var result = JSON.parse(this.result)
+					if (configured = true) {
+						DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: configurationVue.configuration.name});
+					}
+					importing = 2
+					DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [result.configuration]});
+					DBWorker.postMessage({ storeName: 'data', action: "save", value: result.data});
+                	configured = true
+				}
+				
+				// Read the file content as a single string
+				reader.readAsText(document.querySelector('#dataFile').files[0]);
+            },
 			saveConfiguration(element) {
                 if (configured = true) {
                     DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: this.configuration.name});
@@ -243,6 +364,108 @@ function processConfiguration() {
             removeGroup() {
                 this.configuration.fieldServiceGroups.pop()
             },
+			cancel(item) {
+				item.parentNode.querySelector('.name').value = ''
+				item.parentNode.querySelector('.dateOfBirth').value = ''
+				item.parentNode.querySelector('.dateOfBaptism').value = ''
+				item.parentNode.querySelector('.gender').value = 'Select Gender'
+                item.parentNode.querySelector('.hope').value = 'Unbaptized Publisher'
+                item.parentNode.querySelector('.fieldServiceGroup').value = ''
+				item.parentNode.parentNode.querySelectorAll('.privileges').forEach(elem=>{
+					elem.checked = false
+				})
+                item.parentNode.querySelector('.contactAddress').innerHTML = ''
+                item.parentNode.querySelector('.contactPhoneNumber').innerHTML = ''
+                item.parentNode.querySelector('.emergencyContactAddress').innerHTML = ''
+                item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML = ''
+				this.months.forEach(elem=>{
+					const currentItem = item.parentNode.querySelector(`.${elem.abbr}`)
+					currentItem.querySelector('.hours').innerHTML = ''
+					currentItem.querySelector('.bibleStudies').innerHTML = ''
+					currentItem.querySelector('.remarks').innerHTML = ''
+					currentItem.querySelector('.sharedInMinistry').checked = false
+					currentItem.querySelector('.auxiliaryPioneer').checked = false
+				})
+				item.parentNode.parentNode.querySelector('.detail').style.display = 'none'
+                item.parentNode.parentNode.querySelector('.main').style.display = ''
+			},
+			publisherDetail(item) {
+				var publisher = JSON.parse(JSON.stringify(newPublisherRecord))
+                if (item.parentNode.className == 'main') {
+                    item.parentNode.parentNode.querySelector('.main').style.display = 'none'
+                    item.parentNode.parentNode.querySelector('.detail').style.display = ''
+                } else {
+                    if (item.parentNode.querySelector('.name').value) {
+                        publisher.name = item.parentNode.querySelector('.name').value
+                    } else {
+						alert('Please enter Publisher Name')
+						return
+					}
+					if (item.parentNode.querySelector('.dateOfBirth').value) {
+                        publisher.dateOfBirth = item.parentNode.querySelector('.dateOfBirth').value
+                    }
+                    if (item.parentNode.querySelector('.dateOfBaptism')) {
+                        publisher.dateOfBaptism = item.parentNode.querySelector('.dateOfBaptism').value
+                    }
+                    publisher.gender = item.parentNode.querySelector('.gender').value
+                    publisher.hope = item.parentNode.querySelector('.hope').value
+                    publisher.fieldServiceGroup = item.parentNode.querySelector('.fieldServiceGroup').value
+                    
+                    var allPrivileges = []
+
+                    item.parentNode.parentNode.querySelectorAll('.privileges').forEach(elem=>{
+                        if (elem.checked) {
+                            allPrivileges.push(elem.name)
+                        }
+                    })
+
+                    allPrivileges.sort()
+
+                    publisher.privilege = allPrivileges
+
+                    publisher.contactInformation.address = item.parentNode.querySelector('.contactAddress').innerHTML
+                    publisher.contactInformation.phoneNumber = item.parentNode.querySelector('.contactPhoneNumber').innerHTML
+                    publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactAddress').innerHTML
+                    publisher.emergencyContactInformation.phoneNumber = item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML
+                    this.months.forEach(elem=>{
+                        const currentItem = item.parentNode.querySelector(`.${elem.abbr}`)
+                        if (currentItem.querySelector('.hours').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].hours = Number(currentItem.querySelector('.hours').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].hours = null
+                        }
+                        if (currentItem.querySelector('.bibleStudies').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].bibleStudies = Number(currentItem.querySelector('.bibleStudies').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].bibleStudies = null
+                        }
+                        if (currentItem.querySelector('.remarks').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].remarks = Number(currentItem.querySelector('.remarks').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].remarks = null
+                        }
+                        if (currentItem.querySelector('.sharedInMinistry').checked) {
+                            publisher.report.currentServiceYear[elem.abbr].sharedInMinistry = currentItem.querySelector('.sharedInMinistry').checked
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].sharedInMinistry = null
+                        }
+                        if (currentItem.querySelector('.auxiliaryPioneer').checked) {
+                            publisher.report.currentServiceYear[elem.abbr].auxiliaryPioneer = currentItem.querySelector('.auxiliaryPioneer').checked
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].auxiliaryPioneer = null
+                        }
+                        //console.log(currentItem.querySelector('.sharedInMinistry').checked)
+                        //console.log(currentItem.querySelector('.hours'))
+                    })
+
+					allPublishersVue.publishers.push(publisher)
+
+                    console.log(publisher)
+                    
+                    DBWorker.postMessage({ storeName: 'data', action: "save", value: allPublishersVue.publishers});
+					this.cancel(item)
+                }
+			},
         }
     })
 }
@@ -250,12 +473,13 @@ function processConfiguration() {
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
 		<section>
-			<div v-for="(publisher, count) in publishers" :key="publisher.name + '|' + publisher.fieldServiceGroup + '|' + publisher.dateOfBirth" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+			<div v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
                 <div class="main" style="cursor:pointer">
                     <div @click="publisherDetail(publisher, $event.target)">{{ publisher.name }}</div>
                 </div>
                 <div class="detail" style="display:none; border: 1px solid gray; padding:5px">
-                    <i @click="publisherDetail(publisher, $event.target)" class="fas fa-arrow-left"></i>
+					<i @click="publisherDetail(publisher, $event.target)" class="fas fa-arrow-left"></i>
+					<i @click="removePublisher(count, publisher.name, $event.target)" class="fas fa-trash-alt"></i>
                     <h2 contenteditable="true" class="name">{{ publisher.name }}</h2>
                     <p>
                         <label>Date of Birth: </label>
@@ -280,7 +504,8 @@ document.querySelector('#allPublishers').innerHTML = `<template>
                     <p>
                         <label>Field Service Group: </label>
                         <select class="fieldServiceGroup" :v-model="publisher.fieldServiceGroup">
-                            <option :value="publisher.fieldServiceGroup">{{ publisher.fieldServiceGroup }}</option>
+							<option v-if="!allGroups.includes(publisher.fieldServiceGroup)" value="">Select Group</option>
+                            <option v-if="allGroups.includes(publisher.fieldServiceGroup)" :value="publisher.fieldServiceGroup">{{ publisher.fieldServiceGroup }}</option>
                             <option v-for="group in allGroups.filter(elem=>elem !== publisher.fieldServiceGroup)" :value="group">{{ group }}</option>
                         </select>
                     </p>
@@ -423,7 +648,7 @@ function processAllPublishers() {
                     item.parentNode.parentNode.querySelector('.main').style.display = ''
                     DBWorker.postMessage({ storeName: 'data', action: "save", value: allPublishersVue.publishers});
                 }
-			},            
+			},          
 			cleanDate(date) {
                 const currentDate = new Date(date);
 
@@ -431,12 +656,13 @@ function processAllPublishers() {
 
                 return formattedDate
             },
-            setHope(publisher) {
-                if (publisher.dateOfBaptism == null) {
-                    return 'Unbaptized Publisher'
-                } else {
-                    return 1
-                }
+            removePublisher(count, name, item) {
+                if (confirm('Are you sure you want to delete "' + name + '" records?\nPress "OK" to Delete')) {
+					item.parentNode.parentNode.querySelector('.detail').style.display = 'none'
+					item.parentNode.parentNode.querySelector('.main').style.display = ''
+					this.publishers.splice(count, 1)
+					DBWorker.postMessage({ storeName: 'data', action: "deleteItem", value: name});
+				}
             },
             sumHours(publisher) {
                 var totalHours = 0
@@ -720,6 +946,8 @@ var newPublisherRecord = {
         "phoneNumber": null
     }
 }
+
+configurationVue.publisher = newPublisherRecord
 
 function getUniqueElementsByProperty(arr, propNames) {
     const uniqueSet = new Set();

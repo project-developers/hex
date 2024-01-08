@@ -1,5 +1,5 @@
-var navigationVue, allPublishersVue, congregationVue, configurationVue, fieldServiceGroupsVue;
-var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}, {"title": "Configuration", "function": "configurationVue"}]
+var navigationVue, allPublishersVue, congregationVue, configurationVue, fieldServiceGroupsVue, monthlyReportVue;
+var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Configuration", "function": "configurationVue"}]
 //var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 
 function createWorker(script, fn) {
@@ -29,11 +29,11 @@ DBWorker.onmessage = async function (msg) {
                 if (msgData.value.length == 0) {
                     configurationVue.display = true
                     configured = false
-                    navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}]
+                    navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}]
                 } else {
                     congregationVue.display = true
                     configured = true
-                    navigationVue.buttons = [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "congregationVue"}, {"title": "Configuration", "function": "configurationVue"}]
+                    navigationVue.buttons = [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Configuration", "function": "configurationVue"}]
                     configurationVue.configuration = msgData.value[0]
                     navigationVue.allGroups = msgData.value[0].fieldServiceGroups
                     DBWorker.postMessage({ storeName: 'data', action: "readAll"});
@@ -141,6 +141,7 @@ function gotoView(button) {
 	allPublishersVue.display = false
 	fieldServiceGroupsVue.display = false
     configurationVue.display = false
+	monthlyReportVue.display = false
 	if (button == "congregationVue" || button == "configurationVue") {
 		navigationVue.display = false
 	} else {
@@ -634,7 +635,7 @@ function processAllPublishers() {
                         //console.log(currentItem.querySelector('.hours'))
                     })
 
-                    console.log(publisher)
+                    //console.log(publisher)
                     
                     item.parentNode.parentNode.querySelector('.detail').style.display = 'none'
                     item.parentNode.parentNode.querySelector('.main').style.display = ''
@@ -676,12 +677,30 @@ async function shortWait(){
 
 document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 	<div v-if="display == true" style="display:flex">
-		<div>
-			<div v-for="(group) in allGroups" :key="group" v-if="selectedGroup == group || selectedGroup == 'All Field Service Groups'" class="grid-item">
-				<h2 v-if="groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0" class="main card-title" style="cursor:pointer">{{ group }} ({{ groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length }})</h2>
-				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)" @click="publisherDetail(publisher)">{{ publisher.name }}</div>
+		<div style="display:flex">
+			<div style="padding:5px" v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0)">
+				<table>
+					<thead>
+						<tr>
+							<th>S/No.</th>
+							<th>{{ group }}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)">
+							<td>{{ count + 1 }}</td>
+							<td>{{ publisher.name }}</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
+		<!--div>
+			<div v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0)" class="grid-item">
+				<h2 v-if="groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0" class="main card-title" style="cursor:pointer">{{ group }}</h2>
+				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)" @click="publisherDetail(publisher)">{{ publisher.name }}</div>
+			</div>
+		</div-->
 		<div v-if="selectedPublisher.name">
             <p><input type="text" :value="selectedPublisher.name"></p>
             <p>Date of Birth: <input type="text" :value="selectedPublisher.dateOfBirth">
@@ -697,6 +716,7 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
             <div>Ministry</div>
 			<iframe v-if="pdfFile !== ''" :src="pdfFile" width="800" height="700" style="border: none;"></iframe>
 		</div>
+		
     </div>
 </template>`
 
@@ -736,10 +756,174 @@ function processFieldServiceGroups() {
     })
 }
 
+
+document.querySelector('#monthlyReport').innerHTML = `<template>
+	<div v-if="display == true">
+		<section>
+			<div>
+                <table>
+					<thead>
+						<tr>
+							<th>Publisher</th>
+							<th>Shared in Ministry</th>
+							<th>Bible Studies</th>
+							<th>Auxiliary Pioneer</th>
+							<th>Hours (If pioneer or ﬁeld missionary)</th>
+							<th>Remarks</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+							<td>{{ publisher.name }}</td>
+							<td><input class="sharedInMinistry" type="checkbox" :checked="publisher.report.currentServiceYear[month].sharedInMinistry !== null"></td>
+							<td class="bibleStudies" contenteditable="true">{{ publisher.report.currentServiceYear[month].bibleStudies }}</td>
+							<td><input class="auxiliaryPioneer" type="checkbox" :checked="publisher.report.currentServiceYear[month].auxiliaryPioneer !== null"></td>
+							<td class="hours" contenteditable="true">{{ publisher.report.currentServiceYear[month].hours }}</td>
+							<td class="remarks" contenteditable="true">{{ publisher.report.currentServiceYear[month].remarks }}</td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+		</section>
+    </div>
+</template>`
+
+function processMonthlyReport() {
+
+    monthlyReportVue = new Vue({
+        el: document.querySelector('#monthlyReport'),
+        data: {
+            //publishers: [],
+            display: false,
+            hopes: ['Anointed', 'Other Sheep', 'Unbaptized Publisher'],
+            privileges: ['Elder', 'Ministerial Servant', 'Regular Pioneer', 'Special Pioneer', 'Field Missionary'],
+            months: [{"abbr": "sept", "fullName": "September"}, {"abbr": "oct", "fullName": "October"}, {"abbr": "nov", "fullName": "November"}, {"abbr": "dec", "fullName": "December"}, {"abbr": "jan", "fullName": "January"}, {"abbr": "feb", "fullName": "February"}, {"abbr": "mar", "fullName": "March"}, {"abbr": "apr", "fullName": "April"}, {"abbr": "may", "fullName": "May"}, {"abbr": "jun", "fullName": "June"}, {"abbr": "jul", "fullName": "July"}, {"abbr": "aug", "fullName": "August"} ],
+        },
+        computed: {
+            allCharacters() {/*
+                return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
+            },
+            publishers() {
+                return allPublishersVue.publishers
+            },
+            searchTerms() {
+                return navigationVue.searchTerms
+            },
+			selectedGroup() {
+                return navigationVue.fieldServiceGroup
+            },
+			allGroups() {
+                return navigationVue.allGroups
+            },
+			month() {
+                return this.months[0].abbr
+            },
+        },
+        methods: {
+			publisherDetail(publisher, item) {
+                if (item.parentNode.className == 'main') {
+                    item.parentNode.parentNode.querySelector('.main').style.display = 'none'
+                    item.parentNode.parentNode.querySelector('.detail').style.display = ''
+                } else {
+                    publisher.name = item.parentNode.querySelector('.name').innerHTML
+                    if (item.parentNode.querySelector('.dateOfBirth').value) {
+                        publisher.dateOfBirth = item.parentNode.querySelector('.dateOfBirth').value
+                    }
+                    if (item.parentNode.querySelector('.dateOfBaptism')) {
+                        publisher.dateOfBaptism = item.parentNode.querySelector('.dateOfBaptism').value
+                    }
+                    publisher.gender = item.parentNode.querySelector('.gender').value
+                    publisher.hope = item.parentNode.querySelector('.hope').value
+                    publisher.fieldServiceGroup = item.parentNode.querySelector('.fieldServiceGroup').value
+                    
+                    var allPrivileges = []
+
+                    item.parentNode.parentNode.querySelectorAll('.privileges').forEach(elem=>{
+                        if (elem.checked) {
+                            allPrivileges.push(elem.name)
+                        }
+                    })
+
+                    allPrivileges.sort()
+
+                    publisher.privilege = allPrivileges
+
+                    publisher.contactInformation.address = item.parentNode.querySelector('.contactAddress').innerHTML
+                    publisher.contactInformation.phoneNumber = item.parentNode.querySelector('.contactPhoneNumber').innerHTML
+                    publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactAddress').innerHTML
+                    publisher.emergencyContactInformation.phoneNumber = item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML
+                    this.months.forEach(elem=>{
+                        const currentItem = item.parentNode.querySelector(`.${elem.abbr}`)
+                        if (currentItem.querySelector('.hours').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].hours = Number(currentItem.querySelector('.hours').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].hours = null
+                        }
+                        if (currentItem.querySelector('.bibleStudies').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].bibleStudies = Number(currentItem.querySelector('.bibleStudies').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].bibleStudies = null
+                        }
+                        if (currentItem.querySelector('.remarks').innerHTML !== '') {
+                            publisher.report.currentServiceYear[elem.abbr].remarks = Number(currentItem.querySelector('.remarks').innerHTML)
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].remarks = null
+                        }
+                        if (currentItem.querySelector('.sharedInMinistry').checked) {
+                            publisher.report.currentServiceYear[elem.abbr].sharedInMinistry = currentItem.querySelector('.sharedInMinistry').checked
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].sharedInMinistry = null
+                        }
+                        if (currentItem.querySelector('.auxiliaryPioneer').checked) {
+                            publisher.report.currentServiceYear[elem.abbr].auxiliaryPioneer = currentItem.querySelector('.auxiliaryPioneer').checked
+                        } else {
+                            publisher.report.currentServiceYear[elem.abbr].auxiliaryPioneer = null
+                        }
+                        //console.log(currentItem.querySelector('.sharedInMinistry').checked)
+                        //console.log(currentItem.querySelector('.hours'))
+                    })
+
+                    //console.log(publisher)
+                    
+                    item.parentNode.parentNode.querySelector('.detail').style.display = 'none'
+                    item.parentNode.parentNode.querySelector('.main').style.display = ''
+                    DBWorker.postMessage({ storeName: 'data', action: "save", value: allPublishersVue.publishers});
+                }
+			},          
+			cleanDate(date) {
+                const currentDate = new Date(date);
+
+                const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+
+                return formattedDate
+            },
+            removePublisher(count, name, item) {
+                if (confirm('Are you sure you want to delete "' + name + '" records?\nPress "OK" to Delete')) {
+					item.parentNode.parentNode.querySelector('.detail').style.display = 'none'
+					item.parentNode.parentNode.querySelector('.main').style.display = ''
+					this.publishers.splice(count, 1)
+					DBWorker.postMessage({ storeName: 'data', action: "deleteItem", value: name});
+				}
+            },
+            sumHours(publisher) {
+                var totalHours = 0
+                this.months.forEach(elem=>{
+                    const value = publisher.report.currentServiceYear[elem.abbr].hours
+                    if (value !== null) {
+                        totalHours = totalHours + value
+                    }
+                })
+                return totalHours
+            }
+        }
+    })
+}
+
 processAllPublishers()
 processCongregation()
 processConfiguration()
 processFieldServiceGroups()
+processMonthlyReport()
 
 var newPublisherRecord = {
     "name": null,

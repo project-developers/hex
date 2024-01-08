@@ -57,14 +57,7 @@ DBWorker.onmessage = async function (msg) {
             break;
         case "savings":
             {
-                if (importing > 0) {
-					importing--
-					if (importing == 0) {
-						location.reload()
-					}
-				}
-				//console.log(msgData)
-
+                
             }
             break;
         case "done":
@@ -275,12 +268,10 @@ document.querySelector('#configuration').innerHTML = `<template>
 		<p>
             <button @click="exportData()">Export Data</button>
             <button @click="importData()">Import Data</button>
-            <input type="file" id="dataFile">
+            <input type="file" id="dataFile" accept=".cgr">
         </p>
 	</div>
 </template>`
-
-var importing = 0
 
 function processConfiguration() {
 
@@ -311,20 +302,21 @@ function processConfiguration() {
 				var file = new Blob([JSON.stringify({"configuration":configurationVue.configuration, "data":allPublishersVue.publishers})], {type: 'text/plain'});
 				a.href = URL.createObjectURL(file);
 				
-				a.download = 'congData';
+				a.download = 'congData.cgr';
 				a.click();
             },
             importData() {
-                console.log(document.querySelector('#dataFile').files[0])
-				var reader = new FileReader();
+                var reader = new FileReader();
 
 				// When the FileReader has loaded the file...
 				reader.onload = function() {
 					var result = JSON.parse(this.result)
+					configurationVue.configuration = result.configuration
+					navigationVue.allGroups = result.configuration.fieldServiceGroups
+					allPublishersVue.publishers = result.data
 					if (configured = true) {
 						DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: configurationVue.configuration.name});
 					}
-					importing = 2
 					DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [result.configuration]});
 					DBWorker.postMessage({ storeName: 'data', action: "save", value: result.data});
                 	configured = true

@@ -57,7 +57,10 @@ DBWorker.onmessage = async function (msg) {
             break;
         case "savings":
             {
-                
+                if (monthlyReportVue.saved !== 0) {
+					//console.log(msgData)
+					monthlyReportVue.saved--
+				}
             }
             break;
         case "done":
@@ -455,7 +458,7 @@ function processConfiguration() {
 
                     console.log(publisher)
                     
-                    DBWorker.postMessage({ storeName: 'data', action: "save", value: allPublishersVue.publishers});
+                    DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
 					this.cancel(item)
                 }
 			},
@@ -639,7 +642,7 @@ function processAllPublishers() {
                     
                     item.parentNode.parentNode.querySelector('.detail').style.display = 'none'
                     item.parentNode.parentNode.querySelector('.main').style.display = ''
-                    DBWorker.postMessage({ storeName: 'data', action: "save", value: allPublishersVue.publishers});
+                    DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
                 }
 			},          
 			cleanDate(date) {
@@ -760,6 +763,7 @@ function processFieldServiceGroups() {
 document.querySelector('#monthlyReport').innerHTML = `<template>
 	<div v-if="display == true">
 		<section>
+		<h2>{{ month.fullName }} {{ year }} <span v-if="saved !== 0">[Saving record. Please wait . . .]</span></h2>
 			<div>
                 <table>
 					<thead>
@@ -775,11 +779,11 @@ document.querySelector('#monthlyReport').innerHTML = `<template>
 					<tbody>
 						<tr v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
 							<td>{{ publisher.name }}</td>
-							<td><input class="sharedInMinistry" type="checkbox" :checked="publisher.report.currentServiceYear[month].sharedInMinistry !== null"></td>
-							<td class="bibleStudies" contenteditable="true">{{ publisher.report.currentServiceYear[month].bibleStudies }}</td>
-							<td><input class="auxiliaryPioneer" type="checkbox" :checked="publisher.report.currentServiceYear[month].auxiliaryPioneer !== null"></td>
-							<td class="hours" contenteditable="true">{{ publisher.report.currentServiceYear[month].hours }}</td>
-							<td class="remarks" contenteditable="true">{{ publisher.report.currentServiceYear[month].remarks }}</td>
+							<td><input class="sharedInMinistry" type="checkbox" :checked = "publisher.report.currentServiceYear[month.abbr].sharedInMinistry !== null" @change="handleCheckboxChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
+							<td><input class="bibleStudies" type="number" :value="publisher.report.currentServiceYear[month.abbr].bibleStudies" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
+							<td><input class="auxiliaryPioneer" type="checkbox" :checked = "publisher.report.currentServiceYear[month.abbr].auxiliaryPioneer !== null" @change="handleCheckboxChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
+							<td><input class="hours" type="number" :value="publisher.report.currentServiceYear[month.abbr].hours" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
+							<td><input class="remarks" type="text" :value="publisher.report.currentServiceYear[month.abbr].remarks" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -793,7 +797,7 @@ function processMonthlyReport() {
     monthlyReportVue = new Vue({
         el: document.querySelector('#monthlyReport'),
         data: {
-            //publishers: [],
+            saved: 0,
             display: false,
             hopes: ['Anointed', 'Other Sheep', 'Unbaptized Publisher'],
             privileges: ['Elder', 'Ministerial Servant', 'Regular Pioneer', 'Special Pioneer', 'Field Missionary'],
@@ -816,7 +820,17 @@ function processMonthlyReport() {
                 return navigationVue.allGroups
             },
 			month() {
-                return this.months[0].abbr
+				return monthlyReportVue.months.slice(3).concat(monthlyReportVue.months.slice(0,3))[new Date().getMonth()]
+                ///return this.months[0].abbr
+            },
+			year() {
+				if (new Date().getMonth() == 0) {
+					return new Date().getFullYear() - 1
+				} else {
+					return new Date().getFullYear()
+				}
+				return monthlyReportVue.months.slice(3).concat(monthlyReportVue.months.slice(0,3))[new Date().getMonth()]
+                ///return this.months[0].abbr
             },
         },
         methods: {
@@ -887,7 +901,7 @@ function processMonthlyReport() {
                     
                     item.parentNode.parentNode.querySelector('.detail').style.display = 'none'
                     item.parentNode.parentNode.querySelector('.main').style.display = ''
-                    DBWorker.postMessage({ storeName: 'data', action: "save", value: allPublishersVue.publishers});
+                    DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
                 }
 			},          
 			cleanDate(date) {
@@ -905,6 +919,34 @@ function processMonthlyReport() {
 					DBWorker.postMessage({ storeName: 'data', action: "deleteItem", value: name});
 				}
             },
+			handleCheckboxChange(record, event, publisher) {
+				this.saved++
+				if (event.checked) {
+					record[`${event.className}`] = true
+				} else {
+					record[`${event.className}`] = null
+				}
+				DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
+				//console.log(publisher, event, event.checked, publisher[`${event.className}`])
+			},
+			handleInputChange(record, event, publisher) {
+				//console.log(publisher, event, event.value, record[`${event.className}`])
+				
+				this.saved++
+				if (event.value !== '') {
+					//event.innerHTML = ''
+					if (event.className !== 'remarks') {
+						record[`${event.className}`] = Number(event.value)
+					} else {
+						record[`${event.className}`] = event.value
+					}
+				} else {
+					record[`${event.className}`] = null
+				}
+				//console.log(record, publisher)
+				DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
+				//console.log(publisher, event, event.checked, publisher[`${event.className}`])
+			},
             sumHours(publisher) {
                 var totalHours = 0
                 this.months.forEach(elem=>{

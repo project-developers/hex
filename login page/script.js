@@ -1,5 +1,5 @@
-var navigationVue, allPublishersVue, congregationVue, configurationVue, fieldServiceGroupsVue, monthlyReportVue;
-var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Configuration", "function": "configurationVue"}]
+var navigationVue, allPublishersVue, congregationVue, configurationVue, fieldServiceGroupsVue, monthlyReportVue, missingReportVue;
+var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Configuration", "function": "configurationVue"}]
 //var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 
 function createWorker(script, fn) {
@@ -19,30 +19,55 @@ DBWorker.postMessage({ dbName: 'congRec', action: "init"});
 
 var configured
 
+var currentMonth = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}`;
+
+
 DBWorker.onmessage = async function (msg) {
     var msgData = msg.data;
     //console.log(msgData)
     switch (msgData.name) {
         case "configuration":
             {
-                //console.log(msgData.value)
-                if (msgData.value.length == 0) {
+                console.log(msgData.value)
+                if (msgData.value.filter(elem=>elem.name == "Congregation").length == 0) {
                     configurationVue.display = true
                     configured = false
-                    navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}]
-                } else {
+                    navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}]
+                }
+				if (msgData.value.filter(elem=>elem.name == "Congregation").length !== 0) {
                     congregationVue.display = true
                     configured = true
-                    navigationVue.buttons = [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Configuration", "function": "configurationVue"}]
+                    navigationVue.buttons = [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Configuration", "function": "configurationVue"}]
                     configurationVue.configuration = msgData.value[0]
                     navigationVue.allGroups = msgData.value[0].fieldServiceGroups
                     DBWorker.postMessage({ storeName: 'data', action: "readAll"});
-                }       
+                    DBWorker.postMessage({ storeName: 'attendance', action: "readAll"});
+                }/*
+				if (msgData.value.filter(elem=>elem.name == "Late Reports").length !== 0) {
+                    
+                    //navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}]
+                }*/
             }
             break;
         case "data":
             {
                 allPublishersVue.publishers = msgData.value
+				/*
+				var publisherRecords = []
+				allPublishersVue.publishers.forEach(publisher=>{
+					monthlyReportVue.months.slice(0, monthlyReportVue.months.findIndex(elem=>elem.abbr == monthlyReportVue.month.abbr)).forEach(elem=>{
+						if (publisher.report.currentServiceYear[`${elem.abbr}`].sharedInMinistry == null) {
+							publisherRecords.push({'publisher': publisher, 'name': publisher.name, 'month': elem, 'fieldServiceGroup': publisher.fieldServiceGroup, 'contactInformation': publisher.contactInformation, 'dateOfBirth': publisher.dateOfBirth, 'report':publisher.report.currentServiceYear[`${elem.abbr}`]})
+						}
+					})
+				})
+
+				const currentDate = new Date();
+                const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`;
+
+				DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [{"name": "Late Reports", "month": formattedDate, "value": publisherRecords}]});
+				
+				console.log(publisherRecords)*/
             }
             break;
         case "ready":
@@ -50,9 +75,49 @@ DBWorker.onmessage = async function (msg) {
                 
             }
             break;
-        case "productionMonitor":
+        case "attendance":
             {
-                
+                if (msgData.value.filter(elem=>elem.name == "Monthly").length !== 0 && msgData.value.filter(elem=>elem.name == "Monthly")[0].month == currentMonth) {
+					console.log(msgData.value)
+					attendanceVue.currentMonth = msgData.value.filter(elem=>elem.name == "Monthly")[0]
+				} else {
+					attendanceVue.currentMonth = {
+						"name": "Monthly",
+						"month": currentMonth,
+						"meetings": [
+							{
+								"name": "Midweek",
+								"attendance": [
+									{ "name": "1stWeek", "count": null },
+									{ "name": "2ndWeek", "count": null },
+									{ "name": "3rdWeek", "count": null },
+									{ "name": "4thWeek", "count": null },
+									{ "name": "5thWeek", "count": null }
+								]
+							},
+							{
+								"name": "Weekend",
+								"attendance": [
+									{ "name": "1stWeek", "count": null },
+									{ "name": "2ndWeek", "count": null },
+									{ "name": "3rdWeek", "count": null },
+									{ "name": "4thWeek", "count": null },
+									{ "name": "5thWeek", "count": null }
+								]
+							}
+						]
+					}
+					DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [attendanceVue.currentMonth]});
+				}
+
+				if (msgData.value.filter(elem=>elem.name == "Meeting Attendance Record").length !== 0) {
+					console.log(msgData.value)
+					attendanceVue.meetingAttendanceRecord = msgData.value.filter(elem=>elem.name == "Meeting Attendance Record")[0]
+				} else {
+					attendanceVue.meetingAttendanceRecord = meetingAttendanceRecord
+					DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [attendanceVue.meetingAttendanceRecord]});
+				}
+				
             }
             break;
         case "savings":
@@ -60,6 +125,10 @@ DBWorker.onmessage = async function (msg) {
                 if (monthlyReportVue.saved !== 0) {
 					//console.log(msgData)
 					monthlyReportVue.saved--
+				}
+				if (missingReportVue.saved !== 0) {
+					//console.log(msgData)
+					missingReportVue.saved--
 				}
             }
             break;
@@ -145,6 +214,8 @@ function gotoView(button) {
 	fieldServiceGroupsVue.display = false
     configurationVue.display = false
 	monthlyReportVue.display = false
+	missingReportVue.display = false
+	attendanceVue.display = false
 	if (button == "congregationVue" || button == "configurationVue") {
 		navigationVue.display = false
 	} else {
@@ -155,7 +226,7 @@ function gotoView(button) {
 
 document.querySelector('#congregation').innerHTML = `<template>
     <div v-if="display == true">
-		<h1>{{ congregation.name }}</h1>
+		<h1>{{ congregation.congregationName }}</h1>
 		<h2>{{ congregation.address }}</h2>
 		<!--h3>{{ congregation.email }}</h3>
 		<h3>{{ publishersCount }} {{ publishersCount <= 1 ? 'Publisher' : 'Publishers' }}</h3-->
@@ -186,7 +257,7 @@ function processCongregation() {
 
 document.querySelector('#configuration').innerHTML = `<template>
     <div v-if="display == true">
-		<h1 contenteditable="true" class="name">{{ configuration.name }}</h1>
+		<h1 contenteditable="true" class="name">{{ configuration.congregationName }}</h1>
 		<h2 contenteditable="true" class="address">{{ configuration.address }}</h2>
 		<h2 contenteditable="true" class="email">{{ configuration.email }}</h2>
 		<h3 v-for="group in configuration.fieldServiceGroups" :key="group" contenteditable="true" class="fieldServiceGroups">{{ group }}</h3>
@@ -272,7 +343,7 @@ document.querySelector('#configuration').innerHTML = `<template>
 		<p>
             <button @click="exportData()">Export Data</button>
             <button @click="importData()">Import Data</button>
-            <input type="file" id="dataFile" accept=".cgr">
+            <input type="file" id="dataFile" accept=".txt">
         </p>
 	</div>
 </template>`
@@ -282,7 +353,7 @@ function processConfiguration() {
     configurationVue = new Vue({
         el: document.querySelector('#configuration'),
         data: {
-            configuration: {"name": "Congregation Name", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]},
+            configuration: {"congregationName": "Congregation Name", "name": "Congregation", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]},
             display: false,
 			publisher: {},
 			hopes: ['Unbaptized Publisher', 'Other Sheep', 'Anointed'],
@@ -306,7 +377,7 @@ function processConfiguration() {
 				var file = new Blob([JSON.stringify({"configuration":configurationVue.configuration, "data":allPublishersVue.publishers})], {type: 'text/plain'});
 				a.href = URL.createObjectURL(file);
 				
-				a.download = 'congData.cgr';
+				a.download = 'congData.txt';
 				a.click();
             },
             importData() {
@@ -318,9 +389,9 @@ function processConfiguration() {
 					configurationVue.configuration = result.configuration
 					navigationVue.allGroups = result.configuration.fieldServiceGroups
 					allPublishersVue.publishers = result.data
-					if (configured = true) {
+					/*if (configured = true) {
 						DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: configurationVue.configuration.name});
-					}
+					}*/
 					DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [result.configuration]});
 					DBWorker.postMessage({ storeName: 'data', action: "save", value: result.data});
                 	configured = true
@@ -330,9 +401,9 @@ function processConfiguration() {
 				reader.readAsText(document.querySelector('#dataFile').files[0]);
             },
 			saveConfiguration(element) {
-                if (configured = true) {
+                /*if (configured = true) {
                     DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: this.configuration.name});
-                }
+                }*/
                 
                 var allGroups = []
                 element.parentNode.querySelectorAll('.fieldServiceGroups').forEach(elem=>{
@@ -341,7 +412,7 @@ function processConfiguration() {
 
                 allGroups.sort()
 
-                this.configuration = {"name": element.parentNode.querySelector('.name').innerHTML, "address": element.parentNode.querySelector('.address').innerHTML, "email": element.parentNode.querySelector('.email').innerHTML, "fieldServiceGroups": allGroups}
+                this.configuration = {"name": "Congregation", "congregationName": element.parentNode.querySelector('.name').innerHTML, "address": element.parentNode.querySelector('.address').innerHTML, "email": element.parentNode.querySelector('.email').innerHTML, "fieldServiceGroups": allGroups}
                 DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [this.configuration]});
                 configured = true
             },
@@ -349,7 +420,7 @@ function processConfiguration() {
                 if (configured = true) {
                     DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: this.configuration.name});
                 }
-                this.configuration = {"name": "Congregation Name", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]}
+                this.configuration = {"name": "Congregation", "congregationName": "Congregation Name", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]}
                 DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [this.configuration]});
                 configured = true
             },
@@ -462,6 +533,9 @@ function processConfiguration() {
 					this.cancel(item)
                 }
 			},
+			saveFile() {
+				DBWorker.postMessage({ storeName: 'files', action: "save", value: [document.getElementById('pdfFile').files[0]]});
+			}
         }
     })
 }
@@ -580,6 +654,13 @@ function processAllPublishers() {
                     item.parentNode.parentNode.querySelector('.main').style.display = 'none'
                     item.parentNode.parentNode.querySelector('.detail').style.display = ''
                 } else {
+					if (item.parentNode.querySelector('.name').innerHTML.trim() == '' || item.parentNode.querySelector('.name').innerHTML.trim().replaceAll('&nbsp;','').replaceAll('nbsp;','').replaceAll('&amp;','').replaceAll(' ','') == '') {
+						alert("Please enter Publisher Name")
+						return
+					}
+					if (publisher.name !== item.parentNode.querySelector('.name').innerHTML) {
+						DBWorker.postMessage({ storeName: 'data', action: "deleteItem", value: publisher.name});
+					}
                     publisher.name = item.parentNode.querySelector('.name').innerHTML
                     if (item.parentNode.querySelector('.dateOfBirth').value) {
                         publisher.dateOfBirth = item.parentNode.querySelector('.dateOfBirth').value
@@ -762,13 +843,14 @@ function processFieldServiceGroups() {
 
 document.querySelector('#monthlyReport').innerHTML = `<template>
 	<div v-if="display == true">
-		<section>
+		<h1>Monthly Report</h1>
+		<section style="padding:10px; margin:5px; border: 1px solid gray">
 		<h2>{{ month.fullName }} {{ year }} <span v-if="saved !== 0">[Saving record. Please wait . . .]</span></h2>
 			<div>
                 <table>
 					<thead>
 						<tr>
-							<th>Publisher</th>
+							<th>Name</th>
 							<th>Shared in Ministry</th>
 							<th>Bible Studies</th>
 							<th>Auxiliary Pioneer</th>
@@ -780,10 +862,39 @@ document.querySelector('#monthlyReport').innerHTML = `<template>
 						<tr v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
 							<td>{{ publisher.name }}</td>
 							<td><input class="sharedInMinistry" type="checkbox" :checked = "publisher.report.currentServiceYear[month.abbr].sharedInMinistry !== null" @change="handleCheckboxChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
-							<td><input class="bibleStudies" type="number" :value="publisher.report.currentServiceYear[month.abbr].bibleStudies" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
+							<td><input class="bibleStudies" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.currentServiceYear[month.abbr].bibleStudies" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
 							<td><input class="auxiliaryPioneer" type="checkbox" :checked = "publisher.report.currentServiceYear[month.abbr].auxiliaryPioneer !== null" @change="handleCheckboxChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
-							<td><input class="hours" type="number" :value="publisher.report.currentServiceYear[month.abbr].hours" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
-							<td><input class="remarks" type="text" :value="publisher.report.currentServiceYear[month.abbr].remarks" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
+							<td><input class="hours" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.currentServiceYear[month.abbr].hours" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
+							<td><input class="remarks" type="text" style="width: 200px" :value="publisher.report.currentServiceYear[month.abbr].remarks" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+		</section>
+		<section style="padding:10px; margin:5px; border: 1px solid gray">
+		<h2>Late Reports</span></h2>
+			<div>
+                <table>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Month</th>
+							<th>Shared in Ministry</th>
+							<th>Bible Studies</th>
+							<th>Auxiliary Pioneer</th>
+							<th>Hours (If pioneer or ﬁeld missionary)</th>
+							<th>Remarks</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(publisher, count) in lateReports" :key="count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+							<td>{{ publisher.name }}</td>
+							<td>{{ publisher.month.fullName }}</td>
+							<td><input class="sharedInMinistry" type="checkbox" :checked = "publisher.report.sharedInMinistry !== null" @change="handleCheckboxChange2($event.target, publisher.publisher, publisher.month)"></td>
+							<td><input class="bibleStudies" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.bibleStudies" @change="handleInputChange2($event.target, publisher.publisher, publisher.month)"></td>
+							<td><input class="auxiliaryPioneer" type="checkbox" :checked = "publisher.report.auxiliaryPioneer !== null" @change="handleCheckboxChange2($event.target, publisher.publisher, publisher.month)"></td>
+							<td><input class="hours" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.hours" @change="handleInputChange2($event.target, publisher.publisher, publisher.month)"></td>
+							<td><input class="remarks" type="text" style="width: 200px" :value="publisher.report.remarks" @change="handleInputChange2($event.target, publisher.publisher, publisher.month)"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -809,6 +920,19 @@ function processMonthlyReport() {
             },
             publishers() {
                 return allPublishersVue.publishers
+            },
+			lateReports() {
+				var publisherRecords = []
+				allPublishersVue.publishers.forEach(publisher=>{
+					monthlyReportVue.months.slice(0, monthlyReportVue.months.findIndex(elem=>elem.abbr == monthlyReportVue.month.abbr)).forEach(elem=>{
+						if (publisher.report.currentServiceYear[`${elem.abbr}`].created == null || publisher.report.currentServiceYear[`${elem.abbr}`].created.split('-').slice(0, 2).join('-') == this.cleanDate(new Date()).split('-').slice(0, 2).join('-')) {
+							publisherRecords.push({'publisher': publisher, 'name': publisher.name, 'month': elem, 'fieldServiceGroup': publisher.fieldServiceGroup, 'contactInformation': publisher.contactInformation, 'dateOfBirth': publisher.dateOfBirth, 'report':publisher.report.currentServiceYear[`${elem.abbr}`]})
+						}
+					})
+				})
+				
+				return publisherRecords
+                //return allPublishersVue.publishers
             },
             searchTerms() {
                 return navigationVue.searchTerms
@@ -921,6 +1045,12 @@ function processMonthlyReport() {
             },
 			handleCheckboxChange(record, event, publisher) {
 				this.saved++
+				if (!record.created) {
+					record.created = this.cleanDate(new Date())
+					record.modified = this.cleanDate(new Date())
+				} else {
+					record.modified = this.cleanDate(new Date())
+				}
 				if (event.checked) {
 					record[`${event.className}`] = true
 				} else {
@@ -930,18 +1060,67 @@ function processMonthlyReport() {
 				//console.log(publisher, event, event.checked, publisher[`${event.className}`])
 			},
 			handleInputChange(record, event, publisher) {
-				//console.log(publisher, event, event.value, record[`${event.className}`])
-				
 				this.saved++
+				if (!record.created) {
+					record.created = this.cleanDate(new Date())
+					record.modified = this.cleanDate(new Date())
+				} else {
+					record.modified = this.cleanDate(new Date())
+				}
+				//console.log(event.value)
 				if (event.value !== '') {
 					//event.innerHTML = ''
 					if (event.className !== 'remarks') {
-						record[`${event.className}`] = Number(event.value)
+						event.value == '0' ? record[`${event.className}`] = null : record[`${event.className}`] = Number(event.value)
 					} else {
 						record[`${event.className}`] = event.value
 					}
 				} else {
 					record[`${event.className}`] = null
+				}
+				//console.log(record, publisher)
+				DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
+				//console.log(publisher, event, event.checked, publisher[`${event.className}`])
+			},
+			handleCheckboxChange2(event, publisher, month) {
+				this.saved++
+				if (!publisher.report.currentServiceYear[`${month.abbr}`].created) {
+					publisher.report.currentServiceYear[`${month.abbr}`].created = this.cleanDate(new Date())
+					publisher.report.currentServiceYear[`${month.abbr}`].modified = this.cleanDate(new Date())
+				} else {
+					publisher.report.currentServiceYear[`${month.abbr}`].modified = this.cleanDate(new Date())
+				}
+				if (event.checked) {
+					if (!publisher.report.currentServiceYear[`${month.abbr}`].created) {
+						publisher.report.currentServiceYear[`${month.abbr}`].created = this.cleanDate(new Date())
+						publisher.report.currentServiceYear[`${month.abbr}`].modified = this.cleanDate(new Date())
+					} else {
+						publisher.report.currentServiceYear[`${month.abbr}`].modified = this.cleanDate(new Date())
+					}
+					publisher.report.currentServiceYear[`${month.abbr}`][`${event.className}`] = true
+				} else {
+					publisher.report.currentServiceYear[`${month.abbr}`][`${event.className}`] = null
+				}
+				DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
+				//console.log(publisher, event, event.checked, publisher[`${event.className}`])
+			},
+			handleInputChange2(event, publisher, month) {
+				this.saved++
+				if (!publisher.report.currentServiceYear[`${month.abbr}`].created) {
+					publisher.report.currentServiceYear[`${month.abbr}`].created = this.cleanDate(new Date())
+					publisher.report.currentServiceYear[`${month.abbr}`].modified = this.cleanDate(new Date())
+				} else {
+					publisher.report.currentServiceYear[`${month.abbr}`].modified = this.cleanDate(new Date())
+				}
+				if (event.value !== '') {
+					//event.innerHTML = ''
+					if (event.className !== 'remarks') {
+						event.value == '0' ? publisher.report.currentServiceYear[`${month.abbr}`][`${event.className}`] = null : publisher.report.currentServiceYear[`${month.abbr}`][`${event.className}`] = Number(event.value)
+					} else {
+						publisher.report.currentServiceYear[`${month.abbr}`][`${event.className}`] = event.value
+					}
+				} else {
+					publisher.report.currentServiceYear[`${month.abbr}`][`${event.className}`] = null
 				}
 				//console.log(record, publisher)
 				DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
@@ -961,11 +1140,528 @@ function processMonthlyReport() {
     })
 }
 
+document.querySelector('#missingReport').innerHTML = `<template>
+	<div v-if="display == true" style="display:block">
+		<h1>Missing Reports</h1>
+		<div style="display:flex; flex-wrap:wrap">
+			<div style="padding:10px; margin:5px; border: 1px solid gray" v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) && missingRecord(elem).length !== 0).length !== 0)">
+				<h2>{{ group }}</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>S/No.</th>
+							<th>Name</th>
+							<th>Months</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="missingRecord(publisher) !== '' && publisher.fieldServiceGroup == group && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+							<td>{{ count + 1 }}</td>
+							<td>{{ publisher.name }}</td>
+							<td>{{ missingRecord(publisher) }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!--div>
+			<div v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0)" class="grid-item">
+				<h2 v-if="groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0" class="main card-title" style="cursor:pointer">{{ group }}</h2>
+				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)" @click="publisherDetail(publisher)">{{ publisher.name }}</div>
+			</div>
+		</div-->
+		<div v-if="selectedPublisher.name">
+            <p><input type="text" :value="selectedPublisher.name"></p>
+            <p>Date of Birth: <input type="text" :value="selectedPublisher.dateOfBirth">
+                <span><input type="checkbox">Male<span><input type="checkbox">Female</span>
+            </p>
+            <p>Date of Baptism: <input type="text" :value="selectedPublisher.dateOfBaptism">
+                <span><input type="checkbox">Other Sheep<span><input type="checkbox">Anointed</span>
+            </p>
+            <p>
+                <span><input type="checkbox">Elder<span><input type="checkbox">Ministerial Servant<span><input type="checkbox">Regular Pioneer<span><input type="checkbox">Special Pioneer<span><input type="checkbox">Field Missionary</span>
+            </p>
+            <div>Contact Information</div>
+            <div>Ministry</div>
+			<iframe v-if="pdfFile !== ''" :src="pdfFile" width="800" height="700" style="border: none;"></iframe>
+		</div>
+		
+    </div>
+</template>`
+
+function processMissingReport() {
+
+    missingReportVue = new Vue({
+        el: document.querySelector('#missingReport'),
+        data: {
+            //processedGroups: [],
+            display: false,
+            pdfFile: "",
+			selectedPublisher: {},
+        },
+        computed: {
+            publishers() {
+                return allPublishersVue.publishers
+            },
+			searchTerms() {
+                return navigationVue.searchTerms
+            },
+			allGroups() {
+                return navigationVue.allGroups
+            },
+			selectedGroup() {
+                return navigationVue.fieldServiceGroup
+            },
+        },
+        methods: {
+			groupPublishers(group) {
+                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group)
+            },
+			publisherDetail(publisher) {
+				this.selectedPublisher = publisher
+                //fillPublisherRecord(publisher)
+			},
+            updateRecord(publisher) {
+				updatePublisherRecord(publisher)
+			},
+            missingRecord(publisher) {
+				var publisherRecords = ''
+				monthlyReportVue.months.slice(0, monthlyReportVue.months.findIndex(elem=>elem.abbr == monthlyReportVue.month.abbr) + 1).forEach(elem=>{
+					if (publisher.report.currentServiceYear[`${elem.abbr}`].sharedInMinistry !== true) {
+						publisherRecords += '; ' + elem.fullName
+					}
+				})
+				
+				return publisherRecords.replace('; ','')
+			},
+        }
+    })
+}
+
+
+document.querySelector('#attendance').innerHTML = `<template>
+	<div v-if="display == true">
+		<h1>Monthly Attendance</h1>
+		<section style="padding:10px; margin:5px; border: 1px solid gray">
+		<h2>{{ congregationName }} [{{ month.fullName }} {{ year }}] <span v-if="saved !== 0">[Saving record. Please wait . . .]</span></h2>
+			<div>
+                <table>
+					<thead>
+						<tr>
+							<th></th>
+							<th v-for="(week, count) in weeks">{{ week }}</th>
+							<th>Total</th>
+							<th>Average</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(meeting, count) in currentMonth.meetings" :key="count">
+							<td>{{ meeting.name }} Meeting</td>
+							<td v-for="(attendance) in meeting.attendance"><input :class="attendance.name" type="number" min="0" max="9999" style="width: 50px;" :value="attendance.count" @change="handleInputChange(attendance, $event.target)"></td>
+							<td>{{ averageAttendance(meeting) }}</td>
+							<td>{{ totalAttendance(meeting) }}</td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+		</section>
+		<h1>Meeting Attendance Record</h1>
+		<section style="padding:10px; margin:5px; border: 1px solid gray">
+		<h2>{{ congregationName }} [{{ month.fullName }} {{ year }}] <span v-if="saved !== 0">[Saving record. Please wait . . .]</span></h2>
+			<div>
+                <table>
+					<thead>
+						<tr>
+							<th></th>
+							<th v-for="(week, count) in weeks">{{ week }}</th>
+							<th>Total</th>
+							<th>Average</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(meeting, count) in currentMonth.meetings" :key="count">
+							<td>{{ meeting.name }} Meeting</td>
+							<td v-for="(attendance) in meeting.attendance"><input :class="attendance.name" type="number" min="0" max="9999" style="width: 50px;" :value="attendance.count" @change="handleInputChange(attendance, $event.target)"></td>
+							<td>{{ averageAttendance(meeting) }}</td>
+							<td>{{ totalAttendance(meeting) }}</td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+		</section>
+    </div>
+</template>`
+
+function processAttendance() {
+
+    attendanceVue = new Vue({
+        el: document.querySelector('#attendance'),
+        data: {
+            saved: 0,
+            display: false,
+			currentMonth: {},
+			meetingAttendanceRecord: {},
+            weeks: ['1st week', '2nd week', '3rd week', '4th week', '5th week'],
+            meetings: ['Midweek Meeting', 'Weekend Meeting'],
+            months: [{"abbr": "sept", "fullName": "September"}, {"abbr": "oct", "fullName": "October"}, {"abbr": "nov", "fullName": "November"}, {"abbr": "dec", "fullName": "December"}, {"abbr": "jan", "fullName": "January"}, {"abbr": "feb", "fullName": "February"}, {"abbr": "mar", "fullName": "March"}, {"abbr": "apr", "fullName": "April"}, {"abbr": "may", "fullName": "May"}, {"abbr": "jun", "fullName": "June"}, {"abbr": "jul", "fullName": "July"}, {"abbr": "aug", "fullName": "August"} ],
+
+        },
+        computed: {
+            congregationName() {
+                return congregationVue.congregation.congregationName
+            },
+            searchTerms() {
+                return navigationVue.searchTerms
+            },
+			selectedGroup() {
+                return navigationVue.fieldServiceGroup
+            },
+			allGroups() {
+                return navigationVue.allGroups
+            },
+			month() {
+				return monthlyReportVue.months.slice(3).concat(monthlyReportVue.months.slice(0,3))[new Date().getMonth()]
+                ///return this.months[0].abbr
+            },
+			year() {
+				if (new Date().getMonth() == 0) {
+					return new Date().getFullYear() - 1
+				} else {
+					return new Date().getFullYear()
+				}
+				return monthlyReportVue.months.slice(3).concat(monthlyReportVue.months.slice(0,3))[new Date().getMonth()]
+                ///return this.months[0].abbr
+            },
+        },
+        methods: {
+			cleanDate(date) {
+                const currentDate = new Date(date);
+
+                const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+
+                return formattedDate
+            },
+			averageAttendance(attendance) {
+				const numbersArray = attendance.attendance.filter(elem=>elem.count !== null)
+				if (numbersArray.length === 0) {
+					return 0; // Return 0 for an empty array (avoid division by zero)
+				}
+				
+				const sum = numbersArray.reduce((accumulator, currentValue) => {
+					return accumulator + currentValue.count;
+				}, 0);
+				
+				const average = sum / numbersArray.length;
+				
+				return average;
+			  },
+			totalAttendance(attendance) {
+				const numbersArray = attendance.attendance.filter(elem=>elem.count !== null)
+				if (numbersArray.length === 0) {
+					return 0; // Return 0 for an empty array (avoid division by zero)
+				}
+				
+				return numbersArray.reduce((accumulator, currentValue) => {
+					return accumulator + currentValue.count;
+				}, 0);
+			},
+            handleInputChange(attendance, event) {
+				if (event.value == '' || event.value == '0') {
+					attendance.count = null
+				} else {
+					attendance.count = Number(event.value)
+				}
+				DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [this.currentMonth]});
+			},
+			sumHours(publisher) {
+                var totalHours = 0
+                this.months.forEach(elem=>{
+                    const value = publisher.report.currentServiceYear[elem.abbr].hours
+                    if (value !== null) {
+                        totalHours = totalHours + value
+                    }
+                })
+                return totalHours
+            }
+        }
+    })
+}
+
 processAllPublishers()
 processCongregation()
 processConfiguration()
 processFieldServiceGroups()
 processMonthlyReport()
+processMissingReport()
+processAttendance()
+
+var meetingAttendanceRecord = {
+	"name": "Meeting Attendance Record",
+	"meetings" : [
+		{
+			"name": "Midweek Meeting",
+			"currentServiceYear": {
+				"year": null,
+				"jan": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"feb": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"mar": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"apr": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"may": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"jun": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"jul": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"aug": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"sept": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"oct": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"nov": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"dec": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"averageAttendanceEachMonth": null
+			},
+			"lastServiceYear": {
+				"year": null,
+				"jan": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"feb": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"mar": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"apr": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"may": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"jun": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"jul": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"aug": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"sept": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"oct": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"nov": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"dec": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"averageAttendanceEachMonth": null
+			}
+		},
+		{
+			"name": "Weekend Meeting",
+			"currentServiceYear": {
+				"year": null,
+				"jan": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"feb": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"mar": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"apr": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"may": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"jun": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"jul": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"aug": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"sept": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"oct": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"nov": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"dec": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"averageAttendanceEachMonth": null
+			},
+			"lastServiceYear": {
+				"year": null,
+				"jan": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"feb": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"mar": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"apr": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"may": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"jun": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"jul": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"aug": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"sept": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"oct": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"nov": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"dec": {
+					"numberOfMeetings": null,
+					"totalAttendance": null,
+					"averageAttendanceEachWeek": null
+				},
+				"averageAttendanceEachMonth": null
+			}
+		}
+	]
+}
 
 var newPublisherRecord = {
     "name": null,
@@ -986,84 +1682,108 @@ var newPublisherRecord = {
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "feb": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "mar": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "apr": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "may": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "jun": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "jul": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "aug": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "sept": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "oct": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "nov": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "dec": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "totalHours": null,
             "totalRemarks": null
@@ -1075,84 +1795,108 @@ var newPublisherRecord = {
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "feb": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "mar": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "apr": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "may": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "jun": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "jul": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "aug": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "sept": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "oct": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "nov": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "dec": {
                 "sharedInMinistry": null,
                 "bibleStudies": null,
                 "auxiliaryPioneer": null,
                 "hours": null,
-                "remarks": null
+                "remarks": null,
+                "modified": null,
+                "created": null
             },
             "totalHours": null,
             "totalRemarks": null

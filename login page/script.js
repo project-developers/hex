@@ -374,11 +374,12 @@ function processConfiguration() {
         methods: {
             exportData() {
                 var a = document.createElement("a");
-				var file = new Blob([JSON.stringify({"configuration":configurationVue.configuration, "data":allPublishersVue.publishers})], {type: 'text/plain'});
+				var file = new Blob([JSON.stringify({"configuration":configurationVue.configuration, "data":allPublishersVue.publishers, "attendance": [attendanceVue.currentMonth, attendanceVue.meetingAttendanceRecord]})], {type: 'text/plain'});
 				a.href = URL.createObjectURL(file);
 				
 				a.download = 'congData.txt';
 				a.click();
+				window.indexedDB.deleteDatabase('congRec');
             },
             importData() {
                 var reader = new FileReader();
@@ -389,11 +390,12 @@ function processConfiguration() {
 					configurationVue.configuration = result.configuration
 					navigationVue.allGroups = result.configuration.fieldServiceGroups
 					allPublishersVue.publishers = result.data
-					/*if (configured = true) {
-						DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: configurationVue.configuration.name});
-					}*/
+					attendanceVue.currentMonth = result.attendance[0]
+					attendanceVue.meetingAttendanceRecord = result.attendance[1]
+
 					DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [result.configuration]});
 					DBWorker.postMessage({ storeName: 'data', action: "save", value: result.data});
+					DBWorker.postMessage({ storeName: 'attendance', action: "save", value: result.attendance});
                 	configured = true
 				}
 				

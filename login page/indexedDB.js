@@ -2,7 +2,7 @@
 
 var DB = {}
 
-let db, configuration, data, files;
+let db, configuration, data, files, attendance, accounts, co, appointments, kingdomHall, introductions, territory;
 
 self.onmessage = async function (a) {
     switch (a.data.action) {
@@ -16,7 +16,7 @@ self.onmessage = async function (a) {
             DB.save(a.data.storeName, a.data.value, a.data.page);
             break;
         case "updateResult":
-            updateResult(a.data.storeName, a.data.name, a.data.version), "labels" == a.data.storeName && updateResult(a.data.storeName, a.data.id, a.data.value);
+            DB.updateResult(a.data.storeName, a.data.name, a.data.version);
             break;
         case "deleteItem":
             DB.deleteItem(a.data.storeName, a.data.value);
@@ -32,9 +32,16 @@ DB.open = function(b, c, d) {
     
     a.onupgradeneeded = function (e) {
         let db = e.target.result;
+        accounts = db.createObjectStore('accounts',{keyPath: 'name'});
+        appointments = db.createObjectStore('appointments',{keyPath: 'name'});
+        attendance = db.createObjectStore('attendance',{keyPath: 'name'});
+        co = db.createObjectStore('co',{keyPath: 'name'});
         configuration = db.createObjectStore('configuration',{keyPath: 'name'});
         data = db.createObjectStore('data',{keyPath: 'name'});
         files = db.createObjectStore('files',{keyPath: 'name'});
+        introductions = db.createObjectStore('introductions',{keyPath: 'name'});
+        kingdomHall = db.createObjectStore('kingdomHall',{keyPath: 'name'});
+        territory = db.createObjectStore('territory',{keyPath: 'name'});
         self.postMessage({ name: "created" });
                 
     }
@@ -111,15 +118,13 @@ DB.save = function(a, c, d) {
     };
 }
 DB.updateResult = function(a, d, e) {
-    let b = db.transaction([a], "readwrite"),
-        c = b.objectStore(a);
-    c.openCursor().onsuccess = function (f) {
+    let database = db.transaction([a], "readwrite"),
+        objectStore = database.objectStore(a);
+        objectStore.openCursor().onsuccess = function (f) {
         let b = f.target.result;
         if (b) {
             if (b.value.name === d) {
-                let c = b.value;
-                //"productionMonitor" == a && (c.ID = e);
-                let g = b.update(c);
+                let g = b.update(e);
                 g.onsuccess = function () {
                     console.log(a + " " + d + " Updated"), self.postMessage({ name: "savings", value: "Updated" });
                 };

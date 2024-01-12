@@ -15,7 +15,7 @@ function createWorker(script, fn) {
 
 var DBWorker = new Worker("indexedDB.js")
 
-//DBWorker.postMessage({ dbName: 'congRec', action: "init"});
+DBWorker.postMessage({ dbName: 'congRec', action: "init"});
 
 var configured
 
@@ -256,7 +256,8 @@ document.querySelector('#configuration').innerHTML = `<template>
         </p>
 		<p>
             <div class="main">
-				<button @click="publisherDetail($event.target)">New Publisher</button>
+			<button @click="publisherDetail($event.target)">New Publisher</button>
+			<button @click="reloadPage()">Reload</button>
 			</div>
 			<div class="detail" style="display:none; border: 1px solid gray; padding:5px">
 				<button @click="publisherDetail($event.target)">Save</button>
@@ -357,6 +358,9 @@ function processConfiguration() {
             },
         },
         methods: {
+			reloadPage() {
+				location.reload()
+			},
             exportData() {
                 var a = document.createElement("a");
 				var file = new Blob([JSON.stringify({"configuration":configurationVue.configuration, "data":allPublishersVue.publishers, "attendance": [attendanceVue.currentMonth, attendanceVue.meetingAttendanceRecord]})], {type: 'text/plain'});
@@ -403,11 +407,12 @@ function processConfiguration() {
                 DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [this.configuration]});
                 configured = true
             },
-            resetConfiguration() {
-                if (confirm('Are you sure you want to Reset records?\nPress "OK" to Reset')) {
-					window.indexedDB.deleteDatabase('congRec');
-					location.reload()
+            async resetConfiguration() {
+                if (!confirm('Are you sure you want to Reset records?\nPress "OK" to Reset')) {
+					return
 				}
+				await window.indexedDB.deleteDatabase('congRec');
+				//location.reload()
             },
             addGroup() {
                 const count = configurationVue.configuration.fieldServiceGroups.filter(elem=>elem.startsWith("Group ")).map(elem=>Number(elem.split(' ')[1])).sort().slice(-1)[0]

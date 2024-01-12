@@ -403,10 +403,10 @@ function processConfiguration() {
                 DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [this.configuration]});
                 configured = true
             },
-            async resetConfiguration() {
+            resetConfiguration() {
                 if (confirm('Are you sure you want to Reset records?\nPress "OK" to Reset')) {
 					window.indexedDB.deleteDatabase('congRec');
-					location.reload()
+					//location.reload()
 				}
             },
             addGroup() {

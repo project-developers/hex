@@ -32,6 +32,16 @@ DBWorker.onmessage = async function (msg) {
                 if (msgData.value.filter(elem=>elem.name == "Congregation").length == 0) {
                     configurationVue.display = true
                     configured = false
+					configurationVue.configuration = defaultConfiguration
+					attendanceVue.currentMonth = currentMonthAttendance
+					attendanceVue.meetingAttendanceRecord = meetingAttendanceRecord
+					
+					//configurationVue.configuration = result.configuration
+					navigationVue.allGroups = configurationVue.configuration.fieldServiceGroups
+					//allPublishersVue.publishers = result.data
+					//attendanceVue.currentMonth = result.attendance[0]
+					//attendanceVue.meetingAttendanceRecord = result.attendance[1]
+
                     navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}]
                 }
 				if (msgData.value.filter(elem=>elem.name == "Congregation").length !== 0) {
@@ -81,32 +91,7 @@ DBWorker.onmessage = async function (msg) {
 					console.log(msgData.value)
 					attendanceVue.currentMonth = msgData.value.filter(elem=>elem.name == "Monthly")[0]
 				} else {
-					attendanceVue.currentMonth = {
-						"name": "Monthly",
-						"month": currentMonth,
-						"meetings": [
-							{
-								"name": "Midweek",
-								"attendance": [
-									{ "name": "1stWeek", "count": null },
-									{ "name": "2ndWeek", "count": null },
-									{ "name": "3rdWeek", "count": null },
-									{ "name": "4thWeek", "count": null },
-									{ "name": "5thWeek", "count": null }
-								]
-							},
-							{
-								"name": "Weekend",
-								"attendance": [
-									{ "name": "1stWeek", "count": null },
-									{ "name": "2ndWeek", "count": null },
-									{ "name": "3rdWeek", "count": null },
-									{ "name": "4thWeek", "count": null },
-									{ "name": "5thWeek", "count": null }
-								]
-							}
-						]
-					}
+					attendanceVue.currentMonth = currentMonthAttendance
 					DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [attendanceVue.currentMonth]});
 				}
 
@@ -353,7 +338,7 @@ function processConfiguration() {
     configurationVue = new Vue({
         el: document.querySelector('#configuration'),
         data: {
-            configuration: {"congregationName": "Congregation Name", "name": "Congregation", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]},
+            configuration: {},
             display: false,
 			publisher: {},
 			hopes: ['Unbaptized Publisher', 'Other Sheep', 'Anointed'],
@@ -379,7 +364,7 @@ function processConfiguration() {
 				
 				a.download = 'congData.txt';
 				a.click();
-				window.indexedDB.deleteDatabase('congRec');
+				//window.indexedDB.deleteDatabase('congRec');
             },
             importData() {
                 var reader = new FileReader();
@@ -418,13 +403,11 @@ function processConfiguration() {
                 DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [this.configuration]});
                 configured = true
             },
-            resetConfiguration(element) {
-                if (configured = true) {
-                    DBWorker.postMessage({ storeName: 'configuration', action: "deleteItem", value: this.configuration.name});
-                }
-                this.configuration = {"name": "Congregation", "congregationName": "Congregation Name", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]}
-                DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [this.configuration]});
-                configured = true
+            async resetConfiguration() {
+                if (confirm('Are you sure you want to Reset records?\nPress "OK" to Reset')) {
+					window.indexedDB.deleteDatabase('congRec');
+					location.reload()
+				}
             },
             addGroup() {
                 const count = configurationVue.configuration.fieldServiceGroups.filter(elem=>elem.startsWith("Group ")).map(elem=>Number(elem.split(' ')[1])).sort().slice(-1)[0]
@@ -950,13 +933,13 @@ function processMonthlyReport() {
                 ///return this.months[0].abbr
             },
 			year() {
+				var currentYear;
 				if (new Date().getMonth() == 0) {
-					return new Date().getFullYear() - 1
+					currentYear = new Date().getFullYear() - 1
 				} else {
-					return new Date().getFullYear()
+					currentYear = new Date().getFullYear()
 				}
-				return monthlyReportVue.months.slice(3).concat(monthlyReportVue.months.slice(0,3))[new Date().getMonth()]
-                ///return this.months[0].abbr
+				return currentYear
             },
         },
         methods: {
@@ -1260,32 +1243,32 @@ document.querySelector('#attendance').innerHTML = `<template>
 						<tr v-for="(meeting, count) in currentMonth.meetings" :key="count">
 							<td>{{ meeting.name }} Meeting</td>
 							<td v-for="(attendance) in meeting.attendance"><input :class="attendance.name" type="number" min="0" max="9999" style="width: 50px;" :value="attendance.count" @change="handleInputChange(attendance, $event.target)"></td>
-							<td>{{ averageAttendance(meeting) }}</td>
 							<td>{{ totalAttendance(meeting) }}</td>
+							<td>{{ averageAttendance(meeting) }}</td>
 						</tr>
 					</tbody>
 				</table>
             </div>
 		</section>
 		<h1>Meeting Attendance Record</h1>
-		<section style="padding:10px; margin:5px; border: 1px solid gray">
-		<h2>{{ congregationName }} [{{ month.fullName }} {{ year }}] <span v-if="saved !== 0">[Saving record. Please wait . . .]</span></h2>
-			<div>
+		<section v-for="(meeting) in meetingAttendanceRecord.meetings" :key="meeting.name" style="padding:10px; margin:5px; border: 1px solid gray">
+			<h2>{{ meeting.name }} <span v-if="saved !== 0">[Saving record. Please wait . . .]</span></h2>
+			<div v-for="(serviceYear) in serviceYears" :key="serviceYear" style="display:flex; margin: 5px">
                 <table>
 					<thead>
 						<tr>
-							<th></th>
-							<th v-for="(week, count) in weeks">{{ week }}</th>
-							<th>Total</th>
-							<th>Average</th>
+							<th>Service Year {{ meeting[serviceYear].year }}</th>
+							<th>Number of Meetings</th>
+							<th>Total Attendance</th>
+							<th>Average Attendance Each Week</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="(meeting, count) in currentMonth.meetings" :key="count">
-							<td>{{ meeting.name }} Meeting</td>
-							<td v-for="(attendance) in meeting.attendance"><input :class="attendance.name" type="number" min="0" max="9999" style="width: 50px;" :value="attendance.count" @change="handleInputChange(attendance, $event.target)"></td>
-							<td>{{ averageAttendance(meeting) }}</td>
-							<td>{{ totalAttendance(meeting) }}</td>
+						<tr v-for="(month) in months" :key="month.abbr">
+							<td>{{ month.fullName }}</td>
+							<td><input class="numberOfMeetings" type="number" min="0" max="5" style="width: 30px;" :value="meeting[serviceYear][month.abbr].numberOfMeetings" @change="handleRecordInputChange(meeting[serviceYear][month.abbr], $event.target)"></td>
+							<td><input class="totalAttendance" type="number" min="0" max="9999" style="width: 50px;" :value="meeting[serviceYear][month.abbr].totalAttendance" @change="handleRecordInputChange(meeting[serviceYear][month.abbr], $event.target)"></td>
+							<td><input class="averageAttendanceEachWeek" type="number" min="0" max="9999" style="width: 50px;" :value="meeting[serviceYear][month.abbr].averageAttendanceEachWeek" @change="handleRecordInputChange(meeting[serviceYear][month.abbr], $event.target)"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -1303,6 +1286,7 @@ function processAttendance() {
             display: false,
 			currentMonth: {},
 			meetingAttendanceRecord: {},
+			serviceYears: ["currentServiceYear", "lastServiceYear"],
             weeks: ['1st week', '2nd week', '3rd week', '4th week', '5th week'],
             meetings: ['Midweek Meeting', 'Weekend Meeting'],
             months: [{"abbr": "sept", "fullName": "September"}, {"abbr": "oct", "fullName": "October"}, {"abbr": "nov", "fullName": "November"}, {"abbr": "dec", "fullName": "December"}, {"abbr": "jan", "fullName": "January"}, {"abbr": "feb", "fullName": "February"}, {"abbr": "mar", "fullName": "March"}, {"abbr": "apr", "fullName": "April"}, {"abbr": "may", "fullName": "May"}, {"abbr": "jun", "fullName": "June"}, {"abbr": "jul", "fullName": "July"}, {"abbr": "aug", "fullName": "August"} ],
@@ -1326,13 +1310,18 @@ function processAttendance() {
                 ///return this.months[0].abbr
             },
 			year() {
+				var currentYear;
 				if (new Date().getMonth() == 0) {
-					return new Date().getFullYear() - 1
+					currentYear = new Date().getFullYear() - 1
 				} else {
-					return new Date().getFullYear()
+					currentYear = new Date().getFullYear()
 				}
-				return monthlyReportVue.months.slice(3).concat(monthlyReportVue.months.slice(0,3))[new Date().getMonth()]
-                ///return this.months[0].abbr
+
+				this.meetingAttendanceRecord.meetings[0].currentServiceYear.year = 2024
+				this.meetingAttendanceRecord.meetings[1].currentServiceYear.year = 2024
+				this.meetingAttendanceRecord.meetings[0].lastServiceYear.year = 2023
+				this.meetingAttendanceRecord.meetings[1].lastServiceYear.year = 2023
+				return currentYear
             },
         },
         methods: {
@@ -1346,7 +1335,10 @@ function processAttendance() {
 			averageAttendance(attendance) {
 				const numbersArray = attendance.attendance.filter(elem=>elem.count !== null)
 				if (numbersArray.length === 0) {
-					return 0; // Return 0 for an empty array (avoid division by zero)
+					this.meetingAttendanceRecord.meetings.filter(elem=>elem.name.startsWith(attendance.name))[0].currentServiceYear[`${this.month.abbr}`].numberOfMeetings = null
+					this.meetingAttendanceRecord.meetings.filter(elem=>elem.name.startsWith(attendance.name))[0].currentServiceYear[`${this.month.abbr}`].totalAttendance = null
+					this.meetingAttendanceRecord.meetings.filter(elem=>elem.name.startsWith(attendance.name))[0].currentServiceYear[`${this.month.abbr}`].averageAttendanceEachWeek = null
+					return null; // Return 0 for an empty array (avoid division by zero)
 				}
 				
 				const sum = numbersArray.reduce((accumulator, currentValue) => {
@@ -1354,18 +1346,30 @@ function processAttendance() {
 				}, 0);
 				
 				const average = sum / numbersArray.length;
+
+				this.meetingAttendanceRecord.meetings.filter(elem=>elem.name.startsWith(attendance.name))[0].currentServiceYear[`${this.month.abbr}`].numberOfMeetings = numbersArray.length 
+				this.meetingAttendanceRecord.meetings.filter(elem=>elem.name.startsWith(attendance.name))[0].currentServiceYear[`${this.month.abbr}`].totalAttendance = sum
+				this.meetingAttendanceRecord.meetings.filter(elem=>elem.name.startsWith(attendance.name))[0].currentServiceYear[`${this.month.abbr}`].averageAttendanceEachWeek = average
 				
 				return average;
 			  },
 			totalAttendance(attendance) {
 				const numbersArray = attendance.attendance.filter(elem=>elem.count !== null)
 				if (numbersArray.length === 0) {
-					return 0; // Return 0 for an empty array (avoid division by zero)
+					return null; // Return 0 for an empty array (avoid division by zero)
 				}
 				
 				return numbersArray.reduce((accumulator, currentValue) => {
 					return accumulator + currentValue.count;
 				}, 0);
+			},
+			handleRecordInputChange(attendance, event) {
+				if (event.value == '' || event.value == '0') {
+					attendance[`${event.className}`] = null
+				} else {
+					attendance[`${event.className}`] = Number(event.value)
+				}
+				DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [this.meetingAttendanceRecord]});
 			},
             handleInputChange(attendance, event) {
 				if (event.value == '' || event.value == '0') {
@@ -1396,6 +1400,35 @@ processFieldServiceGroups()
 processMonthlyReport()
 processMissingReport()
 processAttendance()
+
+var defaultConfiguration = {"congregationName": "Congregation Name", "name": "Congregation", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]}
+
+var currentMonthAttendance = {
+	"name": "Monthly",
+	"month": currentMonth,
+	"meetings": [
+		{
+			"name": "Midweek",
+			"attendance": [
+				{ "name": "1stWeek", "count": null },
+				{ "name": "2ndWeek", "count": null },
+				{ "name": "3rdWeek", "count": null },
+				{ "name": "4thWeek", "count": null },
+				{ "name": "5thWeek", "count": null }
+			]
+		},
+		{
+			"name": "Weekend",
+			"attendance": [
+				{ "name": "1stWeek", "count": null },
+				{ "name": "2ndWeek", "count": null },
+				{ "name": "3rdWeek", "count": null },
+				{ "name": "4thWeek", "count": null },
+				{ "name": "5thWeek", "count": null }
+			]
+		}
+	]
+}
 
 var meetingAttendanceRecord = {
 	"name": "Meeting Attendance Record",

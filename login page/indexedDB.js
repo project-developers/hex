@@ -2,7 +2,7 @@
 
 var DB = {}
 
-let db, configuration, data, files, attendance, accounts, co, appointments, kingdomHall, introductions, territory;
+let db, configuration, data, files, attendance, fileDetails;
 
 self.onmessage = async function (a) {
     switch (a.data.action) {
@@ -32,16 +32,11 @@ DB.open = function(b, c, d) {
     
     a.onupgradeneeded = function (e) {
         let db = e.target.result;
-        accounts = db.createObjectStore('accounts',{keyPath: 'name'});
-        appointments = db.createObjectStore('appointments',{keyPath: 'name'});
         attendance = db.createObjectStore('attendance',{keyPath: 'name'});
-        co = db.createObjectStore('co',{keyPath: 'name'});
         configuration = db.createObjectStore('configuration',{keyPath: 'name'});
         data = db.createObjectStore('data',{keyPath: 'name'});
         files = db.createObjectStore('files',{keyPath: 'name'});
-        introductions = db.createObjectStore('introductions',{keyPath: 'name'});
-        kingdomHall = db.createObjectStore('kingdomHall',{keyPath: 'name'});
-        territory = db.createObjectStore('territory',{keyPath: 'name'});
+        fileDetails = db.createObjectStore('fileDetails',{keyPath: 'name'});
         self.postMessage({ name: "created" });
                 
     }

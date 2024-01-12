@@ -17,7 +17,7 @@ var DBWorker = new Worker("indexedDB.js")
 
 DBWorker.postMessage({ dbName: 'congRec', action: "init"});
 
-var configured
+var configured, reset, resetCount = 0;
 
 var currentMonth = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}`;
 
@@ -25,11 +25,23 @@ var currentMonth = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).to
 DBWorker.onmessage = async function (msg) {
     var msgData = msg.data;
     //console.log(msgData)
+	if (reset == true && msgData.value) {
+		if (msgData.value.length !== 0) {
+			resetCount = resetCount + msgData.value.length
+			msgData.value.forEach(elem=>{
+				DBWorker.postMessage({ storeName: msgData.name, action: "deleteItem", value: elem.name});
+			})
+		}
+	} else if (reset == true) {
+		resetCount--
+		console.log(resetCount)
+		
+	}
     switch (msgData.name) {
         case "configuration":
             {
                 console.log(msgData.value)
-                if (msgData.value.filter(elem=>elem.name == "Congregation").length == 0) {
+				if (msgData.value.filter(elem=>elem.name == "Congregation").length == 0) {
                     configurationVue.display = true
                     configured = false
 					configurationVue.configuration = defaultConfiguration
@@ -409,8 +421,14 @@ function processConfiguration() {
             },
             async resetConfiguration() {
                 if (prompt('Are you sure you want to Reset records?\nType "Reset" to Reset').toLowerCase() == 'reset') {
+					reset = true
+					DBWorker.postMessage({ storeName: 'data', action: "readAll"});
+                    DBWorker.postMessage({ storeName: 'configuration', action: "readAll"});
+                    DBWorker.postMessage({ storeName: 'attendance', action: "readAll"});
+                    DBWorker.postMessage({ storeName: 'files', action: "readAll"});
+
 					// Open a connection to the database
-					var request = indexedDB.open('congRec');
+					/*var request = indexedDB.open('congRec');
 
 					// Handle the success event
 					request.onsuccess = function(event) {
@@ -441,7 +459,7 @@ function processConfiguration() {
 					// Handle the error event for opening the database
 					request.onerror = function(event) {
 						console.error('Error opening database:', event.target.error);
-					};
+					};*/
 				}
             },
             addGroup() {

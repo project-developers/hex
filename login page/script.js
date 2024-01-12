@@ -424,7 +424,7 @@ function processConfiguration() {
 						var deleteRequest = indexedDB.deleteDatabase('congRec');
 						console.log('Database deleted successfully');
 						alert('Reset completed')
-						location.reload()
+						//location.reload()
 
 						// Handle the success event for deleting the database
 						deleteRequest.onsuccess = function() {

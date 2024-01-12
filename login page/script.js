@@ -15,7 +15,7 @@ function createWorker(script, fn) {
 
 var DBWorker = new Worker("indexedDB.js")
 
-DBWorker.postMessage({ dbName: 'congRec', action: "init"});
+//DBWorker.postMessage({ dbName: 'congRec', action: "init"});
 
 var configured
 
@@ -406,7 +406,7 @@ function processConfiguration() {
             resetConfiguration() {
                 if (confirm('Are you sure you want to Reset records?\nPress "OK" to Reset')) {
 					window.indexedDB.deleteDatabase('congRec');
-					//location.reload()
+					location.reload()
 				}
             },
             addGroup() {

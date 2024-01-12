@@ -2,7 +2,7 @@
 
 var DB = {}
 
-let db, configuration, data, files, attendance, fileDetails;
+let db, configuration, data, files, attendance, fileDetails, account, lifeAndMinistry;
 
 self.onmessage = async function (a) {
     switch (a.data.action) {
@@ -32,11 +32,13 @@ DB.open = function(b, c, d) {
     
     a.onupgradeneeded = function (e) {
         let db = e.target.result;
+        account = db.createObjectStore('account',{keyPath: 'name'});
         attendance = db.createObjectStore('attendance',{keyPath: 'name'});
         configuration = db.createObjectStore('configuration',{keyPath: 'name'});
         data = db.createObjectStore('data',{keyPath: 'name'});
         files = db.createObjectStore('files',{keyPath: 'name'});
         fileDetails = db.createObjectStore('fileDetails',{keyPath: 'name'});
+        lifeAndMinistry = db.createObjectStore('lifeAndMinistry',{keyPath: 'name'});
         self.postMessage({ name: "created" });
                 
     }
@@ -138,11 +140,33 @@ DB.deleteItem = function(a, c) {
         });
 }
 DB.deleteDB = function(b) {
-    var a = window.indexedDB.deleteDatabase(b);
-    (a.onerror = function (a) {
-        console.log("Error deleting database.");
-    }),
-        (a.onsuccess = function (a) {
-            console.log("Database deleted successfully"), console.log(a.result);
-        });
-}
+    // Open a connection to the database
+    var request = indexedDB.open(b);
+
+    // Handle the success event
+    request.onsuccess = function(event) {
+    var db = event.target.result;
+
+    // Close the database connection before deleting it
+    db.close();
+
+    // Delete the database
+    var deleteRequest = indexedDB.deleteDatabase(b);
+
+    // Handle the success event for deleting the database
+    deleteRequest.onsuccess = function() {
+        console.log('Database deleted successfully');
+    };
+
+    // Handle the error event for deleting the database
+    deleteRequest.onerror = function(event) {
+        console.error('Error deleting database:', event.target.error);
+    };
+    };
+
+    // Handle the error event for opening the database
+    request.onerror = function(event) {
+        console.error('Error opening database:', event.target.error);
+    };
+
+};

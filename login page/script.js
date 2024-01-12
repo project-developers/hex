@@ -408,11 +408,41 @@ function processConfiguration() {
                 configured = true
             },
             async resetConfiguration() {
-                if (!confirm('Are you sure you want to Reset records?\nPress "OK" to Reset')) {
-					return
+                if (prompt('Are you sure you want to Reset records?\nType "Reset" to Reset').toLowerCase() == 'reset') {
+					// Open a connection to the database
+					var request = indexedDB.open('congRec');
+
+					// Handle the success event
+					request.onsuccess = function(event) {
+						var db = event.target.result;
+						console.log('Database deleted successfully');
+
+						// Close the database connection before deleting it
+						db.close();
+
+						// Delete the database
+						var deleteRequest = indexedDB.deleteDatabase('congRec');
+						console.log('Database deleted successfully');
+						alert('Reset completed')
+						location.reload()
+
+						// Handle the success event for deleting the database
+						deleteRequest.onsuccess = function() {
+							console.log('Database deleted successfully');
+							
+						};
+
+						// Handle the error event for deleting the database
+						deleteRequest.onerror = function(event) {
+							console.error('Error deleting database:', event.target.error);
+						};
+					};
+
+					// Handle the error event for opening the database
+					request.onerror = function(event) {
+						console.error('Error opening database:', event.target.error);
+					};
 				}
-				await window.indexedDB.deleteDatabase('congRec');
-				//location.reload()
             },
             addGroup() {
                 const count = configurationVue.configuration.fieldServiceGroups.filter(elem=>elem.startsWith("Group ")).map(elem=>Number(elem.split(' ')[1])).sort().slice(-1)[0]

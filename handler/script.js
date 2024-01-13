@@ -1,3 +1,70 @@
+const loginForm = document.getElementById("login-form");
+const loginButton = document.getElementById("login-form-submit");
+const loginErrorMsg = document.getElementById("login-error-msg");
+loginForm.passwordConfirm.style.display = 'none';
+loginErrorMsg.style.opacity = 0;
+
+loginButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    const username = loginForm.username.value;
+    const password = loginForm.password.value;
+
+    if (loginButton.value == 'Create Account') {
+		if ('' == username || username.toLowerCase() == 'reporter') {
+			loginErrorMsg.innerHTML = 'Please select a different Username'
+		} else if (loginForm.password.value !== loginForm.passwordConfirm.value) {
+			loginErrorMsg.innerHTML = 'Password is not the same'
+		} else {
+			currentUser.username = loginForm.username.value
+			currentUser.password = loginForm.password.value
+			if (currentUser.accesses.includes('secretary')) {
+				console.log("You have successfully logged in.");
+				DBWorker.postMessage({ storeName: 'settings', action: "save", value: [currentUser]});
+				document.getElementById("main-holder").style.display = 'none';
+				DBWorker.postMessage({ dbName: 'congRec', action: "init"});
+				loginErrorMsg.style.opacity = 0;
+			}
+		}
+	} else if (null !== currentUser.username && username.toLowerCase() === currentUser.username.toLowerCase() && password === currentUser.password) {
+        console.log("You have successfully logged in.");
+		document.getElementById("main-holder").style.display = 'none';
+		DBWorker.postMessage({ dbName: 'congRec', action: "init"});
+		loginErrorMsg.style.opacity = 0;
+		
+        //location.href = "report.html";
+    } else if (username.toLowerCase() === "reporter".toLowerCase() && password === "reportEntry") {
+        loginErrorMsg.innerHTML = 'You will need to create an account to continue:'
+		loginForm.username.value="";
+		loginForm.password.value="";
+		loginForm.passwordConfirm.style.display = '';
+		loginForm.username.select()
+		loginButton.value = 'Create Account'
+		currentUser.accesses = ['sendReport']
+		//DBWorker.postMessage({ dbName: 'congRec', action: "init"});
+		loginErrorMsg.style.opacity = 1;
+		
+        //location.href = "report.html";
+    } else if (username.toLowerCase() === "reporter".toLowerCase() && password === "super") {
+        loginErrorMsg.innerHTML = 'You will need to create an account to continue:'
+		loginForm.username.value="";
+		loginForm.password.value="";
+		loginForm.passwordConfirm.style.display = '';
+		loginForm.username.select()
+		loginButton.value = 'Create Account'
+		currentUser.accesses = ['secretary']
+		//DBWorker.postMessage({ dbName: 'congRec', action: "init"});
+		loginErrorMsg.style.opacity = 1;
+		
+        //location.href = "report.html";
+    } else {
+		//loginForm.username.value="";
+		loginForm.password.value="";
+        loginErrorMsg.style.opacity = 1;
+    }
+})
+
+var currentUser = { "name": "currentUser", "username": null, "password": null, "accesses": [] }
+
 var navigationVue, allPublishersVue, congregationVue, configurationVue, branchReportVue, contactInformationVue, fieldServiceGroupsVue, monthlyReportVue, missingReportVue;
 var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "contactInformationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Branch Report", "function": "branchReportVue"}, {"title": "Configuration", "function": "configurationVue"}]
 //var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
@@ -15,7 +82,7 @@ function createWorker(script, fn) {
 
 var DBWorker = new Worker("indexedDB.js")
 
-DBWorker.postMessage({ dbName: 'congRec', action: "init"});
+DBWorker.postMessage({ dbName: 'handler', action: "init"});
 
 var configured, reset, resetCount = 0;
 
@@ -76,8 +143,8 @@ DBWorker.onmessage = async function (msg) {
 						congregationVue.display = true
 						configured = true
 						navigationVue.buttons = [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "contactInformationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Branch Report", "function": "branchReportVue"}, {"title": "Configuration", "function": "configurationVue"}]
-						configurationVue.configuration = msgData.value[0]
-						navigationVue.allGroups = msgData.value[0].fieldServiceGroups
+						configurationVue.configuration = msgData.value.filter(elem=>elem.name == "Congregation")[0]
+						navigationVue.allGroups = msgData.value.filter(elem=>elem.name == "Congregation")[0].fieldServiceGroups
 						DBWorker.postMessage({ storeName: 'data', action: "readAll"});
 						DBWorker.postMessage({ storeName: 'attendance', action: "readAll"});
 					}/*
@@ -108,9 +175,12 @@ DBWorker.onmessage = async function (msg) {
 					console.log(publisherRecords)*/
 				}
 				break;
-			case "ready":
+			case "settings":
 				{
-					
+					console.log(msgData.value)
+					if (msgData.value.filter(elem=>elem.name == "currentUser").length !== 0) {
+						currentUser = msgData.value.filter(elem=>elem.name == "currentUser")[0]
+					}
 				}
 				break;
 			case "attendance":
@@ -706,19 +776,25 @@ function processAllPublishers() {
             months: [{"abbr": "sept", "fullName": "September"}, {"abbr": "oct", "fullName": "October"}, {"abbr": "nov", "fullName": "November"}, {"abbr": "dec", "fullName": "December"}, {"abbr": "jan", "fullName": "January"}, {"abbr": "feb", "fullName": "February"}, {"abbr": "mar", "fullName": "March"}, {"abbr": "apr", "fullName": "April"}, {"abbr": "may", "fullName": "May"}, {"abbr": "jun", "fullName": "June"}, {"abbr": "jul", "fullName": "July"}, {"abbr": "aug", "fullName": "August"} ],
         },
         computed: {
-			Publishers() {
-                return this.publishers.map((element) => ({
-                    ...element,
-                    status: this.checkStatus(element.report),
-                }));
-            },
-            searchTerms() {
+			searchTerms() {
                 return navigationVue.searchTerms
             },
 			selectedGroup() {
                 return navigationVue.fieldServiceGroup
             },
 			allGroups() {
+				this.publishers.forEach(elem=>{
+					if (this.checkStatus(elem.report) == 'Active') {
+						elem.active = true
+						if (elem.reactivated) {
+							delete elem.reactivated
+						}
+					} else {
+						if (!elem.reactivated) {
+							elem.active = false
+						}
+					}
+				})
                 return navigationVue.allGroups
             },
         },
@@ -854,7 +930,11 @@ async function shortWait(){
 }
 
 document.querySelector('#fieldServiceGroups').innerHTML = `<template>
-	<div v-if="display == true" style="display:flex">
+	<div v-if="display == true" style="display:block">
+		<div style="display:flex; justify-content:space-between">
+			<h1>Field Service Groups</h1>
+			<h2 style="text-align: right;"><i v-if="active == false" @click="inactive()" title="Show Inactive Publishers" style="margin-right:15px" class="fas fa-eye"></i><i v-if="active == true" @click="inactive()" title="Hide Inactive Publishers" style="margin-right:15px" class="fas fa-eye-slash"></i></h2>
+		</div>
 		<div style="display:flex; flex-wrap:wrap">
 			<div v-for="(group) in allGroups" :key="group" style="padding:10px; margin:5px; border: 1px solid gray" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0)">
 				<h2>{{ group }}</h2>
@@ -907,6 +987,7 @@ function processFieldServiceGroups() {
             publishers: [],
             display: false,
             pdfFile: "",
+			active: true,
 			selectedPublisher: {},
         },
         computed: {
@@ -914,7 +995,7 @@ function processFieldServiceGroups() {
                 return navigationVue.searchTerms
             },
 			allGroups() {
-                return navigationVue.allGroups
+                return allPublishersVue.allGroups
             },
 			selectedGroup() {
                 return navigationVue.fieldServiceGroup
@@ -922,7 +1003,7 @@ function processFieldServiceGroups() {
         },
         methods: {
 			groupPublishers(group) {
-                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group)
+                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group && (elem.active == true || this.active == true))
             },
 			publisherDetail(publisher) {
 				this.selectedPublisher = publisher
@@ -930,6 +1011,9 @@ function processFieldServiceGroups() {
 			},
             updateRecord(publisher) {
 				updatePublisherRecord(publisher)
+			},
+			inactive() {
+				this.active = !this.active;
 			}
         }
     })
@@ -954,7 +1038,7 @@ document.querySelector('#monthlyReport').innerHTML = `<template>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+						<tr v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.active == true || (publisher.active == false && publisher.reactivated)) && (publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
 							<td>{{ publisher.name }}</td>
 							<td><input class="sharedInMinistry" type="checkbox" :checked = "publisher.report.currentServiceYear[month.abbr].sharedInMinistry !== null" @change="handleCheckboxChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
 							<td><input class="bibleStudies" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.currentServiceYear[month.abbr].bibleStudies" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></td>
@@ -982,7 +1066,7 @@ document.querySelector('#monthlyReport').innerHTML = `<template>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="(publisher, count) in lateReports" :key="count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+						<tr v-for="(publisher, count) in lateReports" :key="count" v-if="(publisher.publisher.active == true || (publisher.publisher.active == false && publisher.publisher.reactivated)) && (publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
 							<td>{{ publisher.name }}</td>
 							<td>{{ publisher.month.fullName }}</td>
 							<td><input class="sharedInMinistry" type="checkbox" :checked = "publisher.report.sharedInMinistry !== null" @change="handleCheckboxChange2($event.target, publisher.publisher, publisher.month)"></td>
@@ -1014,6 +1098,22 @@ function processMonthlyReport() {
                 return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
             },
             publishers() {
+				if (!allPublishersVue.publishers[0]) {
+					return 0
+				} else if (!allPublishersVue.publishers[0].active) {
+					allPublishersVue.publishers.forEach(elem=>{
+						if (allPublishersVue.checkStatus(elem.report) == 'Active') {
+							elem.active = true
+							if (elem.reactivated) {
+								delete elem.reactivated
+							}
+						} else {
+							if (!elem.reactivated) {
+								elem.active = false
+							}
+						}
+					})
+				}
                 return allPublishersVue.publishers
             },
 			lateReports() {
@@ -1036,7 +1136,7 @@ function processMonthlyReport() {
                 return navigationVue.fieldServiceGroup
             },
 			allGroups() {
-                return navigationVue.allGroups
+                return allPublishersVue.allGroups
             },
 			month() {
 				return monthlyReportVue.months.slice(3).concat(monthlyReportVue.months.slice(0,3))[new Date().getMonth()]
@@ -1295,7 +1395,7 @@ function contactInformation() {
                 return navigationVue.searchTerms
             },
 			allGroups() {
-                return navigationVue.allGroups
+                return allPublishersVue.allGroups
             },
 			selectedGroup() {
                 return navigationVue.fieldServiceGroup
@@ -1326,42 +1426,6 @@ function contactInformation() {
 			},
 			call(number) {
 				window.location.href = "tel:" + number;
-			},
-            message(group) {
-
-				var elementToCopy = document.getElementsByTagName('table')[0];//document.getElementById('elementToCopy');
-				
-
-				// Create a range to select the content of the element
-				var range = document.createRange();
-				range.selectNode(elementToCopy);
-
-				// Clear the existing clipboard content
-				window.getSelection().removeAllRanges();
-
-				// Add the range to the clipboard
-				window.getSelection().addRange(range);
-
-				// Copy the selected content to the clipboard
-				document.execCommand('copy');
-
-				// Clear the selection
-				window.getSelection().removeAllRanges();
-
-				var recipient = ''//group.OverseerMail//'someone@example.com';
-				var subject = 'Missing Report - ' + group + ' - ' + attendanceVue.cleanDate(new Date());
-				var body = `Dear Brother :
-Please these are the reports still missing for your field service group.
-Thanks,
-
-
-`
-
-				var mailtoLink = 'mailto:' + encodeURIComponent(recipient) +
-								'?subject=' + encodeURIComponent(subject) +
-								'&body=' + encodeURIComponent(body);
-
-				window.location.href = mailtoLink;
 			},
         }
     })
@@ -1437,7 +1501,7 @@ function processMissingReport() {
                 return navigationVue.searchTerms
             },
 			allGroups() {
-                return navigationVue.allGroups
+                return allPublishersVue.allGroups
             },
 			selectedGroup() {
                 return navigationVue.fieldServiceGroup
@@ -1445,7 +1509,7 @@ function processMissingReport() {
         },
         methods: {
 			groupPublishers(group) {
-                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group)
+                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group && (elem.active == true || (elem.active == false && elem.reactivated)))
             },
 			publisherDetail(publisher) {
 				this.selectedPublisher = publisher
@@ -1584,7 +1648,7 @@ function processAttendance() {
                 return navigationVue.fieldServiceGroup
             },
 			allGroups() {
-                return navigationVue.allGroups
+                return allPublishersVue.allGroups
             },
 			month() {
 				return monthlyReportVue.months.slice(3).concat(monthlyReportVue.months.slice(0,3))[new Date().getMonth()]
@@ -1680,7 +1744,7 @@ document.querySelector('#branchReport').innerHTML = `<template>
 		<h1>December 2023</h1>
 		<div style="padding:10px; margin:5px; border: 1px solid gray">
 			<h3>Active Publishers</h3>
-			<div><span>{{ activePublishers(publishers) }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+			<div><span>{{ activePublishers() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
 			<h3>Average Weekend Meeting Attendance</h3>
 			<div><span>{{ averageAttendance() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
 		</div>
@@ -1723,16 +1787,30 @@ function branchReportDetails() {
 			selectedPublisher: {},
         },
         computed: {
-            publishers() {
-                return allPublishersVue.publishers
-            },
+
         },
         methods: {
-			activePublishers(publishers) {
-				return publishers.filter(elem=>allPublishersVue.checkStatus(elem.report) == 'Active').length
+			activePublishers() {
+				if (!allPublishersVue.publishers[0]) {
+					return 0
+				} else if (!allPublishersVue.publishers[0].active) {
+					allPublishersVue.publishers.forEach(elem=>{
+						if (allPublishersVue.checkStatus(elem.report) == 'Active') {
+							elem.active = true
+							if (elem.reactivated) {
+								delete elem.reactivated
+							}
+						} else {
+							if (!elem.reactivated) {
+								elem.active = false
+							}
+						}
+					})
+				}
+				return allPublishersVue.publishers.filter(elem=>elem.active == true).length
 			},
 			averageAttendance() {
-                return attendanceVue.averageAttendance(attendanceVue.currentMonth.meetings[1])
+                return attendanceVue.averageAttendance(attendanceVue.currentMonth.meetings[1]) ? attendanceVue.averageAttendance(attendanceVue.currentMonth.meetings[1]) : 0
             },
 			publisherNumberOfReports() {
 				return monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry).length + monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null).length

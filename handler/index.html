@@ -1,0 +1,52 @@
+<!doctype html>
+
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" /> 
+		<title>Cong Rec</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="style.css">
+        <script src="vue.js"></script>
+        <script src="jszip.min.js"></script>
+        <script src="mammoth.browser.min.js"></script>
+        <script src="pdf-lib.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+	</head>
+	
+    <body>
+
+        <main id="main-holder">
+            <a href="https://project-developers.github.io/hexa/">Back</a>
+            <h1 id="login-header">Login</h1>
+        
+            <div id="login-error-msg-holder">
+                <p id="login-error-msg">Invalid username <span id="error-msg-second-line">and/or password</span></p>
+            </div>
+        
+            <form id="login-form">
+                <input type="text" name="username" id="username-field" class="login-form-field" placeholder="Username">
+                <input type="password" name="password" id="password-field" class="login-form-field" placeholder="Password">
+                <input type="password" name="passwordConfirm" id="passwordConfirm-field" class="login-form-field" placeholder="Confirm Password">
+                <input type="submit" value="Login" id="login-form-submit">
+            </form>
+        
+        </main>
+
+        <div id="navigation"></div>
+        <div id="congregation"></div>
+        <div id="configuration"></div>
+        <div id="allPublishers"></div>
+        <div id="fieldServiceGroups"></div>
+        <div id="contactInformation"></div>
+        <div id="monthlyReport"></div>
+        <div id="missingReport"></div>
+        <div id="attendance"></div>
+        <div id="branchReport"></div>
+        <div id="publisherContactInformation"></div>
+                
+        <script src="script.js"></script>
+    </body>
+
+</html>

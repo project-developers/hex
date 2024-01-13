@@ -2,7 +2,7 @@
 
 var DB = {}
 
-let db, configuration, data, files, attendance, fileDetails, account, lifeAndMinistry;
+let db, settings, configuration, data, files, attendance, fileDetails, account, lifeAndMinistry;
 
 self.onmessage = async function (a) {
     switch (a.data.action) {
@@ -32,19 +32,29 @@ DB.open = function(b, c, d) {
     
     a.onupgradeneeded = function (e) {
         let db = e.target.result;
-        account = db.createObjectStore('account',{keyPath: 'name'});
-        attendance = db.createObjectStore('attendance',{keyPath: 'name'});
-        configuration = db.createObjectStore('configuration',{keyPath: 'name'});
-        data = db.createObjectStore('data',{keyPath: 'name'});
-        files = db.createObjectStore('files',{keyPath: 'name'});
-        fileDetails = db.createObjectStore('fileDetails',{keyPath: 'name'});
-        lifeAndMinistry = db.createObjectStore('lifeAndMinistry',{keyPath: 'name'});
+        
+        if (b == "handler") {
+            settings = db.createObjectStore('settings',{keyPath: 'name'});
+        } else if (b == "congRec") {
+            account = db.createObjectStore('account',{keyPath: 'name'});
+            attendance = db.createObjectStore('attendance',{keyPath: 'name'});
+            configuration = db.createObjectStore('configuration',{keyPath: 'name'});
+            data = db.createObjectStore('data',{keyPath: 'name'});
+            files = db.createObjectStore('files',{keyPath: 'name'});
+            fileDetails = db.createObjectStore('fileDetails',{keyPath: 'name'});
+            lifeAndMinistry = db.createObjectStore('lifeAndMinistry',{keyPath: 'name'});
+        } else {
+
+        }
+        
         self.postMessage({ name: "created" });
                 
     }
     a.onsuccess = function (e) {
         db = a.result
-        if (b=="congRec") {
+        if (b=="handler") {
+            DB.readAll("settings")
+        } else if (b=="congRec") {
             DB.readAll("configuration")
         } else {
             DB.readAll(b)

@@ -1,5 +1,5 @@
 function login() {
-	location.href = "login page/index.html";
+	location.href = "handler/index.html";
 }
 
 function scaleCanvas() {

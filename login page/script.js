@@ -1,5 +1,5 @@
-var navigationVue, allPublishersVue, congregationVue, configurationVue, fieldServiceGroupsVue, monthlyReportVue, missingReportVue;
-var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Configuration", "function": "configurationVue"}]
+var navigationVue, allPublishersVue, congregationVue, configurationVue, branchReportVue, contactInformationVue, fieldServiceGroupsVue, monthlyReportVue, missingReportVue;
+var allButtons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "contactInformationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Branch Report", "function": "branchReportVue"}, {"title": "Configuration", "function": "configurationVue"}]
 //var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 
 function createWorker(script, fn) {
@@ -25,116 +25,133 @@ var currentMonth = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).to
 DBWorker.onmessage = async function (msg) {
     var msgData = msg.data;
     //console.log(msgData)
-	if (reset == true && msgData.value) {
-		if (msgData.value.length !== 0) {
-			resetCount = resetCount + msgData.value.length
-			msgData.value.forEach(elem=>{
-				DBWorker.postMessage({ storeName: msgData.name, action: "deleteItem", value: elem.name});
-			})
-		}
-	} else if (reset == true) {
-		resetCount--
-		console.log(resetCount)
-		
-	}
-    switch (msgData.name) {
-        case "configuration":
-            {
-                console.log(msgData.value)
-				if (msgData.value.filter(elem=>elem.name == "Congregation").length == 0) {
-                    configurationVue.display = true
-                    configured = false
-					configurationVue.configuration = defaultConfiguration
-					attendanceVue.currentMonth = currentMonthAttendance
-					attendanceVue.meetingAttendanceRecord = meetingAttendanceRecord
-					
-					//configurationVue.configuration = result.configuration
-					navigationVue.allGroups = configurationVue.configuration.fieldServiceGroups
-					//allPublishersVue.publishers = result.data
-					//attendanceVue.currentMonth = result.attendance[0]
-					//attendanceVue.meetingAttendanceRecord = result.attendance[1]
-
-                    navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}]
-                }
-				if (msgData.value.filter(elem=>elem.name == "Congregation").length !== 0) {
-                    congregationVue.display = true
-                    configured = true
-                    navigationVue.buttons = [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Configuration", "function": "configurationVue"}]
-                    configurationVue.configuration = msgData.value[0]
-                    navigationVue.allGroups = msgData.value[0].fieldServiceGroups
-                    DBWorker.postMessage({ storeName: 'data', action: "readAll"});
-                    DBWorker.postMessage({ storeName: 'attendance', action: "readAll"});
-                }/*
-				if (msgData.value.filter(elem=>elem.name == "Late Reports").length !== 0) {
-                    
-                    //navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "congregationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}]
-                }*/
-            }
-            break;
-        case "data":
-            {
-                allPublishersVue.publishers = msgData.value
-				/*
-				var publisherRecords = []
-				allPublishersVue.publishers.forEach(publisher=>{
-					monthlyReportVue.months.slice(0, monthlyReportVue.months.findIndex(elem=>elem.abbr == monthlyReportVue.month.abbr)).forEach(elem=>{
-						if (publisher.report.currentServiceYear[`${elem.abbr}`].sharedInMinistry == null) {
-							publisherRecords.push({'publisher': publisher, 'name': publisher.name, 'month': elem, 'fieldServiceGroup': publisher.fieldServiceGroup, 'contactInformation': publisher.contactInformation, 'dateOfBirth': publisher.dateOfBirth, 'report':publisher.report.currentServiceYear[`${elem.abbr}`]})
-						}
-					})
+	if (configurationVue.reset == true){
+		//resetCount--
+		if (msgData.value) {
+			console.log(msgData)
+			resetCount--
+			if (msgData.value.length !== 0) {
+				//resetCount--
+				resetCount += msgData.value.length
+				msgData.value.forEach(elem=>{
+					DBWorker.postMessage({ storeName: msgData.name, action: "deleteItem", value: elem.name});
 				})
-
-				const currentDate = new Date();
-                const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`;
-
-				DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [{"name": "Late Reports", "month": formattedDate, "value": publisherRecords}]});
-				
-				console.log(publisherRecords)*/
-            }
-            break;
-        case "ready":
-            {
-                
-            }
-            break;
-        case "attendance":
-            {
-                if (msgData.value.filter(elem=>elem.name == "Monthly").length !== 0 && msgData.value.filter(elem=>elem.name == "Monthly")[0].month == currentMonth) {
+			}
+		} else if (msgData.length == 3) {
+			resetCount--
+			document.querySelector('#status1').innerHTML = `Deleting items: ${msgData[1]} - ${msgData[2]}.`
+			document.querySelector('#status2').innerHTML = `${resetCount} Remaining.`
+			document.querySelector('#status3').innerHTML = `Please wait . . .`
+			if (resetCount === 0) {
+				location.reload()
+				/*
+				document.querySelector('#status1').innerHTML = ``
+				document.querySelector('#status2').innerHTML = ``
+				document.querySelector('#status3').innerHTML = `Completed`*/
+				//configurationVue.configuration = defaultConfiguration
+			}
+		}
+		return
+	} else {
+		switch (msgData.name) {
+			case "configuration":
+				{
 					console.log(msgData.value)
-					attendanceVue.currentMonth = msgData.value.filter(elem=>elem.name == "Monthly")[0]
-				} else {
-					attendanceVue.currentMonth = currentMonthAttendance
-					DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [attendanceVue.currentMonth]});
-				}
+					if (msgData.value.filter(elem=>elem.name == "Congregation").length == 0) {
+						configurationVue.display = true
+						configured = false
+						configurationVue.configuration = defaultConfiguration
+						attendanceVue.currentMonth = currentMonthAttendance
+						attendanceVue.meetingAttendanceRecord = meetingAttendanceRecord
+						
+						//configurationVue.configuration = result.configuration
+						navigationVue.allGroups = configurationVue.configuration.fieldServiceGroups
+						//allPublishersVue.publishers = result.data
+						//attendanceVue.currentMonth = result.attendance[0]
+						//attendanceVue.meetingAttendanceRecord = result.attendance[1]
 
-				if (msgData.value.filter(elem=>elem.name == "Meeting Attendance Record").length !== 0) {
-					console.log(msgData.value)
-					attendanceVue.meetingAttendanceRecord = msgData.value.filter(elem=>elem.name == "Meeting Attendance Record")[0]
-				} else {
-					attendanceVue.meetingAttendanceRecord = meetingAttendanceRecord
-					DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [attendanceVue.meetingAttendanceRecord]});
+						navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "contactInformationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Branch Report", "function": "branchReportVue"}]
+					}
+					if (msgData.value.filter(elem=>elem.name == "Congregation").length !== 0) {
+						congregationVue.display = true
+						configured = true
+						navigationVue.buttons = [{"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "contactInformationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Branch Report", "function": "branchReportVue"}, {"title": "Configuration", "function": "configurationVue"}]
+						configurationVue.configuration = msgData.value[0]
+						navigationVue.allGroups = msgData.value[0].fieldServiceGroups
+						DBWorker.postMessage({ storeName: 'data', action: "readAll"});
+						DBWorker.postMessage({ storeName: 'attendance', action: "readAll"});
+					}/*
+					if (msgData.value.filter(elem=>elem.name == "Late Reports").length !== 0) {
+						
+						//navigationVue.buttons = [{"title": "Congregation Information", "function": "congregationVue"}, {"title": "All Publishers", "function": "allPublishersVue"}, {"title": "Field Service Groups", "function": "fieldServiceGroupsVue"}, {"title": "All Contact Information", "function": "contactInformationVue"}, {"title": "Monthly Report", "function": "monthlyReportVue"}, {"title": "Missing Report", "function": "missingReportVue"}, {"title": "Attendance", "function": "attendanceVue"}, {"title": "Branch Report", "function": "branchReportVue"}]
+					}*/
 				}
-				
-            }
-            break;
-        case "savings":
-            {
-                if (monthlyReportVue.saved !== 0) {
-					//console.log(msgData)
-					monthlyReportVue.saved--
+				break;
+			case "data":
+				{
+					allPublishersVue.publishers = msgData.value
+					/*
+					var publisherRecords = []
+					allPublishersVue.publishers.forEach(publisher=>{
+						monthlyReportVue.months.slice(0, monthlyReportVue.months.findIndex(elem=>elem.abbr == monthlyReportVue.month.abbr)).forEach(elem=>{
+							if (publisher.report.currentServiceYear[`${elem.abbr}`].sharedInMinistry == null) {
+								publisherRecords.push({'publisher': publisher, 'name': publisher.name, 'month': elem, 'fieldServiceGroup': publisher.fieldServiceGroup, 'contactInformation': publisher.contactInformation, 'dateOfBirth': publisher.dateOfBirth, 'report':publisher.report.currentServiceYear[`${elem.abbr}`]})
+							}
+						})
+					})
+
+					const currentDate = new Date();
+					const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`;
+
+					DBWorker.postMessage({ storeName: 'configuration', action: "save", value: [{"name": "Late Reports", "month": formattedDate, "value": publisherRecords}]});
+					
+					console.log(publisherRecords)*/
 				}
-				if (missingReportVue.saved !== 0) {
-					//console.log(msgData)
-					missingReportVue.saved--
+				break;
+			case "ready":
+				{
+					
 				}
-            }
-            break;
-        case "done":
-            {
-                // No code here
-            }
-            break;
-    }
+				break;
+			case "attendance":
+				{
+					if (msgData.value.filter(elem=>elem.name == "Monthly").length !== 0 && msgData.value.filter(elem=>elem.name == "Monthly")[0].month == currentMonth) {
+						console.log(msgData.value)
+						attendanceVue.currentMonth = msgData.value.filter(elem=>elem.name == "Monthly")[0]
+					} else {
+						attendanceVue.currentMonth = currentMonthAttendance
+						DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [attendanceVue.currentMonth]});
+					}
+
+					if (msgData.value.filter(elem=>elem.name == "Meeting Attendance Record").length !== 0) {
+						console.log(msgData.value)
+						attendanceVue.meetingAttendanceRecord = msgData.value.filter(elem=>elem.name == "Meeting Attendance Record")[0]
+					} else {
+						attendanceVue.meetingAttendanceRecord = meetingAttendanceRecord
+						DBWorker.postMessage({ storeName: 'attendance', action: "save", value: [attendanceVue.meetingAttendanceRecord]});
+					}
+					
+				}
+				break;
+			case "savings":
+				{
+					if (monthlyReportVue.saved !== 0) {
+						//console.log(msgData)
+						monthlyReportVue.saved--
+					}
+					if (missingReportVue.saved !== 0) {
+						//console.log(msgData)
+						missingReportVue.saved--
+					}
+				}
+				break;
+			case "done":
+				{
+					// No code here
+				}
+				break;
+		}
+	}
 }
 
 document.querySelector('#navigation').innerHTML = `<template>
@@ -213,6 +230,8 @@ function gotoView(button) {
 	monthlyReportVue.display = false
 	missingReportVue.display = false
 	attendanceVue.display = false
+	contactInformationVue.display = false
+	branchReportVue.display = false
 	if (button == "congregationVue" || button == "configurationVue") {
 		navigationVue.display = false
 	} else {
@@ -254,11 +273,14 @@ function processCongregation() {
 
 document.querySelector('#configuration').innerHTML = `<template>
     <div v-if="display == true">
-		<h1 contenteditable="true" class="name">{{ configuration.congregationName }}</h1>
-		<h2 contenteditable="true" class="address">{{ configuration.address }}</h2>
-		<h2 contenteditable="true" class="email">{{ configuration.email }}</h2>
-		<h3 v-for="group in configuration.fieldServiceGroups" :key="group" contenteditable="true" class="fieldServiceGroups">{{ group }}</h3>
-        <button @click="saveConfiguration($event.target)">Save</button>
+		<h1 v-if="reset !== true" contenteditable="true" class="name">{{ configuration.congregationName }}</h1>
+		<h2 v-if="reset !== true" contenteditable="true" class="address">{{ configuration.address }}</h2>
+		<h2 v-if="reset !== true" contenteditable="true" class="email">{{ configuration.email }}</h2>
+		<h3 v-if="reset !== true" v-for="group in configuration.fieldServiceGroups" :key="group" contenteditable="true" class="fieldServiceGroups">{{ group }}</h3>
+        <h3 id="status1"></h3>
+        <h3 id="status2"></h3>
+        <h3 id="status3"></h3>
+		<button @click="saveConfiguration($event.target)">Save</button>
         <button @click="resetConfiguration($event.target)">Reset</button>
         <button @click="addGroup($event.target)">Add Field Service Group</button>
         <button @click="removeGroup($event.target)">Remove Field Service Group</button>
@@ -303,7 +325,7 @@ document.querySelector('#configuration').innerHTML = `<template>
 				<label>Phone Number: </label>
 				<p contenteditable="true" class="contactPhoneNumber">{{ publisher.contactInformation.phoneNumber }}</p>
 				<label>Emergency Contact Name: </label>
-				<p contenteditable="true" class="emergencyContactAddress">{{ publisher.emergencyContactInformation.address }}</p>
+				<p contenteditable="true" class="emergencyContactName">{{ publisher.emergencyContactInformation.address }}</p>
 				<label>Emergency Contact Phone Number: </label>
 				<p contenteditable="true" class="emergencyContactPhoneNumber">{{ publisher.emergencyContactInformation.phoneNumber }}</p>
 				<table>
@@ -353,6 +375,7 @@ function processConfiguration() {
         data: {
             configuration: {},
             display: false,
+            reset: false,
 			publisher: {},
 			hopes: ['Unbaptized Publisher', 'Other Sheep', 'Anointed'],
 			privileges: ['Elder', 'Ministerial Servant', 'Regular Pioneer', 'Special Pioneer', 'Field Missionary'],
@@ -367,7 +390,7 @@ function processConfiguration() {
             },
 			allGroups() {
                 return navigationVue.allGroups
-            },
+            }
         },
         methods: {
 			reloadPage() {
@@ -421,7 +444,8 @@ function processConfiguration() {
             },
             async resetConfiguration() {
                 if (prompt('Are you sure you want to Reset records?\nType "Reset" to Reset').toLowerCase() == 'reset') {
-					reset = true
+					this.reset = true
+					resetCount = 4
 					DBWorker.postMessage({ storeName: 'data', action: "readAll"});
                     DBWorker.postMessage({ storeName: 'configuration', action: "readAll"});
                     DBWorker.postMessage({ storeName: 'attendance', action: "readAll"});
@@ -481,7 +505,7 @@ function processConfiguration() {
 				})
                 item.parentNode.querySelector('.contactAddress').innerHTML = ''
                 item.parentNode.querySelector('.contactPhoneNumber').innerHTML = ''
-                item.parentNode.querySelector('.emergencyContactAddress').innerHTML = ''
+                item.parentNode.querySelector('.emergencyContactName').innerHTML = ''
                 item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML = ''
 				this.months.forEach(elem=>{
 					const currentItem = item.parentNode.querySelector(`.${elem.abbr}`)
@@ -530,7 +554,7 @@ function processConfiguration() {
 
                     publisher.contactInformation.address = item.parentNode.querySelector('.contactAddress').innerHTML
                     publisher.contactInformation.phoneNumber = item.parentNode.querySelector('.contactPhoneNumber').innerHTML
-                    publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactAddress').innerHTML
+                    publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactName').innerHTML
                     publisher.emergencyContactInformation.phoneNumber = item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML
                     this.months.forEach(elem=>{
                         const currentItem = item.parentNode.querySelector(`.${elem.abbr}`)
@@ -580,101 +604,113 @@ function processConfiguration() {
 
 document.querySelector('#allPublishers').innerHTML = `<template>
 	<div v-if="display == true">
-		<section>
-			<div v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
-                <div class="main" style="cursor:pointer">
-                    <div @click="publisherDetail(publisher, $event.target)">{{ publisher.name }}</div>
-                </div>
-                <div class="detail" style="display:none; border: 1px solid gray; padding:5px">
-					<i @click="publisherDetail(publisher, $event.target)" class="fas fa-arrow-left"></i>
-					<i @click="removePublisher(count, publisher.name, $event.target)" class="fas fa-trash-alt"></i>
-                    <h2 contenteditable="true" class="name">{{ publisher.name }}</h2>
-                    <p>
-                        <label>Date of Birth: </label>
-                        <input v-if="publisher.dateOfBirth == null" type="date" class="dateOfBirth">
-                        <input v-if="publisher.dateOfBirth !== null" type="date" class="dateOfBirth" :value="cleanDate(publisher.dateOfBirth)">
-                        <select class="gender" :v-model="publisher.gender">
-                            <option v-if="publisher.gender !== 'Male' && publisher.gender !== 'Female'" value="">Select Gender</option>
-                            <option v-if="publisher.gender == 'Male' || publisher.gender == 'Female'" :value="publisher.gender">{{ publisher.gender }}</option>
-                            <option v-for="gender in ['Male', 'Female'].filter(elem=>elem !== publisher.gender)" :value="gender">{{ gender }}</option>
-                        </select>
-                    </p>
-                    <p>
-                        <label>Date of Baptism: </label>
-                        <input type="date" class="dateOfBaptism" :value="cleanDate(publisher.dateOfBaptism)">
-                        
-                        <select class="hope" :v-model="publisher.hope">
-                            <option :value="publisher.hope">{{ publisher.hope }}</option>
-                            <option v-for="hope in hopes.filter(elem=>elem !== publisher.hope)" :value="hope">{{ hope }}</option>
-                        </select>
-                    </p>
-                    <label v-for="(privilege, index) in privileges" :key="index"><input type="checkbox" :name="privilege" class="privileges" :checked=publisher.privilege.includes(privilege)>{{ privilege }}</label>
-                    <p>
-                        <label>Field Service Group: </label>
-                        <select class="fieldServiceGroup" :v-model="publisher.fieldServiceGroup">
-							<option v-if="!allGroups.includes(publisher.fieldServiceGroup)" value="">Select Group</option>
-                            <option v-if="allGroups.includes(publisher.fieldServiceGroup)" :value="publisher.fieldServiceGroup">{{ publisher.fieldServiceGroup }}</option>
-                            <option v-for="group in allGroups.filter(elem=>elem !== publisher.fieldServiceGroup)" :value="group">{{ group }}</option>
-                        </select>
-                    </p>
-                    <label>Address: </label>
-                    <p contenteditable="true" class="contactAddress">{{ publisher.contactInformation.address }}</p>
-                    <label>Phone Number: </label>
-                    <p contenteditable="true" class="contactPhoneNumber">{{ publisher.contactInformation.phoneNumber }}</p>
-                    <label>Emergency Contact Name: </label>
-                    <p contenteditable="true" class="emergencyContactAddress">{{ publisher.emergencyContactInformation.address }}</p>
-                    <label>Emergency Contact Phone Number: </label>
-                    <p contenteditable="true" class="emergencyContactPhoneNumber">{{ publisher.emergencyContactInformation.phoneNumber }}</p>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Service Year 2024</th>
-                            <th>Shared in Ministry</th>
-                            <th>Bible Studies</th>
-                            <th>Auxiliary Pioneer</th>
-                            <th>Hours (If pioneer or ﬁeld missionary)</th>
-                            <th>Remarks</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="(month, index) in months" :key="month.abbr" :class="month.abbr">
-                            <td>{{ month.fullName }}</td>
-                            <td><input class="sharedInMinistry" type="checkbox" :checked="publisher.report.currentServiceYear[month.abbr].sharedInMinistry !== null"></td>
-                            <td class="bibleStudies" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].bibleStudies }}</td>
-                            <td><input class="auxiliaryPioneer" type="checkbox" :checked="publisher.report.currentServiceYear[month.abbr].auxiliaryPioneer !== null"></td>
-                            <td class="hours" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].hours }}</td>
-                            <td class="remarks" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].remarks }}</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>Total</td>
-                            <td>{{ publisher.report.currentServiceYear.totalHours }}</td>
-                            <td contenteditable="true">{{ publisher.report.currentServiceYear.totalRemarks }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
+		<section v-for="(state) in status" :key="state" style="padding:10px; margin:5px; border: 1px solid gray">
+			<h2>{{ state }} Publishers</h2>
+			<div v-for="(group) in ['Pioneers','Publishers']"  v-if="state == 'Active' || (state == 'Inactive' && group == 'Publishers')" style="padding:10px; margin:5px; border: 1px solid gray">
+				<h2 v-if="state == 'Active'">{{ group }}</h2>
+				<div v-for="(currentGroup, count) in allGroups" style="padding:10px; margin:5px; border: 1px solid gray">
+					<h2 v-if="state == 'Active' && group == 'Publishers'">{{ currentGroup }}</h2>
+					<div v-for="(publisher, count) in publishers" :key="count" v-if="publisher.fieldServiceGroup == currentGroup && checkStatus(publisher.report) == state && ((group == 'Pioneers' && publisher.privilege.some(item => privileges.slice(-3).includes(item))) || (group !== 'Pioneers' && !publisher.privilege.some(item => privileges.slice(-3).includes(item)))) && (publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Field Service Groups') && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+				
+					<div class="main" style="cursor:pointer">
+						<div @click="publisherDetail(publisher, $event.target)">{{ publisher.name }}</div>
+					</div>
+					<div class="detail" style="display:none; border: 1px solid gray; padding:5px">
+						<i @click="publisherDetail(publisher, $event.target)" class="fas fa-arrow-left"></i>
+						<i @click="removePublisher(count, publisher.name, $event.target)" class="fas fa-trash-alt"></i>
+						<h2 contenteditable="true" class="name">{{ publisher.name }}</h2>
+						<p>
+							<label>Date of Birth: </label>
+							<input v-if="publisher.dateOfBirth == null" type="date" class="dateOfBirth">
+							<input v-if="publisher.dateOfBirth !== null" type="date" class="dateOfBirth" :value="cleanDate(publisher.dateOfBirth)">
+							<select class="gender" :v-model="publisher.gender">
+								<option v-if="publisher.gender !== 'Male' && publisher.gender !== 'Female'" value="">Select Gender</option>
+								<option v-if="publisher.gender == 'Male' || publisher.gender == 'Female'" :value="publisher.gender">{{ publisher.gender }}</option>
+								<option v-for="gender in ['Male', 'Female'].filter(elem=>elem !== publisher.gender)" :value="gender">{{ gender }}</option>
+							</select>
+						</p>
+						<p>
+							<label>Date of Baptism: </label>
+							<input type="date" class="dateOfBaptism" :value="cleanDate(publisher.dateOfBaptism)">
+							
+							<select class="hope" :v-model="publisher.hope">
+								<option :value="publisher.hope">{{ publisher.hope }}</option>
+								<option v-for="hope in hopes.filter(elem=>elem !== publisher.hope)" :value="hope">{{ hope }}</option>
+							</select>
+						</p>
+						<label v-for="(privilege, index) in privileges" :key="index"><input type="checkbox" :name="privilege" class="privileges" :checked=publisher.privilege.includes(privilege)>{{ privilege }}</label>
+						<p>
+							<label>Field Service Group: </label>
+							<select class="fieldServiceGroup" :v-model="publisher.fieldServiceGroup">
+								<option v-if="!allGroups.includes(publisher.fieldServiceGroup)" value="">Select Group</option>
+								<option v-if="allGroups.includes(publisher.fieldServiceGroup)" :value="publisher.fieldServiceGroup">{{ publisher.fieldServiceGroup }}</option>
+								<option v-for="group in allGroups.filter(elem=>elem !== publisher.fieldServiceGroup)" :value="group">{{ group }}</option>
+							</select>
+						</p>
+						<label>Address: </label>
+						<p contenteditable="true" class="contactAddress">{{ publisher.contactInformation.address }}</p>
+						<label>Phone Number: </label>
+						<p contenteditable="true" class="contactPhoneNumber">{{ publisher.contactInformation.phoneNumber }}</p>
+						<label>Emergency Contact Name: </label>
+						<p contenteditable="true" class="emergencyContactName">{{ publisher.emergencyContactInformation.address }}</p>
+						<label>Emergency Contact Phone Number: </label>
+						<p contenteditable="true" class="emergencyContactPhoneNumber">{{ publisher.emergencyContactInformation.phoneNumber }}</p>
+						<table>
+							<thead>
+							<tr>
+								<th>Service Year 2024</th>
+								<th>Shared in Ministry</th>
+								<th>Bible Studies</th>
+								<th>Auxiliary Pioneer</th>
+								<th>Hours (If pioneer or ﬁeld missionary)</th>
+								<th>Remarks</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr v-for="(month, index) in months" :key="month.abbr" :class="month.abbr">
+								<td>{{ month.fullName }}</td>
+								<td><input class="sharedInMinistry" type="checkbox" :checked="publisher.report.currentServiceYear[month.abbr].sharedInMinistry !== null"></td>
+								<td class="bibleStudies" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].bibleStudies }}</td>
+								<td><input class="auxiliaryPioneer" type="checkbox" :checked="publisher.report.currentServiceYear[month.abbr].auxiliaryPioneer !== null"></td>
+								<td class="hours" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].hours }}</td>
+								<td class="remarks" contenteditable="true">{{ publisher.report.currentServiceYear[month.abbr].remarks }}</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td>Total</td>
+								<td>{{ publisher.report.currentServiceYear.totalHours }}</td>
+								<td contenteditable="true">{{ publisher.report.currentServiceYear.totalRemarks }}</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+					</div>
                 </div>
             </div>
 		</section>
     </div>
 </template>`
-
+//(group == 'Pioneers' && publisher.privilege.some(item => privileges.slice(-3).includes(item)))
 function processAllPublishers() {
 
     allPublishersVue = new Vue({
         el: document.querySelector('#allPublishers'),
         data: {
             publishers: [],
+            status: ["Active", "Inactive"],
             display: false,
             hopes: ['Anointed', 'Other Sheep', 'Unbaptized Publisher'],
             privileges: ['Elder', 'Ministerial Servant', 'Regular Pioneer', 'Special Pioneer', 'Field Missionary'],
             months: [{"abbr": "sept", "fullName": "September"}, {"abbr": "oct", "fullName": "October"}, {"abbr": "nov", "fullName": "November"}, {"abbr": "dec", "fullName": "December"}, {"abbr": "jan", "fullName": "January"}, {"abbr": "feb", "fullName": "February"}, {"abbr": "mar", "fullName": "March"}, {"abbr": "apr", "fullName": "April"}, {"abbr": "may", "fullName": "May"}, {"abbr": "jun", "fullName": "June"}, {"abbr": "jul", "fullName": "July"}, {"abbr": "aug", "fullName": "August"} ],
         },
         computed: {
-            allCharacters() {/*
-                return getUniqueElementsByProperty(this.clickedSectionFilter,['ID'])*/
+			Publishers() {
+                return this.publishers.map((element) => ({
+                    ...element,
+                    status: this.checkStatus(element.report),
+                }));
             },
             searchTerms() {
                 return navigationVue.searchTerms
@@ -687,7 +723,27 @@ function processAllPublishers() {
             },
         },
         methods: {
-			publisherDetail(publisher, item) {
+			checkStatus(report) {
+				var lastServiceYearMonths = monthlyReportVue.months.map((element) => ({
+                    ...element,
+                    serviceYear: 'lastServiceYear',
+                }));
+				var currentServiceYearMonths = monthlyReportVue.months.map((element) => ({
+                    ...element,
+                    serviceYear: 'currentServiceYear',
+                }));
+				var lastSixMonths = lastServiceYearMonths.concat(currentServiceYearMonths.slice(0, currentServiceYearMonths.findIndex(elem=>elem.abbr == monthlyReportVue.month.abbr) + 1)).slice(-6)
+				var activeMonths = []
+				lastSixMonths.forEach(elem=>{
+					activeMonths.push(report[`${elem.serviceYear}`][`${elem.abbr}`].sharedInMinistry)
+				})
+				if (activeMonths.findIndex(elem=>elem == true) == -1) {
+					return "Inactive"
+				} else {
+					return "Active"
+				}
+			},
+            publisherDetail(publisher, item) {
                 if (item.parentNode.className == 'main') {
                     item.parentNode.parentNode.querySelector('.main').style.display = 'none'
                     item.parentNode.parentNode.querySelector('.detail').style.display = ''
@@ -722,10 +778,10 @@ function processAllPublishers() {
 
                     publisher.privilege = allPrivileges
 
-                    publisher.contactInformation.address = item.parentNode.querySelector('.contactAddress').innerHTML
-                    publisher.contactInformation.phoneNumber = item.parentNode.querySelector('.contactPhoneNumber').innerHTML
-                    publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactAddress').innerHTML
-                    publisher.emergencyContactInformation.phoneNumber = item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML
+                    item.parentNode.querySelector('.contactAddress').innerHTML = '' ? null : publisher.contactInformation.address = item.parentNode.querySelector('.contactAddress').innerHTML
+                    item.parentNode.querySelector('.contactPhoneNumber').innerHTML = '' ? null : publisher.contactInformation.phoneNumber = item.parentNode.querySelector('.contactPhoneNumber').innerHTML
+                    item.parentNode.querySelector('.emergencyContactName').innerHTML = '' ? null : publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactName').innerHTML
+                    item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML = '' ? null : publisher.emergencyContactInformation.phoneNumber = item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML
                     this.months.forEach(elem=>{
                         const currentItem = item.parentNode.querySelector(`.${elem.abbr}`)
                         if (currentItem.querySelector('.hours').innerHTML !== '') {
@@ -799,13 +855,14 @@ async function shortWait(){
 
 document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 	<div v-if="display == true" style="display:flex">
-		<div style="display:flex">
-			<div style="padding:5px" v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0)">
+		<div style="display:flex; flex-wrap:wrap">
+			<div v-for="(group) in allGroups" :key="group" style="padding:10px; margin:5px; border: 1px solid gray" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) || elem.contactInformation.address.toLowerCase().includes(searchTerms) || elem.contactInformation.phoneNumber.toLowerCase().includes(searchTerms)).length !== 0)">
+				<h2>{{ group }}</h2>
 				<table>
 					<thead>
 						<tr>
 							<th>S/No.</th>
-							<th>{{ group }}</th>
+							<th>Publisher Name</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -1026,7 +1083,7 @@ function processMonthlyReport() {
 
                     publisher.contactInformation.address = item.parentNode.querySelector('.contactAddress').innerHTML
                     publisher.contactInformation.phoneNumber = item.parentNode.querySelector('.contactPhoneNumber').innerHTML
-                    publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactAddress').innerHTML
+                    publisher.emergencyContactInformation.name = item.parentNode.querySelector('.emergencyContactName').innerHTML
                     publisher.emergencyContactInformation.phoneNumber = item.parentNode.querySelector('.emergencyContactPhoneNumber').innerHTML
                     this.months.forEach(elem=>{
                         const currentItem = item.parentNode.querySelector(`.${elem.abbr}`)
@@ -1178,12 +1235,147 @@ function processMonthlyReport() {
     })
 }
 
+document.querySelector('#contactInformation').innerHTML = `<template>
+	<div v-if="display == true" style="display:block">
+		<div style="display:flex; justify-content:space-between">
+			<h1>Contact Information</h1>
+			<h2 style="text-align: right;"><i v-if="editing == false" @click="edit()" title="Edit" style="margin-right:15px" class="fas fa-edit"></i><i v-if="editing == true" @click="edit()" title="Save" style="margin-right:15px" class="fas fa-save"></i></h2>
+		</div>
+		<div style="display:flex; flex-wrap:wrap">
+			<div style="padding:10px; margin:5px; border: 1px solid gray; display:block" v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms)).length !== 0)">
+				<div style="display:flex; justify-content:space-between">
+					<h2>{{ group }}</h2>
+				</div>
+				<table>
+					<thead>
+						<tr>
+							<th>S/No.</th>
+							<th>Name</th>
+							<th>Phone Number</th>
+							<th>Address</th>
+							<th>Emergency Contact</th>
+							<th>Emergency Contact Number</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.fieldServiceGroup == group && (publisher.name.toLowerCase().includes(searchTerms) || publisher.contactInformation.address.toLowerCase().includes(searchTerms) || publisher.contactInformation.phoneNumber.toLowerCase().includes(searchTerms))">
+							<td>{{ count + 1 }}</td>
+							<td>{{ publisher.name }}</td>
+							<td v-if="editing == false" style="display:flex; flex-wrap:nowrap">{{ publisher.contactInformation.phoneNumber }}<i v-if="publisher.contactInformation.phoneNumber !== null" @click="call(publisher.contactInformation.phoneNumber)" title="Call" style="margin-left:15px" class="fas fa-phone"></i></td>
+							<td v-if="editing == false">{{ publisher.contactInformation.address }}</td>
+							<td v-if="editing == false">{{ publisher.emergencyContactInformation.name }}</td>
+							<td v-if="editing == false" style="display:flex; flex-wrap:nowrap">{{ publisher.emergencyContactInformation.phoneNumber }}<i v-if="publisher.emergencyContactInformation.phoneNumber !== null" @click="call(publisher.emergencyContactInformation.phoneNumber)" title="Call" style="margin-left:15px" class="fas fa-phone"></i></td>
+							<td v-if="editing == true"><input class="contactInformation" type="tel" :value="publisher.contactInformation.phoneNumber" @change="handleInputChange($event.target, publisher, 'phoneNumber')"></td>
+							<td v-if="editing == true"><input class="contactInformation" type="text" :value="publisher.contactInformation.address" @change="handleInputChange($event.target, publisher, 'address')"></td>
+							<td v-if="editing == true"><input class="emergencyContactInformation" type="text" :value="publisher.emergencyContactInformation.name" @change="handleInputChange($event.target, publisher, 'name')"></td>
+							<td v-if="editing == true"><input class="emergencyContactInformation" type="tel" :value="publisher.emergencyContactInformation.phoneNumber" @change="handleInputChange($event.target, publisher, 'phoneNumber')"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+    </div>
+</template>`
+
+function contactInformation() {
+
+    contactInformationVue = new Vue({
+        el: document.querySelector('#contactInformation'),
+        data: {
+            editing: false,
+            display: false,
+            pdfFile: "",
+			selectedPublisher: {},
+        },
+        computed: {
+            publishers() {
+                return allPublishersVue.publishers
+            },
+			searchTerms() {
+                return navigationVue.searchTerms
+            },
+			allGroups() {
+                return navigationVue.allGroups
+            },
+			selectedGroup() {
+                return navigationVue.fieldServiceGroup
+            },
+        },
+        methods: {
+			groupPublishers(group) {
+                return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group)
+            },
+			publisherDetail(publisher) {
+				this.selectedPublisher = publisher
+                //fillPublisherRecord(publisher)
+			},
+            updateRecord(publisher) {
+				updatePublisherRecord(publisher)
+			},
+            handleInputChange(event, publisher, property) {
+				if (event.value == '') {
+					publisher[`${event.className}`][`${property}`] = null
+				} else {
+					publisher[`${event.className}`][`${property}`] = event.value
+				}
+
+				DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
+			},
+			edit() {
+				this.editing = !this.editing;
+			},
+			call(number) {
+				window.location.href = "tel:" + number;
+			},
+            message(group) {
+
+				var elementToCopy = document.getElementsByTagName('table')[0];//document.getElementById('elementToCopy');
+				
+
+				// Create a range to select the content of the element
+				var range = document.createRange();
+				range.selectNode(elementToCopy);
+
+				// Clear the existing clipboard content
+				window.getSelection().removeAllRanges();
+
+				// Add the range to the clipboard
+				window.getSelection().addRange(range);
+
+				// Copy the selected content to the clipboard
+				document.execCommand('copy');
+
+				// Clear the selection
+				window.getSelection().removeAllRanges();
+
+				var recipient = ''//group.OverseerMail//'someone@example.com';
+				var subject = 'Missing Report - ' + group + ' - ' + attendanceVue.cleanDate(new Date());
+				var body = `Dear Brother :
+Please these are the reports still missing for your field service group.
+Thanks,
+
+
+`
+
+				var mailtoLink = 'mailto:' + encodeURIComponent(recipient) +
+								'?subject=' + encodeURIComponent(subject) +
+								'&body=' + encodeURIComponent(body);
+
+				window.location.href = mailtoLink;
+			},
+        }
+    })
+}
+
 document.querySelector('#missingReport').innerHTML = `<template>
 	<div v-if="display == true" style="display:block">
 		<h1>Missing Reports</h1>
 		<div style="display:flex; flex-wrap:wrap">
-			<div style="padding:10px; margin:5px; border: 1px solid gray" v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) && missingRecord(elem).length !== 0).length !== 0)">
-				<h2>{{ group }}</h2>
+			<div class="elementToCopy" style="padding:10px; margin:5px; border: 1px solid gray; display:block" v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Field Service Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) && missingRecord(elem).length !== 0).length !== 0)">
+				<div style="display:flex; justify-content:space-between">
+					<h2>{{ group }}</h2>
+					<h2 v-if="selectedGroup !== 'All Field Service Groups'" style="text-align: right;" @click="message(group)" title="Send Message"><i class="fas fa-envelope"></i></h2>
+				</div>
 				<table>
 					<thead>
 						<tr>
@@ -1271,6 +1463,42 @@ function processMissingReport() {
 				})
 				
 				return publisherRecords.replace('; ','')
+			},
+            message(group) {
+
+				var elementToCopy = document.getElementsByTagName('table')[0];//document.getElementById('elementToCopy');
+				
+
+				// Create a range to select the content of the element
+				var range = document.createRange();
+				range.selectNode(elementToCopy);
+
+				// Clear the existing clipboard content
+				window.getSelection().removeAllRanges();
+
+				// Add the range to the clipboard
+				window.getSelection().addRange(range);
+
+				// Copy the selected content to the clipboard
+				document.execCommand('copy');
+
+				// Clear the selection
+				window.getSelection().removeAllRanges();
+
+				var recipient = ''//group.OverseerMail//'someone@example.com';
+				var subject = 'Missing Report - ' + group + ' - ' + attendanceVue.cleanDate(new Date());
+				var body = `Dear Brother :
+Please these are the reports still missing for your field service group.
+Thanks,
+
+
+`
+				
+				var mailtoLink = 'mailto:' + encodeURIComponent(recipient) +
+								'?subject=' + encodeURIComponent(subject) +
+								'&body=' + encodeURIComponent(body);
+
+				window.location.href = mailtoLink;
 			},
         }
     })
@@ -1446,6 +1674,124 @@ function processAttendance() {
     })
 }
 
+document.querySelector('#branchReport').innerHTML = `<template>
+	<div v-if="display == true" style="display:block">
+		<p>Field Service and Meeting Attendance (S-1)</p>
+		<h1>December 2023</h1>
+		<div style="padding:10px; margin:5px; border: 1px solid gray">
+			<h3>Active Publishers</h3>
+			<div><span>{{ activePublishers(publishers) }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+			<h3>Average Weekend Meeting Attendance</h3>
+			<div><span>{{ averageAttendance() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+		</div>
+		<div style="padding:10px; margin:5px; border: 1px solid gray">
+			<h2>Publishers</h2>
+			<h3>Number of Reports</h3>
+			<div><span>{{ publisherNumberOfReports() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+			<h3>Bible Studies</h3>
+			<div><span>{{ publisherBibleStudies() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+		</div>
+		<div style="padding:10px; margin:5px; border: 1px solid gray">
+			<h2>Auxiliary Pioneers</h2>
+			<h3>Number of Reports</h3>
+			<div><span>{{ auxiliaryPioneerNumberOfReports() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+			<h3>Hours</h3>
+			<div><span>{{ auxiliaryPioneerHours() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+			<h3>Bible Studies</h3>
+			<div><span>{{ auxiliaryPioneerBibleStudies() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+		</div>
+		<div style="padding:10px; margin:5px; border: 1px solid gray">
+			<h2>Regular Pioneers</h2>
+			<h3>Number of Reports</h3>
+			<div><span>{{ regularPioneerNumberOfReports() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+			<h3>Hours</h3>
+			<div><span>{{ regularPioneerHours() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+			<h3>Bible Studies</h3>
+			<div><span>{{ regularPioneerBibleStudies() }}</span><i style="margin-left:10px" @click="copy($event.target)" title="Copy" class="fas fa-copy"></i></div>
+		</div>
+	</div>
+</template>`
+
+function branchReportDetails() {
+
+    branchReportVue = new Vue({
+        el: document.querySelector('#branchReport'),
+        data: {
+            //processedGroups: [],
+            display: false,
+            pdfFile: "",
+			selectedPublisher: {},
+        },
+        computed: {
+            publishers() {
+                return allPublishersVue.publishers
+            },
+        },
+        methods: {
+			activePublishers(publishers) {
+				return publishers.filter(elem=>allPublishersVue.checkStatus(elem.report) == 'Active').length
+			},
+			averageAttendance() {
+                return attendanceVue.averageAttendance(attendanceVue.currentMonth.meetings[1])
+            },
+			publisherNumberOfReports() {
+				return monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry).length + monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null).length
+			},
+			auxiliaryPioneerNumberOfReports() {
+				return monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.report.auxiliaryPioneer == true).length + monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].auxiliaryPioneer == true).length
+			},
+			regularPioneerNumberOfReports() {
+				return monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.publisher.privilege.includes("Regular Pioneer")).length + monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.privilege.includes('Regular Pioneer')).length
+			},
+			publisherBibleStudies() {
+				var totalBibleStudies = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry).map(elem=>elem.report.bibleStudies ? elem.report.bibleStudies : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies : 0))
+				return totalBibleStudies.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+			},
+			auxiliaryPioneerBibleStudies() {
+				var totalBibleStudies = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.report.auxiliaryPioneer == true).map(elem=>elem.report.bibleStudies ? elem.report.bibleStudies : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].auxiliaryPioneer == true).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies : 0))
+				return totalBibleStudies.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+			},
+			regularPioneerBibleStudies() {
+				var totalBibleStudies = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.publisher.privilege.includes("Regular Pioneer")).map(elem=>elem.report.bibleStudies ? elem.report.bibleStudies : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.privilege.includes('Regular Pioneer')).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies : 0))
+				return totalBibleStudies.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+			},
+			auxiliaryPioneerHours() {
+				var totalHours = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.report.auxiliaryPioneer == true).map(elem=>elem.report.hours ? elem.report.hours : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].auxiliaryPioneer == true).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].hours ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].hours : 0))
+				return totalHours.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+			},
+			regularPioneerHours() {
+				var totalHours = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.publisher.privilege.includes("Regular Pioneer")).map(elem=>elem.report.hours ? elem.report.hours : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.privilege.includes('Regular Pioneer')).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].hours ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].hours : 0))
+				return totalHours.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+			},
+			async copy(event) {
+				console.log(event.className)
+				event.className = "fas fa-check"
+				await shortWait()
+				// Get the HTML content of the element
+				var elementToCopy = event.parentNode.querySelector('span');
+				var htmlContent = elementToCopy.innerHTML;
+			
+				// Create a temporary textarea element to hold the HTML content
+				var tempTextArea = document.createElement('textarea');
+				tempTextArea.value = htmlContent;
+			
+				// Append the textarea to the document (it doesn't have to be visible)
+				document.body.appendChild(tempTextArea);
+			
+				// Select and copy the content
+				tempTextArea.select();
+				document.execCommand('copy');
+			
+				// Remove the temporary textarea
+				document.body.removeChild(tempTextArea);
+				await shortWait()
+				//console.log(event.parentNode.querySelector('span').innerHTML)
+				event.className = "fas fa-copy"
+			}
+        }
+    })
+}
+
 processAllPublishers()
 processCongregation()
 processConfiguration()
@@ -1453,6 +1799,8 @@ processFieldServiceGroups()
 processMonthlyReport()
 processMissingReport()
 processAttendance()
+contactInformation()
+branchReportDetails()
 
 var defaultConfiguration = {"congregationName": "Congregation Name", "name": "Congregation", "address": "Congregation Address", "email": "Congregation Email", "fieldServiceGroups": ["Group 1", "Group 2", "Group 3"]}
 

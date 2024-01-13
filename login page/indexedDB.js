@@ -132,10 +132,10 @@ DB.updateResult = function(a, d, e) {
 }
 DB.deleteItem = function(a, c) {
     let b = db.transaction([a], "readwrite").objectStore(a).delete(c);
-    (b.onsuccess = function (a) {
-        self.postMessage("Successfully deleted user in db");
+    (b.onsuccess = function (e) {
+        self.postMessage(["Successfully deleted user in db", a ,c]);
     }),
-        (b.onerror = function (a) {
+        (b.onerror = function (e) {
             self.postMessage("something went wrong here");
         });
 }

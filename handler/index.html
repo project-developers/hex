@@ -6,46 +6,67 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" /> 
 		<title>Cong Rec</title>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="stylesheet" href="style.css">
         <script src="vue.js"></script>
         <script src="jszip.min.js"></script>
         <script src="mammoth.browser.min.js"></script>
         <script src="pdf-lib.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-	</head>
-	
+    </head>
+
     <body>
 
-        <main id="main-holder">
-            <a href="https://project-developers.github.io/hexa/">Back</a>
-            <h1 id="login-header">Login</h1>
-        
-            <div id="login-error-msg-holder">
-                <p id="login-error-msg">Invalid username <span id="error-msg-second-line">and/or password</span></p>
-            </div>
-        
-            <form id="login-form">
-                <input type="text" name="username" id="username-field" class="login-form-field" placeholder="Username">
-                <input type="password" name="password" id="password-field" class="login-form-field" placeholder="Password">
-                <input type="password" name="passwordConfirm" id="passwordConfirm-field" class="login-form-field" placeholder="Confirm Password">
-                <input type="submit" value="Login" id="login-form-submit">
-            </form>
-        
-        </main>
+        <!-- Navbar (sit on top) -->
+        <div class="w3-top" id="navigation"></div>
 
-        <div id="navigation"></div>
-        <div id="congregation"></div>
-        <div id="configuration"></div>
-        <div id="allPublishers"></div>
-        <div id="fieldServiceGroups"></div>
-        <div id="contactInformation"></div>
-        <div id="monthlyReport"></div>
-        <div id="missingReport"></div>
-        <div id="attendance"></div>
-        <div id="branchReport"></div>
-        <div id="publisherContactInformation"></div>
-                
+        <!-- Sidebar on small screens when clicking the menu icon -->
+        <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large"
+            style="display:none" id="mySidebar">
+        </nav>
+
+        <!-- Header with full-height image -->
+        <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
+            
+            <div class="w3-display-left w3-text-white" style="padding:48px">
+            </div>
+            <div class="w3-display-left w3-text-white" style="padding:48px">
+            </div>
+            <div class="w3-container w3-light-grey" id="main-holder" style="padding:128px 36px">
+                <a href="https://project-developers.github.io/hexa/">BACK</a>
+                <h3 class="w3-center">LOGIN</h3>
+                <div id="login-error-msg-holder">
+                    <p id="login-error-msg">Invalid username <span id="error-msg-second-line">and/or password</span></p>
+                </div>
+                <div style="margin-top:48px">
+                    <form id="login-form">
+                        <p><input class="w3-input w3-border" type="text" placeholder="Username" required="" name="username">
+                        </p>
+                        <p><input class="w3-input w3-border" type="password" placeholder="Password" required=""
+                                name="password"></p>
+                        <p><input class="w3-input w3-border" type="password" placeholder="Confirm Password" required=""
+                                name="confirmPassword"></p>
+                        <p>
+                            <button class="w3-button w3-black" type="submit" id="login-form-submit">
+                                <i class="fa fa-sign-in-alt"></i> LOGIN
+                            </button>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <div class="w3-container" id="congregation" style="padding:48px 16px 16px 16px;display:none"></div>
+        <div class="w3-container" id="allPublishers" style="padding:0 16px 0 16px;display:none"></div>
+        <div class="w3-container" id="contactInformation" style="padding:64px 16px 0 16px;display:none"></div>
+        <div class="w3-container" id="fieldServiceGroups" style="padding:0 16px 0 16px; margin-top:-64px;display:none"></div>
+        <div class="w3-container" id="monthlyReport" style="padding:48px 16px 0 16px;display:none"></div>
+        <div class="w3-container" id="missingReport" style="padding:32px 16px 0 16px;margin-top:-32px;display:none"></div>
+        <div class="w3-container" id="attendance" style="padding:0 16px 0 16px;margin-top:-32px;display:none"></div>
+        <div class="w3-container" id="branchReport" style="padding:0 16px 0 16px;display:none"></div>
+        <div class="w3-container" id="configuration" style="padding:0 16px 0 16px;display:none"></div>
+
         <script src="script.js"></script>
     </body>
 

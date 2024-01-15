@@ -2014,7 +2014,6 @@ document.querySelector('#configuration').innerHTML = `<template>
 							<div class="main">
 								<button class="w3-button w3-black" @click="publisherDetail($event.target)">New Publisher</button>
 								<button class="w3-button w3-black" @click="reloadPage()">Reload</button>
-								<button class="w3-button w3-black" @click="signOut()">Sign Out</button>
 							</div>
 							<div class="detail" style="display:none; border: 1px solid gray; padding:5px">
 								<button class="w3-button w3-black" @click="publisherDetail($event.target)">Save</button>

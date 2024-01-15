@@ -84,7 +84,7 @@ loginButton.addEventListener("click", (e) => {
 var currentUser = { "name": "currentUser", "username": null, "password": null, "accesses": [] }
 
 var navigationVue, navigationVue2, allPublishersVue, congregationVue, configurationVue, branchReportVue, contactInformationVue, fieldServiceGroupsVue, monthlyReportVue, missingReportVue;
-var allButtons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "GROUPS", "function": "fieldServiceGroupsVue"}, {"title": "CONTACTS", "function": "contactInformationVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}, {"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "SETTINGS", "function": "configurationVue"}]
+var allButtons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "GROUPS", "function": "fieldServiceGroupsVue"}, {"title": "CONTACTS", "function": "contactInformationVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}, {"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "MISSING", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "SETTINGS", "function": "configurationVue"}]
 //var CongregationData = JSON.parse(localStorage.getItem('CongregationData'));
 
 function createWorker(script, fn) {
@@ -106,7 +106,7 @@ var configured, reset, resetCount = 0;
 
 var currentMonth = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}`;
 
-var reportButtons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}]
+var reportButtons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "MISSING", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}]
 
 DBWorker.onmessage = async function (msg) {
     var msgData = msg.data;
@@ -268,19 +268,19 @@ document.querySelector('#navigation').innerHTML = `<template>
 				type="text" 
 			>
 		</div>
-		
 	</div>
 	<!-- Hide right-floated links on small screens and replace them with a menu icon -->
 
 	<a href="javascript:void(0)" v-if="logged() == true" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
 		<i class="fa fa-bars"></i>
 	</a>
-	<div v-if="logged() == true && displayDropdown == true">
+	<div v-if="logged() == true && displayDropdown == true" class="w3-hide-large w3-hide-medium">
 		<select style="margin-top:2px" class="w3-bar-item w3-select" v-model="fieldServiceGroup">
 			<option v-if="allGroups.length > 1" value="All Groups">All Groups</option>
 			<option v-for="group in allGroups" :key="group" :value="group">{{ group }}</option>
 		</select>
 		<input 
+			style="width:150px"
 			class="w3-bar-item w3-search"
 			v-model="searchTerms" 
 			placeholder="Search Publishers" 
@@ -328,19 +328,19 @@ function processNavigation() {
 					this.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ACTIVE PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "REPORTS") {
 					this.displayDropdown = true
-					this.buttons = [{"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
-				} else if (button.innerHTML == "MISSING REPORT") {
+					this.buttons = [{"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "MISSING") {
 					this.displayDropdown = true
-					this.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
-				} else if (button.innerHTML == "MONTHLY REPORT") {
+					this.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "MONTHLY") {
 					this.displayDropdown = true
-					this.buttons = [{"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+					this.buttons = [{"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else if (button.innerHTML == "ATTENDANCE") {
 					this.displayDropdown = false
-					this.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+					this.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "MISSING", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else if (button.innerHTML == "BRANCH REPORT") {
 					this.displayDropdown = false
-					this.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "CONG", "function": "congregationVue"}]
+					this.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else {
 					this.displayDropdown = false
 					this.buttons = allButtons.filter(elem=>elem.title !== button.innerHTML)
@@ -425,19 +425,19 @@ function processNavigation2() {
 					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ACTIVE PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "REPORTS") {
 					navigationVue.displayDropdown = true
-					navigationVue.buttons = [{"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
-				} else if (button.innerHTML == "MISSING REPORT") {
+					navigationVue.buttons = [{"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "MISSING") {
 					navigationVue.displayDropdown = true
-					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
-				} else if (button.innerHTML == "MONTHLY REPORT") {
+					navigationVue.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "MONTHLY") {
 					navigationVue.displayDropdown = true
-					navigationVue.buttons = [{"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+					navigationVue.buttons = [{"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else if (button.innerHTML == "ATTENDANCE") {
 					navigationVue.displayDropdown = false
-					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+					navigationVue.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "MISSING", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else if (button.innerHTML == "BRANCH REPORT") {
 					navigationVue.displayDropdown = false
-					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "CONG", "function": "congregationVue"}]
+					navigationVue.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else {
 					navigationVue.displayDropdown = false
 					navigationVue.buttons = allButtons.filter(elem=>elem.title !== button.innerHTML)
@@ -468,19 +468,19 @@ function processNavigation2() {
 					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ACTIVE PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "REPORTS") {
 					navigationVue.displayDropdown = true
-					navigationVue.buttons = [{"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
-				} else if (button.innerHTML == "MISSING REPORT") {
+					navigationVue.buttons = [{"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "MISSING") {
 					navigationVue.displayDropdown = true
-					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
-				} else if (button.innerHTML == "MONTHLY REPORT") {
+					navigationVue.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "MONTHLY") {
 					navigationVue.displayDropdown = true
-					navigationVue.buttons = [{"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+					navigationVue.buttons = [{"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else if (button.innerHTML == "ATTENDANCE") {
 					navigationVue.displayDropdown = false
-					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+					navigationVue.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "MISSING", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else if (button.innerHTML == "BRANCH REPORT") {
 					navigationVue.displayDropdown = false
-					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "CONG", "function": "congregationVue"}]
+					navigationVue.buttons = [{"title": "MONTHLY", "function": "monthlyReportVue"}, {"title": "MISSING", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "CONG", "function": "congregationVue"}]
 				} else {
 					navigationVue.displayDropdown = false
 					navigationVue.buttons = allButtons.filter(elem=>elem.title !== button.innerHTML)
@@ -1193,7 +1193,7 @@ function contactInformation() {
 
 document.querySelector('#monthlyReport').innerHTML = `<template>
 	<div v-if="display == true">
-		<h2 class="w3-center">MONTHLY REPORT</h2>
+		<h2 class="w3-center">MONTHLY</h2>
 		<h3 class="w3-center">{{ month.fullName }} {{ year }}</h3>
 		<div class="w3-row-padding w3-grayscale">
 			<div v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.active == true || (publisher.active == false && publisher.reactivated)) && (publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Groups') && (publisher.name.toLowerCase().includes(searchTerms.toLowerCase()))" class="w3-col l3 m6 w3-margin-bottom">
@@ -1486,19 +1486,28 @@ function processMonthlyReport() {
 
 document.querySelector('#missingReport').innerHTML = `<template>
 	<div v-if="display == true" style="display:block">
-		<h2 class="w3-center">MISSING REPORTS</h2>
+		<h2 class="w3-center">MISSINGS</h2>
 		<div class="w3-row-padding w3-grayscale" style="margin-top:4px">
 			<div v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms.toLowerCase()) && missingRecord(elem).length !== 0).length !== 0)" class="w3-col l3 m6 w3-margin-bottom">
 				<div style="padding-bottom:10px" class="w3-card">
-					<div class="w3-container main">
+					<div class="w3-container">
 						<div style="display:flex; justify-content:space-between">
 							<h3>{{ group }}</h3>
 							<h3 style="text-align: right;" @click="message($event.target, group)" title="Send Message"><i class="fas fa-envelope"></i></h3>
 						</div>
-						<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="missingRecord(publisher) !== '' && publisher.fieldServiceGroup == group && (publisher.name.toLowerCase().includes(searchTerms.toLowerCase()))">
+						<div class="main" v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="missingRecord(publisher) !== '' && publisher.fieldServiceGroup == group && (publisher.name.toLowerCase().includes(searchTerms.toLowerCase()))">
 							<hr style="margin:0; padding:0">
-							<h5 style="margin:2px 0">{{ publisher.name }}</h5>
+							<h5 @click="publisherDetail(publisher, $event.target)" style="margin:2px 0"><i class="fa fa-caret-right w3-margin-right"></i>{{ publisher.name }}</h5>
 							<p style="margin:0">{{ missingRecord(publisher) }}</p>
+							<div v-for="(lateReport) in missingRecord(publisher).split('; ')" class="w3-container detail" style="display:none">
+								<h5 style="margin:0">{{ lateReport }}</h5>
+								<p>Shared in Ministry: <input style="margin-left:8px" class="sharedInMinistry" type="checkbox"></p>
+								<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 40px;"></p>
+								<p>Auxiliary Pioneer: <input style="margin-left:8px" class="auxiliaryPioneer" type="checkbox"></p>
+								<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 40px;"></p>
+								<p>Remarks: <input class="remarks w3-input" type="text" style="width: 200px"></p>
+								<hr style="margin:0; padding:0">
+							</div>
 						</div>
 					</div>
 				</div>
@@ -1535,8 +1544,33 @@ function processMissingReport() {
 			groupPublishers(group) {
                 return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group && (elem.active == true || (elem.active == false && elem.reactivated)))
             },
-			publisherDetail(publisher) {
-				this.selectedPublisher = publisher
+			publisherDetail(publisher, event) {
+				console.log(publisher, event, event.parentNode.querySelector('p'))
+				if (event.parentNode.querySelector('.detail').style.display !== '') {
+					event.parentNode.querySelector('p').style.display = 'none'
+					event.parentNode.querySelector('.fa-caret-right').classList.value = 'fa fa-caret-down w3-margin-right'
+					event.parentNode.querySelectorAll('.detail').forEach(elem=>{
+						elem.style.display = ''
+					})
+				} else {
+					event.parentNode.querySelector('p').style.display = ''
+					event.parentNode.querySelector('.fa-caret-down').classList.value = 'fa fa-caret-right w3-margin-right'
+					event.parentNode.querySelectorAll('.detail').forEach(elem=>{
+						//publisher.report.currentServiceYear[month.abbr].bibleStudies
+						const currentMonth = configurationVue.months.filter(ele=>ele.fullName == elem.querySelector('h5').innerHTML)[0].abbr
+						console.log(elem.querySelector('h5').innerHTML)
+						console.log(currentMonth)
+						elem.querySelector('.sharedInMinistry').checked ? publisher.report.currentServiceYear[`${currentMonth}`].sharedInMinistry = true : publisher.report.currentServiceYear[`${currentMonth}`].sharedInMinistry = null
+						console.log(elem.querySelector('.sharedInMinistry').checked)
+						elem.querySelector('.bibleStudies').value !== '' ? publisher.report.currentServiceYear[`${currentMonth}`].bibleStudies = elem.querySelector('.bibleStudies').value : publisher.report.currentServiceYear[`${currentMonth}`].bibleStudies = null
+						elem.querySelector('.auxiliaryPioneer').checked ? publisher.report.currentServiceYear[`${currentMonth}`].auxiliaryPioneer = true : publisher.report.currentServiceYear[`${currentMonth}`].auxiliaryPioneer = null
+						elem.querySelector('.hours').value !== '' ? publisher.report.currentServiceYear[`${currentMonth}`].hours = elem.querySelector('.hours').value : publisher.report.currentServiceYear[`${currentMonth}`].hours = null
+						elem.querySelector('.remarks').value !== '' ? publisher.report.currentServiceYear[`${currentMonth}`].remarks = elem.querySelector('.remarks').value : publisher.report.currentServiceYear[`${currentMonth}`].remarks = null
+						//publisher.report.currentServiceYear[month.abbr].sharedInMinistry
+						elem.style.display = 'none'
+					})
+				}
+				//this.selectedPublisher = publisher
                 //fillPublisherRecord(publisher)
 			},
             updateRecord(publisher) {
@@ -1578,7 +1612,7 @@ function processMissingReport() {
 				window.getSelection().removeAllRanges();
 
 				var recipient = ''//group.OverseerMail//'someone@example.com';
-				var subject = 'MISSING REPORT - ' + group + ' - ' + attendanceVue.cleanDate(new Date());
+				var subject = 'MISSING - ' + group + ' - ' + attendanceVue.cleanDate(new Date());
 				var body = `Dear Brother :
 Please these are the reports still missing for your field service group.
 Thanks,
@@ -1946,6 +1980,9 @@ function branchReportDetails() {
     })
 }
 
+async function shortWait() {
+    await new Promise((e) => setTimeout(e, 50));
+}
 
 document.querySelector('#configuration').innerHTML = `<template>
     <div v-if="display == true">

@@ -1545,7 +1545,7 @@ function processMissingReport() {
                 return allPublishersVue.publishers.filter(elem=>elem.fieldServiceGroup == group && (elem.active == true || (elem.active == false && elem.reactivated)))
             },
 			publisherDetail(publisher, event) {
-				console.log(publisher, event, event.parentNode.querySelector('p'))
+				//console.log(publisher, event, event.parentNode.querySelector('p'))
 				if (event.parentNode.querySelector('.detail').style.display !== '') {
 					event.parentNode.querySelector('p').style.display = 'none'
 					event.parentNode.querySelector('.fa-caret-right').classList.value = 'fa fa-caret-down w3-margin-right'
@@ -1558,10 +1558,10 @@ function processMissingReport() {
 					event.parentNode.querySelectorAll('.detail').forEach(elem=>{
 						//publisher.report.currentServiceYear[month.abbr].bibleStudies
 						const currentMonth = configurationVue.months.filter(ele=>ele.fullName == elem.querySelector('h5').innerHTML)[0].abbr
-						console.log(elem.querySelector('h5').innerHTML)
-						console.log(currentMonth)
+						//console.log(elem.querySelector('h5').innerHTML)
+						//console.log(currentMonth)
 						elem.querySelector('.sharedInMinistry').checked ? publisher.report.currentServiceYear[`${currentMonth}`].sharedInMinistry = true : publisher.report.currentServiceYear[`${currentMonth}`].sharedInMinistry = null
-						console.log(elem.querySelector('.sharedInMinistry').checked)
+						//console.log(elem.querySelector('.sharedInMinistry').checked)
 						elem.querySelector('.bibleStudies').value !== '' ? publisher.report.currentServiceYear[`${currentMonth}`].bibleStudies = elem.querySelector('.bibleStudies').value : publisher.report.currentServiceYear[`${currentMonth}`].bibleStudies = null
 						elem.querySelector('.auxiliaryPioneer').checked ? publisher.report.currentServiceYear[`${currentMonth}`].auxiliaryPioneer = true : publisher.report.currentServiceYear[`${currentMonth}`].auxiliaryPioneer = null
 						elem.querySelector('.hours').value !== '' ? publisher.report.currentServiceYear[`${currentMonth}`].hours = elem.querySelector('.hours').value : publisher.report.currentServiceYear[`${currentMonth}`].hours = null

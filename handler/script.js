@@ -249,6 +249,7 @@ DBWorker.onmessage = async function (msg) {
 
 document.querySelector('#navigation').innerHTML = `<template>
 <div class="w3-bar w3-white w3-card" id="myNavbar">
+	<a v-if="logged() == false" class="w3-bar-item w3-button" href="https://project-developers.github.io/hexa/"><i class="fas fa-arrow-left"></i> BACK</a>
 	<a class="w3-bar-item w3-button w3-wide" @click="openButton($event.target)">{{ buttons[0] ? buttons[0].title : '' }}</a>
 	<!-- Right-sided navbar links -->
 	<div class="w3-right w3-hide-small">
@@ -257,7 +258,7 @@ document.querySelector('#navigation').innerHTML = `<template>
 		<a v-if="logged() == true" class="w3-bar-item w3-button" @click="signOut()"><i class="fa fa-sign-out-alt"></i></a>
 		<div v-if="logged() == true && displayDropdown == true">
 			<select style="margin-top:2px" class="w3-bar-item w3-select" v-model="fieldServiceGroup">
-				<option v-if="allGroups.length > 1" value="All GROUPS">All GROUPS</option>
+				<option v-if="allGroups.length > 1" value="All Groups">All Groups</option>
 				<option v-for="group in allGroups" :key="group" :value="group">{{ group }}</option>
 			</select>
 			<input 
@@ -271,12 +272,12 @@ document.querySelector('#navigation').innerHTML = `<template>
 	</div>
 	<!-- Hide right-floated links on small screens and replace them with a menu icon -->
 
-	<a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
+	<a href="javascript:void(0)" v-if="logged() == true" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
 		<i class="fa fa-bars"></i>
 	</a>
 	<div v-if="logged() == true && displayDropdown == true">
 		<select style="margin-top:2px" class="w3-bar-item w3-select" v-model="fieldServiceGroup">
-			<option v-if="allGroups.length > 1" value="All GROUPS">All GROUPS</option>
+			<option v-if="allGroups.length > 1" value="All Groups">All Groups</option>
 			<option v-for="group in allGroups" :key="group" :value="group">{{ group }}</option>
 		</select>
 		<input 
@@ -296,7 +297,7 @@ function processNavigation() {
         data: {
             buttons: [],
             allGroups: [],
-            fieldServiceGroup: 'All GROUPS',
+            fieldServiceGroup: 'All Groups',
 			searchTerms: '',
 			display: false,
 			displayDropdown: false,
@@ -308,7 +309,7 @@ function processNavigation() {
 			openButton(button) {
                 //console.log(button)
 				if (button.innerHTML == "PUBLISHERS") {
-					this.displayDropdown = false
+					this.displayDropdown = true
 					this.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "CONTACTS", "function": "contactInformationVue"}, {"title": "GROUPS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "CONTACTS") {
 					this.displayDropdown = true
@@ -317,13 +318,13 @@ function processNavigation() {
 					this.displayDropdown = false
 					this.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "GROUPS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "GROUPS") {
-					this.displayDropdown = false
+					this.displayDropdown = true
 					this.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ACTIVE PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "ACTIVE PUBLISHERS") {
-					this.displayDropdown = false
+					this.displayDropdown = true
 					this.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ALL PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "ALL PUBLISHERS") {
-					this.displayDropdown = false
+					this.displayDropdown = true
 					this.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ACTIVE PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "REPORTS") {
 					this.displayDropdown = true
@@ -390,7 +391,7 @@ function processNavigation2() {
         el: document.querySelector('#mySidebar'),
         data: {
             allGroups: [],
-            fieldServiceGroup: 'All GROUPS',
+            fieldServiceGroup: 'All Groups',
 			searchTerms: '',
 			display: false,
         },
@@ -402,7 +403,8 @@ function processNavigation2() {
         methods: {
 			openButton(button) {
                 //console.log(button)
-				w3_close()
+				
+				w3_close()/*
 				if (button.innerHTML == "PUBLISHERS") {
 					navigationVue.displayDropdown = false
 					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "CONTACTS", "function": "contactInformationVue"}, {"title": "GROUPS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
@@ -420,6 +422,49 @@ function processNavigation2() {
 					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ALL PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "ALL PUBLISHERS") {
 					navigationVue.displayDropdown = false
+					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ACTIVE PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
+				} else if (button.innerHTML == "REPORTS") {
+					navigationVue.displayDropdown = true
+					navigationVue.buttons = [{"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "MISSING REPORT") {
+					navigationVue.displayDropdown = true
+					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "MONTHLY REPORT") {
+					navigationVue.displayDropdown = true
+					navigationVue.buttons = [{"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "ATTENDANCE") {
+					navigationVue.displayDropdown = false
+					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "BRANCH REPORT", "function": "branchReportVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else if (button.innerHTML == "BRANCH REPORT") {
+					navigationVue.displayDropdown = false
+					navigationVue.buttons = [{"title": "MONTHLY REPORT", "function": "monthlyReportVue"}, {"title": "MISSING REPORT", "function": "missingReportVue"}, {"title": "ATTENDANCE", "function": "attendanceVue"}, {"title": "CONG", "function": "congregationVue"}]
+				} else {
+					navigationVue.displayDropdown = false
+					navigationVue.buttons = allButtons.filter(elem=>elem.title !== button.innerHTML)
+				}
+				if (button.innerHTML == "ALL PUBLISHERS" || button.innerHTML == "ACTIVE PUBLISHERS") {
+					fieldServiceGroupsVue.inactive()
+				} else {
+					gotoView(allButtons.filter(elem=>elem.title == button.innerHTML)[0].function)
+					
+				}*/
+				if (button.innerHTML == "PUBLISHERS") {
+					navigationVue.displayDropdown = true
+					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "CONTACTS", "function": "contactInformationVue"}, {"title": "GROUPS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
+				} else if (button.innerHTML == "CONTACTS") {
+					navigationVue.displayDropdown = true
+					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "GROUPS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
+				} else if (button.innerHTML == "CONG") {
+					navigationVue.displayDropdown = false
+					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "GROUPS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
+				} else if (button.innerHTML == "GROUPS") {
+					navigationVue.displayDropdown = true
+					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ACTIVE PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
+				} else if (button.innerHTML == "ACTIVE PUBLISHERS") {
+					navigationVue.displayDropdown = true
+					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ALL PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
+				} else if (button.innerHTML == "ALL PUBLISHERS") {
+					navigationVue.displayDropdown = true
 					navigationVue.buttons = [{"title": "CONG", "function": "congregationVue"}, {"title": "PUBLISHERS", "function": "allPublishersVue"}, {"title": "ACTIVE PUBLISHERS", "function": "fieldServiceGroupsVue"}, {"title": "REPORTS", "function": "monthlyReportVue"}]
 				} else if (button.innerHTML == "REPORTS") {
 					navigationVue.displayDropdown = true
@@ -564,7 +609,7 @@ document.querySelector('#allPublishers').innerHTML = `<template>
 		<div v-for="(category) in regularPioneers">
 			<h2 class="w3-center">{{ category.name }}</h2>
 			<div class="w3-row-padding w3-grayscale" style="margin-top:4px">
-				<div v-for="(publisher, count) in category.value" :key="publisher + '|' + count" class="w3-col l3 m6 w3-margin-bottom">
+				<div v-for="(publisher, count) in category.value" :key="publisher + '|' + count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Groups') && publisher.name.toLowerCase().includes(searchTerms.toLowerCase())" class="w3-col l3 m6 w3-margin-bottom">
 					<div class="w3-card">
 						<div class="w3-container main">
 							<h5 @click="publisherDetail(publisher, $event.target)">{{ publisher.name }}</h5>
@@ -647,7 +692,7 @@ document.querySelector('#allPublishers').innerHTML = `<template>
 		<div v-for="(group) in allGroups">
 			<h2 class="w3-center">{{ group }}</h2>
 			<div class="w3-row-padding w3-grayscale" style="margin-top:4px">
-				<div v-for="(publisher, count) in activePublishers" v-if="publisher.fieldServiceGroup == group" :key="publisher + '|' + count" class="w3-col l3 m6 w3-margin-bottom">
+				<div v-for="(publisher, count) in activePublishers" v-if="publisher.fieldServiceGroup == group && (group == selectedGroup || selectedGroup == 'All Groups') && publisher.name.toLowerCase().includes(searchTerms.toLowerCase())" :key="publisher + '|' + count" class="w3-col l3 m6 w3-margin-bottom">
 					<div class="w3-card">
 						<div class="w3-container main">
 							<h5 @click="publisherDetail(publisher, $event.target)">{{ publisher.name }}</h5>
@@ -729,7 +774,7 @@ document.querySelector('#allPublishers').innerHTML = `<template>
 		</div>
 		<h2 class="w3-center">Inactive Publishers</h2>
 		<div class="w3-row-padding w3-grayscale" style="margin-top:4px">
-			<div v-for="(publisher, count) in inactivePublishers" :key="publisher + '|' + count" class="w3-col l3 m6 w3-margin-bottom">
+			<div v-for="(publisher, count) in inactivePublishers" :key="publisher + '|' + count" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Groups') && publisher.name.toLowerCase().includes(searchTerms.toLowerCase())" class="w3-col l3 m6 w3-margin-bottom">
 				<div class="w3-card">
 					<div class="w3-container main">
 						<h5 @click="publisherDetail(publisher, $event.target)">{{ publisher.name }}</h5>
@@ -999,7 +1044,7 @@ document.querySelector('#fieldServiceGroups').innerHTML = `<template>
 					<div class="w3-container main">
 						<h3 class="w3-center">{{ group }}</h3>
 						<hr>
-						<h5 v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.name.toLowerCase().includes(searchTerms)">{{ count + 1 }} | {{ publisher.name }}</h5>
+						<h5 v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="(publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Groups') && publisher.name.toLowerCase().includes(searchTerms.toLowerCase())">{{ count + 1 }} | {{ publisher.name }}</h5>
 					</div>
 				</div>
 			</div>
@@ -1049,11 +1094,11 @@ function processFieldServiceGroups() {
 
 document.querySelector('#contactInformation').innerHTML = `<template>
 	<div v-if="display == true">
-		<h2 class="w3-center">CONTACT INFORMATION</h2>
-		<div v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All GROUPS') && groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms)).length !== 0">
+		<h2 class="w3-center">CONTACTS</h2>
+		<div v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Groups') && groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms.toLowerCase())).length !== 0">
 			<h2 class="w3-center">{{ group }}</h2>
 			<div class="w3-row-padding w3-grayscale" style="margin-top:4px">
-				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.fieldServiceGroup == group && (publisher.name.toLowerCase().includes(searchTerms))" class="w3-col l3 m6 w3-margin-bottom">
+				<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="publisher.fieldServiceGroup == group && (publisher.name.toLowerCase().includes(searchTerms.toLowerCase()))" class="w3-col l3 m6 w3-margin-bottom">
 					<div class="w3-card">
 						<div class="w3-container main">
 							<div style="display:flex; justify-content:space-between">
@@ -1151,7 +1196,7 @@ document.querySelector('#monthlyReport').innerHTML = `<template>
 		<h2 class="w3-center">MONTHLY REPORT</h2>
 		<h3 class="w3-center">{{ month.fullName }} {{ year }}</h3>
 		<div class="w3-row-padding w3-grayscale">
-			<div v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.active == true || (publisher.active == false && publisher.reactivated)) && (publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All GROUPS') && (publisher.name.toLowerCase().includes(searchTerms))" class="w3-col l3 m6 w3-margin-bottom">
+			<div v-for="(publisher, count) in publishers" :key="count" v-if="(publisher.active == true || (publisher.active == false && publisher.reactivated)) && (publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Groups') && (publisher.name.toLowerCase().includes(searchTerms.toLowerCase()))" class="w3-col l3 m6 w3-margin-bottom">
 				<div class="w3-card">
 					<div class="w3-container">
 						<h3>{{ publisher.name }}</h3>
@@ -1167,7 +1212,7 @@ document.querySelector('#monthlyReport').innerHTML = `<template>
 		</div>
 		<h3 class="w3-center">Late Reports</h3>
 		<div class="w3-row-padding w3-grayscale">
-			<div v-for="(publisher, count) in lateReports" :key="count" v-if="(publisher.publisher.active == true || (publisher.publisher.active == false && publisher.publisher.reactivated)) && (publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All GROUPS') && (publisher.name.toLowerCase().includes(searchTerms))" class="w3-col l3 m6 w3-margin-bottom">
+			<div v-for="(publisher, count) in lateReports" :key="count" v-if="(publisher.publisher.active == true || (publisher.publisher.active == false && publisher.publisher.reactivated)) && (publisher.fieldServiceGroup == selectedGroup || selectedGroup == 'All Groups') && (publisher.name.toLowerCase().includes(searchTerms.toLowerCase()))" class="w3-col l3 m6 w3-margin-bottom">
 				<div class="w3-card">
 					<div class="w3-container">
 						<h3>{{ publisher.name }}</h3>
@@ -1443,14 +1488,14 @@ document.querySelector('#missingReport').innerHTML = `<template>
 	<div v-if="display == true" style="display:block">
 		<h2 class="w3-center">MISSING REPORTS</h2>
 		<div class="w3-row-padding w3-grayscale" style="margin-top:4px">
-			<div v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All GROUPS') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms) && missingRecord(elem).length !== 0).length !== 0)" class="w3-col l3 m6 w3-margin-bottom">
+			<div v-for="(group) in allGroups" :key="group" v-if="(selectedGroup == group || selectedGroup == 'All Groups') && (groupPublishers(group).filter(elem=>elem.name.toLowerCase().includes(searchTerms.toLowerCase()) && missingRecord(elem).length !== 0).length !== 0)" class="w3-col l3 m6 w3-margin-bottom">
 				<div style="padding-bottom:10px" class="w3-card">
 					<div class="w3-container main">
 						<div style="display:flex; justify-content:space-between">
 							<h3>{{ group }}</h3>
 							<h3 style="text-align: right;" @click="message($event.target, group)" title="Send Message"><i class="fas fa-envelope"></i></h3>
 						</div>
-						<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="missingRecord(publisher) !== '' && publisher.fieldServiceGroup == group && (publisher.name.toLowerCase().includes(searchTerms))">
+						<div v-for="(publisher, count) in groupPublishers(group)" :key="publisher + '|' + count" style="cursor:pointer" v-if="missingRecord(publisher) !== '' && publisher.fieldServiceGroup == group && (publisher.name.toLowerCase().includes(searchTerms.toLowerCase()))">
 							<hr style="margin:0; padding:0">
 							<h5 style="margin:2px 0">{{ publisher.name }}</h5>
 							<p style="margin:0">{{ missingRecord(publisher) }}</p>
@@ -1641,7 +1686,7 @@ function processAttendance() {
 					currentYear = new Date().getFullYear()
 				}
 
-				console.log(this.month)
+				//console.log(this.month)
 
 				if (attendanceVue.months.findIndex(elem=>elem.abbr == this.month.abbr) < 4) {
 					this.meetingAttendanceRecord.meetings[0].currentServiceYear.year = currentYear

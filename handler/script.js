@@ -1202,9 +1202,9 @@ document.querySelector('#monthlyReport').innerHTML = `<template>
 						<h3>{{ publisher.name }}</h3>
 						<hr>
 						<p>Shared in Ministry: <input style="margin-left:8px" class="sharedInMinistry" type="checkbox" :checked = "publisher.report.currentServiceYear[month.abbr].sharedInMinistry !== null" @change="handleCheckboxChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></p>
-						<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.currentServiceYear[month.abbr].bibleStudies" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></p>
+						<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 60px;" :value="publisher.report.currentServiceYear[month.abbr].bibleStudies" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></p>
 						<p>Auxiliary Pioneer: <input style="margin-left:8px" class="auxiliaryPioneer" type="checkbox" :checked = "publisher.report.currentServiceYear[month.abbr].auxiliaryPioneer !== null" @change="handleCheckboxChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></p>
-						<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.currentServiceYear[month.abbr].hours" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></p>
+						<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 60px;" :value="publisher.report.currentServiceYear[month.abbr].hours" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></p>
 						<p>Remarks: <input class="remarks w3-input" type="text" style="width: 200px" :value="publisher.report.currentServiceYear[month.abbr].remarks" @change="handleInputChange(publisher.report.currentServiceYear[month.abbr], $event.target, publisher)"></p>
 					</div>
 				</div>
@@ -1219,9 +1219,9 @@ document.querySelector('#monthlyReport').innerHTML = `<template>
 						<h3>{{ publisher.month.fullName }}</h3>
 						<hr>
 						<p>Shared in Ministry: <input style="margin-left:8px" class="sharedInMinistry" type="checkbox" :checked = "publisher.report.sharedInMinistry !== null" @change="handleCheckboxChange2($event.target, publisher.publisher, publisher.month)"></p>
-						<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.bibleStudies" @change="handleInputChange2($event.target, publisher.publisher, publisher.month)"></p>
+						<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 60px;" :value="publisher.report.bibleStudies" @change="handleInputChange2($event.target, publisher.publisher, publisher.month)"></p>
 						<p>Auxiliary Pioneer: <input style="margin-left:8px" class="auxiliaryPioneer" type="checkbox" :checked = "publisher.report.auxiliaryPioneer !== null" @change="handleCheckboxChange2($event.target, publisher.publisher, publisher.month)"></p>
-						<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 40px;" :value="publisher.report.hours" @change="handleInputChange2($event.target, publisher.publisher, publisher.month)"></p>
+						<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 60px;" :value="publisher.report.hours" @change="handleInputChange2($event.target, publisher.publisher, publisher.month)"></p>
 						<p>Remarks: <input class="remarks w3-input" type="text" style="width: 200px" :value="publisher.report.remarks" @change="handleInputChange2($event.target, publisher.publisher, publisher.month)"></p>
 					</div>
 				</div>
@@ -1502,9 +1502,9 @@ document.querySelector('#missingReport').innerHTML = `<template>
 							<div v-for="(lateReport) in missingRecord(publisher).split('; ')" class="w3-container detail" style="display:none">
 								<h5 style="margin:0">{{ lateReport }}</h5>
 								<p>Shared in Ministry: <input style="margin-left:8px" class="sharedInMinistry" type="checkbox"></p>
-								<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 40px;"></p>
+								<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 60px;"></p>
 								<p>Auxiliary Pioneer: <input style="margin-left:8px" class="auxiliaryPioneer" type="checkbox"></p>
-								<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 50px;"></p>
+								<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 60px;"></p>
 								<p>Remarks: <input class="remarks w3-input" type="text" style="width: 200px"></p>
 								<hr style="margin:0; padding:0">
 							</div>

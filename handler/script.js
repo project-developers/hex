@@ -1934,23 +1934,23 @@ function branchReportDetails() {
 			},
 			publisherBibleStudies() {
 				var totalBibleStudies = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry).map(elem=>elem.report.bibleStudies ? elem.report.bibleStudies : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies : 0))
-				return totalBibleStudies.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+				return totalBibleStudies.reduce((accumulator, currentValue) => Number(accumulator) + Number(currentValue), 0);
 			},
 			auxiliaryPioneerBibleStudies() {
 				var totalBibleStudies = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.report.auxiliaryPioneer == true).map(elem=>elem.report.bibleStudies ? elem.report.bibleStudies : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].auxiliaryPioneer == true).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies : 0))
-				return totalBibleStudies.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+				return totalBibleStudies.reduce((accumulator, currentValue) => Number(accumulator) + Number(currentValue), 0);
 			},
 			regularPioneerBibleStudies() {
 				var totalBibleStudies = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.publisher.privilege.includes("Regular Pioneer")).map(elem=>elem.report.bibleStudies ? elem.report.bibleStudies : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.privilege.includes('Regular Pioneer')).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].bibleStudies : 0))
-				return totalBibleStudies.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+				return totalBibleStudies.reduce((accumulator, currentValue) => Number(accumulator) + Number(currentValue), 0);
 			},
 			auxiliaryPioneerHours() {
 				var totalHours = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.report.auxiliaryPioneer == true).map(elem=>elem.report.hours ? elem.report.hours : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].auxiliaryPioneer == true).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].hours ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].hours : 0))
-				return totalHours.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+				return totalHours.reduce((accumulator, currentValue) => Number(accumulator) + Number(currentValue), 0);
 			},
 			regularPioneerHours() {
 				var totalHours = monthlyReportVue.lateReports.filter(elem=>elem.report.sharedInMinistry && elem.publisher.privilege.includes("Regular Pioneer")).map(elem=>elem.report.hours ? elem.report.hours : 0).concat(monthlyReportVue.publishers.filter(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].sharedInMinistry !== null && elem.privilege.includes('Regular Pioneer')).map(elem=>elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].hours ? elem.report.currentServiceYear[`${monthlyReportVue.month.abbr}`].hours : 0))
-				return totalHours.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+				return totalHours.reduce((accumulator, currentValue) => Number(accumulator) + Number(currentValue), 0);
 			},
 			async copy(event) {
 				//console.log(event.className)

@@ -1501,11 +1501,11 @@ document.querySelector('#missingReport').innerHTML = `<template>
 							<p style="margin:0">{{ missingRecord(publisher) }}</p>
 							<div v-for="(lateReport) in missingRecord(publisher).split('; ')" class="w3-container detail" style="display:none">
 								<h5 style="margin:0">{{ lateReport }}</h5>
-								<p>Shared in Ministry: <input style="margin-left:8px" class="sharedInMinistry" type="checkbox"></p>
-								<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 64px;"></p>
-								<p>Auxiliary Pioneer: <input style="margin-left:8px" class="auxiliaryPioneer" type="checkbox"></p>
-								<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 64px;"></p>
-								<p>Remarks: <input class="remarks w3-input" type="text" style="width: 200px"></p>
+								<p><label>Shared in Ministry: <input style="margin-left:8px" class="sharedInMinistry" type="checkbox"></label></p>
+								<p><label>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 64px;"></label></p>
+								<p><label>Auxiliary Pioneer: <input style="margin-left:8px" class="auxiliaryPioneer" type="checkbox"></label></p>
+								<p><label>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 64px;"></label></p>
+								<p><label>Remarks: <input class="remarks w3-input" type="text" style="width: 200px"></label></p>
 								<hr style="margin:0; padding:0">
 							</div>
 						</div>
@@ -1569,6 +1569,7 @@ function processMissingReport() {
 						//publisher.report.currentServiceYear[month.abbr].sharedInMinistry
 						elem.style.display = 'none'
 					})
+					DBWorker.postMessage({ storeName: 'data', action: "save", value: [publisher]});
 				}
 				//this.selectedPublisher = publisher
                 //fillPublisherRecord(publisher)

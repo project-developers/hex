@@ -1504,7 +1504,7 @@ document.querySelector('#missingReport').innerHTML = `<template>
 								<p>Shared in Ministry: <input style="margin-left:8px" class="sharedInMinistry" type="checkbox"></p>
 								<p>Bible Studies: <input class="bibleStudies w3-input" type="number" min="0" max="999" style="width: 40px;"></p>
 								<p>Auxiliary Pioneer: <input style="margin-left:8px" class="auxiliaryPioneer" type="checkbox"></p>
-								<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 40px;"></p>
+								<p>Hours (If pioneer or ﬁeld missionary): <input class="hours w3-input" type="number" min="0" max="999" style="width: 50px;"></p>
 								<p>Remarks: <input class="remarks w3-input" type="text" style="width: 200px"></p>
 								<hr style="margin:0; padding:0">
 							</div>
